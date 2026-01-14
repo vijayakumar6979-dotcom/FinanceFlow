@@ -2,6 +2,7 @@
     "expo": {
         "name": "FinanceFlow Mobile",
         "slug": "financeflow-mobile",
+        "scheme": "financeflow",
         "version": "1.0.0",
         "orientation": "portrait",
         "icon": "./assets/icon.png",

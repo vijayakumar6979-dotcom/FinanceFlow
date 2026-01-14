@@ -1,22 +1,16 @@
+import React from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { SHARED_CONSTANT } from '@financeflow/shared';
+import RootNavigator from './src/navigation/RootNavigator';
+import { useTheme } from '@financeflow/shared/src/hooks/useTheme';
+
+// Polyfill for text encoder if needed for some libs in RN
+import 'text-encoding-polyfill';
 
 export default function App() {
     return (
-        <View style={styles.container}>
-            <Text>FinanceFlow Mobile App</Text>
-            <Text>{SHARED_CONSTANT}</Text>
-            <StatusBar style="auto" />
-        </View>
+        <SafeAreaProvider>
+            <RootNavigator />
+        </SafeAreaProvider>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});

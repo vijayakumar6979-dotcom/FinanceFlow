@@ -1,14 +1,44 @@
-import { Button } from '@financeflow/ui';
-import { SHARED_CONSTANT } from '@financeflow/shared';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { DashboardLayout } from '@/components/layouts/DashboardLayout';
+import { useTheme } from '@financeflow/shared/src/hooks/useTheme';
+
+// Placeholder Pages
+const DashboardPage = () => <div className="p-4 bg-white dark:bg-dark-surface rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 h-96 flex items-center justify-center">Dashboard Content</div>;
+const TransactionsPage = () => <div className="p-4 bg-white dark:bg-dark-surface rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 h-96 flex items-center justify-center">Transactions Content</div>;
 
 function App() {
+    const { theme } = useTheme();
+
+    // Sync theme with HTML root
+    useEffect(() => {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, [theme]);
+
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-dark-base flex flex-col items-center justify-center">
-            <h1 className="text-4xl font-bold text-primary-600 mb-4">FinanceFlow Web</h1>
-            <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">{SHARED_CONSTANT}</p>
-            <Button>Shared Button Component</Button>
-        </div>
-    )
+        <Router>
+            <Routes>
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+                <Route
+                    path="/*"
+                    element={
+                        <DashboardLayout>
+                            <Routes>
+                                <Route path="dashboard" element={<DashboardPage />} />
+                                <Route path="transactions" element={<TransactionsPage />} />
+                                <Route path="*" element={<div className="text-center py-20">404 - Page Not Found</div>} />
+                            </Routes>
+                        </DashboardLayout>
+                    }
+                />
+            </Routes>
+        </Router>
+    );
 }
 
-export default App
+export default App;
