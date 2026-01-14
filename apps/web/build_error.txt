@@ -1,0 +1,4 @@
+﻿src/components/ui/Button.tsx(76,13): error TS2322: Type 'ReactNode | MotionValueNumber | MotionValueString' is not assignable to type 'ReactNode'.
+  Type 'MotionValueNumber' is not assignable to type 'ReactNode'.
+src/components/ui/Checkbox.tsx(1,18): error TS6133: 'AnimatePresence' is declared but its value is never read.
+src/components/ui/Tabs.tsx(1,17): error TS6133: 'useState' is declared but its value is never read.
