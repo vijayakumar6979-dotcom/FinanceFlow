@@ -18,7 +18,7 @@ const MOCK_ACCOUNTS: AccountProps[] = [
         currency: 'MYR',
         institution: {
             name: 'Maybank',
-            logo: '/logos/banks/maybank-logo.png',
+            logo: 'https://www.google.com/s2/favicons?sz=64&domain=maybank2u.com.my',
             color: '#FFD700'
         },
         accountNumber: '123456789012',
@@ -32,7 +32,7 @@ const MOCK_ACCOUNTS: AccountProps[] = [
         currency: 'MYR',
         institution: {
             name: 'Maybank',
-            logo: '/logos/banks/maybank-logo.png',
+            logo: 'https://www.google.com/s2/favicons?sz=64&domain=maybank2u.com.my',
             color: '#FFD700'
         },
         accountNumber: '4567',
@@ -47,7 +47,7 @@ const MOCK_ACCOUNTS: AccountProps[] = [
         currency: 'MYR',
         institution: {
             name: 'GrabPay',
-            logo: '/logos/banks/grabpay-logo.png',
+            logo: 'https://www.google.com/s2/favicons?sz=64&domain=grab.com',
             color: '#00B14F'
         },
         linked_phone: '+60123456789'

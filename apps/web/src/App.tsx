@@ -13,6 +13,7 @@ import CreateGoal from '@/pages/goals/CreateGoal';
 import GoalDetails from '@/pages/goals/GoalDetails';
 import BillsDashboard from '@/pages/bills/BillsDashboard';
 import CreateBill from '@/pages/bills/CreateBill';
+import { ReloadPrompt } from '@/components/ReloadPrompt';
 
 // Placeholder Page
 const TransactionsPage = () => <div className="p-4 bg-white dark:bg-dark-surface rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 h-96 flex items-center justify-center">Transactions Content</div>;
@@ -31,6 +32,7 @@ function App() {
 
     return (
         <Router>
+            <ReloadPrompt />
             <Routes>
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
