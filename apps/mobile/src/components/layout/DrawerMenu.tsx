@@ -12,8 +12,9 @@ const menuItems = [
     { id: 'transactions', label: 'Transactions', icon: Receipt, screen: 'Transactions' },
     { id: 'accounts', label: 'Accounts', icon: Wallet, screen: 'Accounts' },
     { id: 'budgets', label: 'Budgets', icon: PieChart, screen: 'Budgets' },
+    { id: 'goals', label: 'Financial Goals', icon: TrendingUp, screen: 'Goals' },
+    { id: 'bills', label: 'Bills', icon: Receipt, screen: 'Bills' },
     { id: 'loans', label: 'Loans', icon: TrendingDown, screen: 'Loans' },
-    { id: 'investments', label: 'Investments', icon: TrendingUp, screen: 'Investments' },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, screen: 'Analytics' },
     { id: 'settings', label: 'Settings', icon: Settings, screen: 'Settings' },
 ];

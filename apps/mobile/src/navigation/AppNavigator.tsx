@@ -10,6 +10,9 @@ import { TabBar } from '../components/navigation/TabBar';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { DrawerMenu } from '../components/layout/DrawerMenu';
 import { useLayoutStore } from '../store/layoutStore';
+import { BudgetsScreen, CreateBudgetScreen, BudgetDetailScreen } from '../screens/budgets';
+import { GoalsScreen, CreateGoalScreen, GoalDetailScreen } from '../screens/goals';
+import { BillsScreen, CreateBillScreen, BillDetailScreen } from '../screens/bills';
 
 // Placeholder Screens
 const HomeScreen = () => (
@@ -70,15 +73,25 @@ export default function AppNavigator() {
         <>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="MainTabs" component={MainTabs} />
-                <Stack.Screen
-                    name="AccountDetail"
-                    component={AccountDetailScreen}
-                />
-                <Stack.Screen
-                    name="AddAccount"
-                    component={AddAccountScreen}
-                    options={{ presentation: 'modal' }}
-                />
+
+                {/* Accounts */}
+                <Stack.Screen name="AccountDetail" component={AccountDetailScreen} />
+                <Stack.Screen name="AddAccount" component={AddAccountScreen} options={{ presentation: 'modal' }} />
+
+                {/* Budgets */}
+                <Stack.Screen name="Budgets" component={BudgetsScreen} />
+                <Stack.Screen name="CreateBudget" component={CreateBudgetScreen} options={{ presentation: 'modal' }} />
+                <Stack.Screen name="BudgetDetail" component={BudgetDetailScreen} />
+
+                {/* Goals */}
+                <Stack.Screen name="Goals" component={GoalsScreen} />
+                <Stack.Screen name="CreateGoal" component={CreateGoalScreen} options={{ presentation: 'modal' }} />
+                <Stack.Screen name="GoalDetail" component={GoalDetailScreen} />
+
+                {/* Bills */}
+                <Stack.Screen name="Bills" component={BillsScreen} />
+                <Stack.Screen name="CreateBill" component={CreateBillScreen} options={{ presentation: 'modal' }} />
+                <Stack.Screen name="BillDetail" component={BillDetailScreen} />
             </Stack.Navigator>
 
             <DrawerMenu

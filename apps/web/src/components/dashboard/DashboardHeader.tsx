@@ -6,7 +6,12 @@ import { Download, Filter } from 'lucide-react'
 
 // interface DateRange { ... } removed
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+    title?: string;
+    subtitle?: string;
+}
+
+export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
     /* const [dateRange, setDateRange] = useState<DateRange>({
         from: startOfMonth(new Date()),
         to: endOfMonth(new Date())
@@ -27,10 +32,10 @@ export function DashboardHeader() {
                 {/* Left: Greeting */}
                 <div>
                     <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2">
-                        Welcome back, John! 👋
+                        {title || "Welcome back, John! 👋"}
                     </h1>
                     <p className="text-slate-500 dark:text-gray-400">
-                        Here's your financial overview for {format(new Date(), 'MMMM yyyy')}
+                        {subtitle || `Here's your financial overview for ${format(new Date(), 'MMMM yyyy')}`}
                     </p>
                 </div>
 

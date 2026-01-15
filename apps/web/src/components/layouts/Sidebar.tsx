@@ -22,6 +22,8 @@ const navItems = [
     { id: 'transactions', label: 'Transactions', icon: Receipt, path: '/transactions', badge: 5 },
     { id: 'accounts', label: 'Accounts', icon: Wallet, path: '/accounts' },
     { id: 'budgets', label: 'Budgets', icon: PieChart, path: '/budgets' },
+    { id: 'goals', label: 'Goals', icon: TrendingUp, path: '/goals' },
+    { id: 'bills', label: 'Bills', icon: Receipt, path: '/bills' },
     { id: 'loans', label: 'Loans', icon: TrendingDown, path: '/loans' },
     { id: 'investments', label: 'Investments', icon: TrendingUp, path: '/investments' },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/analytics' },
