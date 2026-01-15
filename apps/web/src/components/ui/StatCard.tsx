@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
-import { cn } from './utils/cn';
+import { cn } from '@/utils/cn';
 import { Card } from './Card';
 import { Skeleton } from './Skeleton';
 

@@ -1,0 +1,1300 @@
+Following the global rules, create the Dashboard Home Page with interactive widgets, charts, and financial overview for BOTH web (React + Tailwind) and mobile (React Native + Expo) platforms.
+
+---
+
+## 📱 PART B: MOBILE DASHBOARD (React Native + Expo)
+
+Location: /apps/mobile/src/screens/HomeScreen.tsx
+
+### Mobile Dashboard Structure
+┌─────────────────────────┐
+│  Status Bar             │
+├─────────────────────────┤
+│  Header (Avatar + Bell) │
+├─────────────────────────┤
+│  Financial Summary Card │
+│  (Swipeable)            │
+├─────────────────────────┤
+│  Quick Actions (4 btns) │
+├─────────────────────────┤
+│  Spending Chart         │
+├─────────────────────────┤
+│  Budget Progress (List) │
+├─────────────────────────┤
+│  Recent Transactions    │
+├─────────────────────────┤
+│  AI Insights (Cards)    │
+├─────────────────────────┤
+│  Financial Goals        │
+└─────────────────────────┘
+### 1. Mobile Dashboard Header
+
+**HomeHeader.tsx**
+```typescript
+import { View, Text, TouchableOpacity } from 'react-native'
+import { Avatar } from '@/components/ui/Avatar'
+import { Badge } from '@/components/ui/Badge'
+import { Icon } from '@/components/ui/Icon'
+import { useNavigation } from '@react-navigation/native'
+import { BlurView } from 'expo-blur'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+
+export function HomeHeader() {
+  const navigation = useNavigation()
+  const insets = useSafeAreaInsets()
+  const notificationCount = 3
+  
+  return (
+    <BlurView 
+      intensity={80} 
+      tint="dark"
+      className="border-b border-white/10"
+      style={{ paddingTop: insets.top }}
+    >
+      <View className="flex-row items-center justify-between px-4 py-4">
+        {/* Left: Avatar + Greeting */}
+        <View className="flex-row items-center">
+          <TouchableOpacity onPress={() => navigation.openDrawer()}>
+            <Avatar
+              name="John Doe"
+              src="https://i.pravatar.cc/100"
+              size="md"
+              showBorder
+            />
+          </TouchableOpacity>
+          
+          <View className="ml-3">
+            <Text className="text-gray-400 text-sm">Welcome back,</Text>
+            <Text className="text-white text-lg font-bold">John! 👋</Text>
+          </View>
+        </View>
+        
+        {/* Right: Notification Bell */}
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('Notifications')}
+          className="relative"
+        >
+          <View className="w-10 h-10 rounded-full bg-white/10 items-center justify-center">
+            <Icon name="bell" size={20} color="#FFFFFF" />
+          </View>
+          {notificationCount > 0 && (
+            <Badge variant="danger" count={notificationCount} />
+          )}
+        </TouchableOpacity>
+      </View>
+    </BlurView>
+  )
+}
+```
+
+### 2. Financial Summary Carousel (Swipeable Cards)
+
+**FinancialSummaryCarousel.tsx**
+```typescript
+import { View, Text, Dimensions } from 'react-native'
+import Carousel from 'react-native-reanimated-carousel'
+import { LinearGradient } from 'expo-linear-gradient'
+import { Icon } from '@/components/ui/Icon'
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window')
+const CARD_WIDTH = SCREEN_WIDTH - 48
+
+export function FinancialSummaryCarousel() {
+  const summaryCards = [
+    {
+      title: 'Total Balance',
+      value: 45280,
+      change: 12.5,
+      trend: 'up',
+      icon: 'wallet',
+      colors: ['#0066FF', '#8B5CF6'],
+    },
+    {
+      title: 'Total Income',
+      value: 18500,
+      change: 8.2,
+      trend: 'up',
+      icon: 'trending-up',
+      colors: ['#10B981', '#059669'],
+    },
+    {
+      title: 'Total Expenses',
+      value: 12340,
+      change: -5.4,
+      trend: 'down',
+      icon: 'trending-down',
+      colors: ['#EF4444', '#DC2626'],
+    },
+    {
+      title: 'Savings Rate',
+      value: 35,
+      change: 3.1,
+      trend: 'up',
+      icon: 'pie-chart',
+      colors: ['#F59E0B', '#D97706'],
+      suffix: '%',
+    },
+  ]
+  
+  return (
+    <View className="my-4">
+      <Carousel
+        width={CARD_WIDTH}
+        height={180}
+        data={summaryCards}
+        renderItem={({ item }) => (
+          <LinearGradient
+            colors={item.colors}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            className="rounded-3xl p-6 mx-1"
+            style={{
+              shadowColor: item.colors[0],
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.3,
+              shadowRadius: 20,
+            }}
+          >
+            {/* Icon */}
+            <View className="w-12 h-12 rounded-2xl bg-white/20 items-center justify-center mb-4">
+              <Icon name={item.icon} size={24} color="#FFFFFF" />
+            </View>
+            
+            {/* Title */}
+            <Text className="text-white/80 text-sm mb-2">{item.title}</Text>
+            
+            {/* Value */}
+            <Text className="text-white text-4xl font-bold font-mono mb-2">
+              {item.suffix ? `${item.value}${item.suffix}` : `$${item.value.toLocaleString()}`}
+            </Text>
+            
+            {/* Change */}
+            <View className="flex-row items-center">
+              <Icon 
+                name={item.trend === 'up' ? 'arrow-up' : 'arrow-down'} 
+                size={16} 
+                color="#FFFFFF" 
+              />
+              <Text className="text-white text-sm font-semibold ml-1">
+                {Math.abs(item.change)}%
+              </Text>
+              <Text className="text-white/60 text-sm ml-2">vs last month</Text>
+            </View>
+          </LinearGradient>
+        )}
+        loop={false}
+        pagingEnabled
+        snapEnabled
+        mode="parallax"
+        modeConfig={{
+          parallaxScrollingScale: 0.9,
+          parallaxScrollingOffset: 50,
+        }}
+      />
+    </View>
+  )
+}
+```
+
+### 3. Quick Actions Grid
+
+**QuickActions.tsx**
+```typescript
+import { View, Text, TouchableOpacity } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
+import { Icon } from '@/components/ui/Icon'
+import { useNavigation } from '@react-navigation/native'
+import * as Haptics from 'expo-haptics'
+
+export function QuickActions() {
+  const navigation = useNavigation()
+  
+  const actions = [
+    {
+      id: 'add-transaction',
+      label: 'Add Transaction',
+      icon: 'plus-circle',
+      colors: ['#0066FF', '#8B5CF6'],
+      screen: 'AddTransaction',
+    },
+    {
+      id: 'scan-receipt',
+      label: 'Scan Receipt',
+      icon: 'camera',
+      colors: ['#10B981', '#059669'],
+      screen: 'ScanReceipt',
+    },
+    {
+      id: 'budgets',
+      label: 'Budgets',
+      icon: 'target',
+      colors: ['#F59E0B', '#D97706'],
+      screen: 'Budgets',
+    },
+    {
+      id: 'analytics',
+      label: 'Analytics',
+      icon: 'bar-chart',
+      colors: ['#8B5CF6', '#6B21E8'],
+      screen: 'Analytics',
+    },
+  ]
+  
+  const handlePress = (screen: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    navigation.navigate(screen)
+  }
+  
+  return (
+    <View className="px-4 mb-6">
+      <View className="flex-row justify-between">
+        {actions.map((action) => (
+          <TouchableOpacity
+            key={action.id}
+            onPress={() => handlePress(action.screen)}
+            activeOpacity={0.7}
+            className="items-center"
+            style={{ width: '23%' }}
+          >
+            <LinearGradient
+              colors={action.colors}
+              className="w-16 h-16 rounded-2xl items-center justify-center mb-2"
+            >
+              <Icon name={action.icon} size={28} color="#FFFFFF" />
+            </LinearGradient>
+            <Text className="text-white text-xs text-center">{action.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  )
+}
+```
+
+### 4. Spending Chart (Mobile)
+
+**MobileSpendingChart.tsx**
+```typescript
+import { View, Text, Dimensions } from 'react-native'
+import { Card } from '@/components/ui/Card'
+import { VictoryChart, VictoryLine, VictoryArea, VictoryAxis, VictoryTheme } from 'victory-native'
+import { LinearGradient, Stop, Defs } from 'react-native-svg'
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window')
+
+export function MobileSpendingChart() {
+  const data = [
+    { x: 1, y: 2400 },
+    { x: 5, y: 1398 },
+    { x: 10, y: 3800 },
+    { x: 15, y: 3908 },
+    { x: 20, y: 4800 },
+    { x: 25, y: 3800 },
+    { x: 30, y: 4300 },
+  ]
+  
+  return (
+    <Card className="mx-4 mb-4">
+      <Text className="text-white text-lg font-bold mb-4">Spending Trends</Text>
+      
+      <VictoryChart
+        width={SCREEN_WIDTH - 80}
+        height={200}
+        theme={VictoryTheme.material}
+        padding={{ top: 10, bottom: 30, left: 50, right: 20 }}
+      >
+        <Defs>
+          <LinearGradient id="gradientFill" x1="0%" y1="0%" x2="0%" y2="100%">
+            <Stop offset="0%" stopColor="#0066FF" stopOpacity="0.3" />
+            <Stop offset="100%" stopColor="#0066FF" stopOpacity="0" />
+          </LinearGradient>
+        </Defs>
+        
+        <VictoryAxis
+          style={{
+            axis: { stroke: 'rgba(255,255,255,0.1)' },
+            tickLabels: { fill: '#94A3B8', fontSize: 10 },
+            grid: { stroke: 'rgba(255,255,255,0.05)' }
+          }}
+        />
+        
+        <VictoryAxis
+          dependentAxis
+          style={{
+            axis: { stroke: 'rgba(255,255,255,0.1)' },
+            tickLabels: { fill: '#94A3B8', fontSize: 10 },
+            grid: { stroke: 'rgba(255,255,255,0.05)', strokeDasharray: '5,5' }
+          }}
+          tickFormat={(t) => `$${t/1000}k`}
+        />
+        
+        <VictoryArea
+          data={data}
+          style={{
+            data: { fill: 'url(#gradientFill)', stroke: '#0066FF', strokeWidth: 3 }
+          }}
+        />
+        
+        <VictoryLine
+          data={data}
+          style={{
+            data: { stroke: '#0066FF', strokeWidth: 3 }
+          }}
+        />
+      </VictoryChart>
+    </Card>
+  )
+}
+```
+
+### 5. Budget Progress List (Mobile)
+
+**MobileBudgetProgress.tsx**
+```typescript
+import { View, Text, ScrollView } from 'react-native'
+import { Card } from '@/components/ui/Card'
+import { ProgressBar } from '@/components/ui/ProgressBar'
+import { Icon } from '@/components/ui/Icon'
+
+export function MobileBudgetProgress() {
+  const budgets = [
+    { category: 'Food & Dining', spent: 450, total: 500, color: '#FF6B6B', icon: 'coffee' },
+    { category: 'Transportation', spent: 180, total: 300, color: '#4ECDC4', icon: 'car' },
+    { category: 'Shopping', spent: 520, total: 400, color: '#FF8B94', icon: 'shopping-bag' },
+    { category: 'Entertainment', spent: 150, total: 200, color: '#A8E6CF', icon: 'film' },
+  ]
+  
+  return (
+    <Card className="mx-4 mb-4">
+      <Text className="text-white text-lg font-bold mb-4">Budget Overview</Text>
+      
+      {budgets.map((budget, index) => {
+        const percentage = (budget.spent / budget.total) * 100
+        const isOver = percentage > 100
+        
+        return (
+          <View key={index} className={index < budgets.length - 1 ? 'mb-4' : ''}>
+            <View className="flex-row items-center justify-between mb-2">
+              <View className="flex-row items-center">
+                <View 
+                  className="w-8 h-8 rounded-lg items-center justify-center mr-2"
+                  style={{ backgroundColor: `${budget.color}20` }}
+                >
+                  <Icon name={budget.icon} size={16} color={budget.color} />
+                </View>
+                <Text className="text-white text-sm">{budget.category}</Text>
+              </View>
+              
+              <Text className={`font-bold text-sm ${isOver ? 'text-red-500' : 'text-white'}`}>
+                ${budget.spent} / ${budget.total}
+              </Text>
+            </View>
+            
+            <ProgressBar
+              value={budget.spent}
+              max={budget.total}
+              size="sm"
+            />
+          </View>
+        )
+      })}
+    </Card>
+  )
+}
+```
+
+### 6. Recent Transactions List (Mobile)
+
+**MobileRecentTransactions.tsx**
+```typescript
+import { View, Text, TouchableOpacity, FlatList } from 'react-native'
+import { Card } from '@/components/ui/Card'
+import { TransactionCard } from '@/components/ui/TransactionCard'
+import { Button } from '@/components/ui/Button'
+import { useNavigation } from '@react-navigation/native'
+
+export function MobileRecentTransactions() {
+  const navigation = useNavigation()
+  
+  const transactions = [
+    {
+      id: '1',
+      description: 'Starbucks Coffee',
+      amount: 12.50,
+      type: 'expense',
+      category: { name: 'Food & Dining', icon: 'coffee', color: '#FF6B6B' },
+      date: 'Today, 10:30 AM',
+      account: 'Credit Card',
+    },
+    {
+      id: '2',
+      description: 'Monthly Salary',
+      amount: 5000,
+      type: 'income',
+      category: { name: 'Salary', icon: 'dollar-sign', color: '#10B981' },
+      date: 'Today, 9:00 AM',
+      account: 'Bank Account',
+    },
+    {
+      id: '3',
+      description: 'Uber Ride',
+      amount: 25.80,
+      type: 'expense',
+      category: { name: 'Transportation', icon: 'car', color: '#4ECDC4' },
+      date: 'Yesterday',
+      account: 'Debit Card',
+    },
+  ]
+  
+  return (
+    <Card className="mx-4 mb-4">
+      <View className="flex-row items-center justify-between mb-4">
+        <Text className="text-white text-lg font-bold">Recent Transactions</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Transactions')}>
+          <Text className="text-blue-500 text-sm">View All</Text>
+        </TouchableOpacity>
+      </View>
+      
+      {transactions.map((transaction) => (
+        <TransactionCard
+          key={transaction.id}
+          transaction={transaction}
+          onPress={() => navigation.navigate('TransactionDetail', { id: transaction.id })}
+        />
+      ))}
+    </Card>
+  )
+}
+```
+
+### 7. AI Insights Mobile
+
+**MobileAIInsights.tsx**
+```typescript
+import { View, Text } from 'react-native'
+import { Card } from '@/components/ui/Card'
+import { LinearGradient } from 'expo-linear-gradient'
+import { Icon } from '@/components/ui/Icon'
+import { Button } from '@/components/ui/Button'
+
+export function MobileAIInsights() {
+  const insights = [
+    {
+      id: '1',
+      title: 'Reduce Food Expenses',
+      content: 'Your food spending is 25% higher than average. Save $200/month with meal planning.',
+      icon: 'alert-triangle',
+      color: '#F59E0B',
+    },
+    {
+      id: '2',
+      title: 'Investment Opportunity',
+      content: 'You have $5,000 idle. Consider low-risk index funds for better returns.',
+      icon: 'trending-up',
+      color: '#10B981',
+    },
+  ]
+  
+  return (
+    <Card className="mx-4 mb-4">
+      <View className="flex-row items-center mb-4">
+        <Icon name="sparkles" size={20} color="#0066FF" />
+        <Text className="text-white text-lg font-bold ml-2">AI Insights</Text>
+        <View className="ml-auto bg-blue-500/20 px-2 py-1 rounded-full">
+          <Text className="text-blue-500 text-xs">Grok AI</Text>
+        </View>
+      </View>
+      
+      {insights.map((insight) => (
+        <View
+          key={insight.id}
+          className="p-4 rounded-2xl mb-3"
+          style={{ backgroundColor: `${insight.color}10` }}
+        >
+          <View className="flex-row items-start">
+            <View 
+              className="w-10 h-10 rounded-xl items-center justify-center mr-3"
+              style={{ backgroundColor: `${insight.color}20` }}
+            >
+              <Icon name={insight.icon} size={20} color={insight.color} />
+            </View>
+            
+            <View className="flex-1">
+              <Text className="text-white font-semibold mb-1">{insight.title}</Text>
+              <Text className="text-gray-400 text-sm leading-5">{insight.content}</Text>
+            </View>
+          </View>
+        </View>
+      ))}
+    </Card>
+  )
+}
+```
+
+### 8. Main Mobile Dashboard Screen
+
+**HomeScreen.tsx**
+```typescript
+import { ScrollView, RefreshControl, StatusBar } from 'react-native'
+import { useState } from 'react'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { HomeHeader } from '@/components/dashboard/HomeHeader'
+import { FinancialSummaryCarousel } from '@/components/dashboard/FinancialSummaryCarousel'
+import { QuickActions } from '@/components/dashboard/QuickActions'
+import { MobileSpendingChart } from '@/components/dashboard/MobileSpendingChart'
+import { MobileBudgetProgress } from '@/components/dashboard/MobileBudgetProgress'
+import { MobileRecentTransactions } from '@/components/dashboard/MobileRecentTransactions'
+import { MobileAIInsights } from '@/components/dashboard/MobileAIInsights'
+
+export function HomeScreen() {
+  const [refreshing, setRefreshing] = useState(false)
+  const insets = useSafeAreaInsets()
+  
+  const onRefresh = async () => {
+    setRefreshing(true)
+    // Fetch fresh data
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    setRefreshing(false)
+  }
+  
+  return (
+    <>
+      <StatusBar barStyle="light-content" />
+      
+      <ScrollView
+        className="flex-1 bg-dark-base"
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#0066FF"
+            colors={['#0066FF', '#8B5CF6']}
+          />
+        }
+      >
+        {/* Header */}
+        <HomeHeader />
+        
+        {/* Financial Summary Carousel */}
+        <FinancialSummaryCarousel />
+        
+        {/* Quick Actions */}
+        <QuickActions />
+        
+        {/* Spending Chart */}
+        <MobileSpendingChart />
+        
+        {/* Budget Progress */}
+        <MobileBudgetProgress />
+        
+        {/* Recent Transactions */}
+        <MobileRecentTransactions />
+        
+        {/* AI Insights */}
+        <MobileAIInsights />
+        
+        {/* Bottom padding for tab bar */}
+        <View style={{ height: insets.bottom + 80 }} />
+      </ScrollView>
+    </>
+  )
+}
+```
+
+---
+
+## 🔗 DATA FETCHING & STATE MANAGEMENT
+
+### Custom Hook for Financial Data
+
+**useFinancialData.ts** (Shared between web and mobile)
+```typescript
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/services/supabase'
+
+export function useFinancialData(dateRange?: { from: Date; to: Date }) {
+  return useQuery({
+    queryKey: ['financialData', dateRange],
+    queryFn: async () => {
+      const { data: user } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+      
+      // Fetch accounts
+      const { data: accounts } = await supabase
+        .from('accounts')
+        .select('*')
+        .eq('user_id', user.id)
+      
+      // Fetch transactions
+      const { data: transactions } = await supabase
+        .from('transactions')
+        .select('*, category(*), account(*)')
+        .eq('user_id', user.id)
+        .gte('date', dateRange?.from.toISOString())
+        .lte('date', dateRange?.to.toISOString())
+        .order('date', { ascending: false })
+      
+      // Calculate summary
+      const totalBalance = accounts?.reduce((sum, acc) => sum + acc.balance, 0) || 0
+      const totalIncome = transactions?.filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0) || 0
+      const totalExpenses = transactions?.filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0) || 0
+      const savingsRate = totalIncome > 0 
+        ? ((totalIncome - totalExpenses) / totalIncome) * 100 
+        : 0
+      
+      return {
+        summary: {
+          totalBalance,
+          totalIncome,
+          totalExpenses,
+          savingsRate
+        },
+        transactions,
+        accounts
+      }
+    },
+    staleTime: 1000 * 60 * 5 // 5 minutes
+  })
+}
+```
+
+---
+
+## 📦 DELIVERABLES
+
+### Web:
+1. ✅ Complete dashboard page with all widgets
+2. ✅ Interactive charts (Line, Bar, Pie) using Recharts
+3. ✅ Financial summary cards with animations
+4. ✅ Recent transactions list
+5. ✅ Budget progress bars
+6. ✅ AI insights cards
+7. ✅ Financial goals with circular progress
+8. ✅ Date range selector and filters
+9. ✅ Responsive design (mobile, tablet, desktop)
+10. ✅ Data fetching with React Query
+
+### Mobile:
+1. ✅ Complete home screen with all sections
+2. ✅ Swipeable financial summary carousel
+3. ✅ Quick actions grid
+4. ✅ Charts using Victory Native
+5. ✅ Budget progress list
+6. ✅ Recent transactions with swipe actions
+7. ✅ AI insights cards
+8. ✅ Pull-to-refresh functionality
+9. ✅ Smooth animations (60fps)
+10. ✅ Data fetching with React Query
+
+### Shared:
+1. ✅ useFinancialData hook
+2. ✅ Supabase integration
+3. ✅ Real-time data sync
+4. ✅ Loading and error states
+5. ✅ Type-safe data structures
+
+---
+
+## ✅ TESTING CHECKLIST
+
+### Web:
+- [ ] All charts render correctly
+- [ ] Charts are responsive
+- [ ] Tooltips display properly
+- [ ] Date range selector works
+- [ ] Export functionality works
+- [ ] All widgets load data correctly
+- [ ] Loading skeletons display
+- [ ] Error states handled
+- [ ] Dark/light theme works
+- [ ] Animations are smooth (60fps)
+
+### Mobile:
+- [ ] Carousel swipes smoothly
+- [ ] Pull-to-refresh works
+- [ ] Charts render on all screen sizes
+- [ ] Quick actions navigate correctly
+- [ ] Swipe actions on transactions work
+- [ ] All animations are 60fps
+- [ ] Safe area handled correctly
+- [ ] Data loads and updates properly
+- [ ] Loading states display
+- [ ] Error handling works properly
+
+🎨 STYLING & ANIMATION REQUIREMENTS
+Web Specific:
+
+Chart Animations:
+
+Charts must animate on mount (duration: 1000ms)
+Use spring animations for interactive elements
+Tooltip appears with fade-in (200ms)
+Data points pulse on hover
+
+
+Card Animations:
+
+Stagger animation for multiple cards (100ms delay between each)
+Hover lift effect (translateY: -4px)
+Shadow intensity increases on hover
+
+
+Responsive Breakpoints:
+
+css   Mobile: < 768px (1 column layout)
+   Tablet: 768px - 1024px (2 column layout)
+   Desktop: > 1024px (3-4 column layout)
+Mobile Specific:
+
+Gesture Animations:
+
+Carousel parallax effect (scale: 0.9 for inactive cards)
+Swipe actions reveal with spring animation
+Pull-to-refresh indicator rotates smoothly
+
+
+Performance:
+
+Use useNativeDriver: true for all animations
+Lazy load charts (render on scroll)
+Virtualize long lists (FlatList with windowSize optimization)
+
+
+Haptic Feedback:
+
+Light impact on button press
+Medium impact on swipe action
+Success notification on goal completion
+
+
+
+
+🔄 REAL-TIME UPDATES
+Web Implementation:
+useDashboardRealtime.ts
+typescriptimport { useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/services/supabase'
+
+export function useDashboardRealtime(userId: string) {
+  const queryClient = useQueryClient()
+  
+  useEffect(() => {
+    // Subscribe to transactions
+    const transactionsChannel = supabase
+      .channel('dashboard_transactions')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'transactions',
+          filter: `user_id=eq.${userId}`
+        },
+        () => {
+          queryClient.invalidateQueries(['financialData'])
+          queryClient.invalidateQueries(['transactions'])
+        }
+      )
+      .subscribe()
+    
+    // Subscribe to accounts
+    const accountsChannel = supabase
+      .channel('dashboard_accounts')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'accounts',
+          filter: `user_id=eq.${userId}`
+        },
+        () => {
+          queryClient.invalidateQueries(['financialData'])
+          queryClient.invalidateQueries(['accounts'])
+        }
+      )
+      .subscribe()
+    
+    return () => {
+      supabase.removeChannel(transactionsChannel)
+      supabase.removeChannel(accountsChannel)
+    }
+  }, [userId, queryClient])
+}
+Mobile Implementation:
+Same hook works for mobile - just import in HomeScreen.tsx:
+typescriptexport function HomeScreen() {
+  const { user } = useAuth()
+  useDashboardRealtime(user.id) // Real-time updates
+  
+  // ... rest of component
+}
+
+🤖 GROK AI INTEGRATION
+Edge Function for AI Insights
+Location: /supabase/functions/generate-insights/index.ts
+typescriptimport { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const GROK_API_KEY = Deno.env.get('GROK_API_KEY')
+const GROK_API_URL = 'https://api.x.ai/v1/chat/completions'
+
+serve(async (req) => {
+  try {
+    const { userId } = await req.json()
+    
+    // Create Supabase client
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+    )
+    
+    // Fetch user's financial data
+    const { data: transactions } = await supabaseClient
+      .from('transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .gte('date', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+    
+    const { data: budgets } = await supabaseClient
+      .from('budgets')
+      .select('*, category(*)')
+      .eq('user_id', userId)
+    
+    // Prepare data for Grok
+    const totalIncome = transactions
+      ?.filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0) || 0
+    
+    const totalExpenses = transactions
+      ?.filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0) || 0
+    
+    const categoryBreakdown = transactions
+      ?.filter(t => t.type === 'expense')
+      .reduce((acc, t) => {
+        acc[t.category_id] = (acc[t.category_id] || 0) + t.amount
+        return acc
+      }, {})
+    
+    // Call Grok API
+    const grokResponse = await fetch(GROK_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROK_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'grok-beta',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a financial advisor AI. Analyze the user's financial data and provide 3 actionable insights. 
+            
+Return ONLY a JSON array with this exact structure:
+[
+  {
+    "type": "saving_tip" | "spending_pattern" | "investment_suggestion" | "budget_alert",
+    "priority": "low" | "medium" | "high",
+    "title": "Short title (max 50 chars)",
+    "content": "Actionable insight (max 150 chars)"
+  }
+]
+
+Focus on:
+1. Budget overspending or underspending
+2. Unusual spending patterns
+3. Savings opportunities
+4. Investment suggestions if cash is idle`
+          },
+          {
+            role: 'user',
+            content: JSON.stringify({
+              totalIncome,
+              totalExpenses,
+              savingsRate: ((totalIncome - totalExpenses) / totalIncome) * 100,
+              categoryBreakdown,
+              budgets: budgets?.map(b => ({
+                category: b.category.name,
+                spent: b.current_amount || 0,
+                limit: b.amount
+              }))
+            })
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 500
+      })
+    })
+    
+    if (!grokResponse.ok) {
+      throw new Error(`Grok API error: ${grokResponse.statusText}`)
+    }
+    
+    const grokData = await grokResponse.json()
+    const insights = JSON.parse(grokData.choices[0].message.content)
+    
+    // Save insights to database
+    const insightsToInsert = insights.map(insight => ({
+      user_id: userId,
+      insight_type: insight.type,
+      priority: insight.priority,
+      title: insight.title,
+      content: insight.content,
+      metadata: { generated_by: 'grok-beta', generated_at: new Date().toISOString() },
+      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
+    }))
+    
+    await supabaseClient
+      .from('ai_insights')
+      .insert(insightsToInsert)
+    
+    return new Response(
+      JSON.stringify({ success: true, insights }),
+      { headers: { 'Content-Type': 'application/json' } }
+    )
+    
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    )
+  }
+})
+Hook to Fetch AI Insights
+useAIInsights.ts (Shared)
+typescriptimport { useQuery, useMutation } from '@tanstack/react-query'
+import { supabase } from '@/services/supabase'
+
+export function useAIInsights() {
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getUser()
+      return data.user
+    }
+  })
+  
+  // Fetch existing insights
+  const insightsQuery = useQuery({
+    queryKey: ['aiInsights', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ai_insights')
+        .select('*')
+        .eq('user_id', user!.id)
+        .gt('expires_at', new Date().toISOString())
+        .order('priority', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(5)
+      
+      if (error) throw error
+      return data
+    },
+    enabled: !!user
+  })
+  
+  // Generate new insights
+  const generateInsights = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke('generate-insights', {
+        body: { userId: user!.id }
+      })
+      
+      if (error) throw error
+      return data
+    },
+    onSuccess: () => {
+      insightsQuery.refetch()
+    }
+  })
+  
+  // Mark as read
+  const markAsRead = useMutation({
+    mutationFn: async (insightId: string) => {
+      const { error } = await supabase
+        .from('ai_insights')
+        .update({ is_read: true, read_at: new Date().toISOString() })
+        .eq('id', insightId)
+      
+      if (error) throw error
+    },
+    onSuccess: () => {
+      insightsQuery.refetch()
+    }
+  })
+  
+  return {
+    insights: insightsQuery.data || [],
+    isLoading: insightsQuery.isLoading,
+    generateInsights: generateInsights.mutate,
+    isGenerating: generateInsights.isPending,
+    markAsRead: markAsRead.mutate
+  }
+}
+
+📊 CHART DATA TRANSFORMATIONS
+Utility Functions (Shared)
+chartUtils.ts
+typescriptimport { format, startOfMonth, endOfMonth, eachDayOfInterval, eachMonthOfInterval } from 'date-fns'
+
+export function transformTransactionsForLineChart(transactions: Transaction[]) {
+  // Group by date and calculate daily totals
+  const grouped = transactions.reduce((acc, t) => {
+    const date = format(new Date(t.date), 'MMM dd')
+    if (!acc[date]) {
+      acc[date] = { date, income: 0, expense: 0 }
+    }
+    
+    if (t.type === 'income') {
+      acc[date].income += t.amount
+    } else if (t.type === 'expense') {
+      acc[date].expense += t.amount
+    }
+    
+    return acc
+  }, {} as Record<string, { date: string; income: number; expense: number }>)
+  
+  return Object.values(grouped).sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  )
+}
+
+export function transformTransactionsForBarChart(transactions: Transaction[]) {
+  // Group by month
+  const grouped = transactions.reduce((acc, t) => {
+    const month = format(new Date(t.date), 'MMM')
+    if (!acc[month]) {
+      acc[month] = { month, income: 0, expense: 0 }
+    }
+    
+    if (t.type === 'income') {
+      acc[month].income += t.amount
+    } else if (t.type === 'expense') {
+      acc[month].expense += t.amount
+    }
+    
+    return acc
+  }, {} as Record<string, { month: string; income: number; expense: number }>)
+  
+  return Object.values(grouped)
+}
+
+export function transformTransactionsForPieChart(transactions: Transaction[]) {
+  // Group by category
+  const grouped = transactions
+    .filter(t => t.type === 'expense')
+    .reduce((acc, t) => {
+      const categoryName = t.category.name
+      if (!acc[categoryName]) {
+        acc[categoryName] = {
+          name: categoryName,
+          value: 0,
+          color: t.category.color
+        }
+      }
+      acc[categoryName].value += t.amount
+      return acc
+    }, {} as Record<string, { name: string; value: number; color: string }>)
+  
+  return Object.values(grouped).sort((a, b) => b.value - a.value)
+}
+
+🎯 PERFORMANCE OPTIMIZATIONS
+Web:
+
+Code Splitting:
+
+typescript// Lazy load heavy chart components
+const SpendingTrendsChart = lazy(() => import('@/components/dashboard/SpendingTrendsChart'))
+const CategoryBreakdownChart = lazy(() => import('@/components/dashboard/CategoryBreakdownChart'))
+
+// Use Suspense
+<Suspense fallback={<ChartSkeleton />}>
+  <SpendingTrendsChart />
+</Suspense>
+
+Memoization:
+
+typescriptconst chartData = useMemo(() => 
+  transformTransactionsForLineChart(transactions),
+  [transactions]
+)
+
+Virtual Scrolling:
+
+typescriptimport { useVirtualizer } from '@tanstack/react-virtual'
+
+// For long transaction lists
+const virtualizer = useVirtualizer({
+  count: transactions.length,
+  getScrollElement: () => parentRef.current,
+  estimateSize: () => 60,
+  overscan: 5
+})
+Mobile:
+
+FlatList Optimization:
+
+typescript<FlatList
+  data={transactions}
+  renderItem={renderTransaction}
+  keyExtractor={(item) => item.id}
+  initialNumToRender={10}
+  maxToRenderPerBatch={10}
+  windowSize={5}
+  removeClippedSubviews={true}
+  getItemLayout={(data, index) => ({
+    length: 80,
+    offset: 80 * index,
+    index,
+  })}
+/>
+
+Image Optimization:
+
+typescript<Image
+  source={{ uri: avatarUrl }}
+  style={{ width: 40, height: 40 }}
+  resizeMode="cover"
+  loadingIndicatorSource={require('@/assets/placeholder.png')}
+/>
+
+Reanimated Worklets:
+
+typescriptconst scrollHandler = useAnimatedScrollHandler({
+  onScroll: (event) => {
+    scrollY.value = event.contentOffset.y
+  }
+})
+
+🔔 NOTIFICATIONS INTEGRATION
+Trigger Notifications on Dashboard Events
+notificationService.ts (Shared)
+typescriptimport { supabase } from './supabase'
+
+export async function sendBudgetAlert(userId: string, budgetName: string, percentage: number) {
+  // Create notification in database
+  await supabase.from('notifications').insert({
+    user_id: userId,
+    title: 'Budget Alert',
+    message: `You've spent ${percentage}% of your ${budgetName} budget`,
+    type: 'budget',
+    metadata: { budgetName, percentage }
+  })
+  
+  // Get user's device token
+  const { data: tokens } = await supabase
+    .from('device_tokens')
+    .select('token, platform')
+    .eq('user_id', userId)
+    .eq('is_active', true)
+  
+  // Send FCM notification
+  if (tokens && tokens.length > 0) {
+    await supabase.functions.invoke('send-notification', {
+      body: {
+        tokens: tokens.map(t => t.token),
+        notification: {
+          title: '💸 Budget Alert',
+          body: `You've spent ${percentage}% of your ${budgetName} budget`
+        },
+        data: {
+          type: 'budget_alert',
+          screen: 'Budgets'
+        }
+      }
+    })
+  }
+}
+
+export async function sendGoalMilestone(userId: string, goalName: string, percentage: number) {
+  await supabase.from('notifications').insert({
+    user_id: userId,
+    title: 'Goal Milestone',
+    message: `You've reached ${percentage}% of your ${goalName} goal! 🎉`,
+    type: 'goal',
+    metadata: { goalName, percentage }
+  })
+}
+
+📱 DEEP LINKING FOR MOBILE
+Handle Notifications
+App.tsx (Mobile)
+typescriptimport { useEffect } from 'react'
+import * as Notifications from 'expo-notifications'
+import { useNavigation } from '@react-navigation/native'
+
+export default function App() {
+  const navigation = useNavigation()
+  
+  useEffect(() => {
+    // Handle notification tap
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const { screen, ...params } = response.notification.request.content.data
+      
+      if (screen) {
+        navigation.navigate(screen, params)
+      }
+    })
+    
+    return () => subscription.remove()
+  }, [])
+  
+  return <RootNavigator />
+}
+
+✅ FINAL DELIVERABLES CHECKLIST
+Web Dashboard:
+
+ Header with welcome message and date selector
+ 4 financial summary cards with animations
+ Spending trends line/area chart
+ Income vs expense bar chart
+ Category breakdown pie chart
+ Recent transactions list (top 5)
+ Budget progress with visual bars
+ AI insights cards (dismissible)
+ Financial goals with circular progress
+ Responsive on all screen sizes
+ Real-time data updates
+ Loading skeletons for all sections
+ Error states with retry options
+ Export functionality
+ Filter options
+
+Mobile Dashboard:
+
+ Header with avatar and notifications
+ Swipeable financial summary carousel
+ Quick actions grid (4 buttons)
+ Spending chart (Victory Native)
+ Budget progress list
+ Recent transactions (swipeable)
+ AI insights cards
+ Pull-to-refresh
+ 60fps animations throughout
+ Real-time updates
+ Loading states
+ Error handling
+ Deep linking support
+ Haptic feedback
+ Safe area handling
+
+Shared:
+
+ useFinancialData hook
+ useAIInsights hook
+ Chart transformation utilities
+ Notification service
+ Supabase integration
+ Grok AI edge function
+ TypeScript types
+ Real-time subscriptions
+
+
+Create production-ready, performant dashboard pages for both platforms following the exact design specifications from global rules. All charts must be interactive, animated, and display real data from Supabase.

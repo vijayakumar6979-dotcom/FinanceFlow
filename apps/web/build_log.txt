@@ -1,0 +1,32 @@
+
+> web@0.0.0 build
+> tsc && vite build
+
+src/components/dashboard/BudgetProgress.tsx(103,33): error TS2322: Type '{ value: number; max: number; color: string; size: string; }' is not assignable to type 'IntrinsicAttributes & ProgressBarProps & RefAttributes<HTMLDivElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ProgressBarProps & RefAttributes<HTMLDivElement>'.
+src/components/dashboard/DashboardHeader.tsx(2,1): error TS6133: 'useState' is declared but its value is never read.
+src/components/dashboard/DashboardHeader.tsx(3,18): error TS6133: 'startOfMonth' is declared but its value is never read.
+src/components/dashboard/DashboardHeader.tsx(3,32): error TS6133: 'endOfMonth' is declared but its value is never read.
+src/components/dashboard/DashboardHeader.tsx(8,11): error TS6196: 'DateRange' is declared but never used.
+src/components/dashboard/DashboardHeader.tsx(47,25): error TS2322: Type '{ options: { label: string; value: string; }[]; value: string; onChange: (value: string | string[]) => void; icon: Element; className: string; }' is not assignable to type 'IntrinsicAttributes & SelectProps'.
+  Property 'icon' does not exist on type 'IntrinsicAttributes & SelectProps'.
+src/components/layouts/Header.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/layouts/Header.tsx(8,5): error TS6133: 'ChevronDown' is declared but its value is never read.
+src/components/layouts/Header.tsx(16,13): error TS6133: 'toggleSidebar' is declared but its value is never read.
+src/components/layouts/Header.tsx(17,13): error TS6133: 'theme' is declared but its value is never read.
+src/components/layouts/Header.tsx(88,40): error TS2339: Property 'photoURL' does not exist on type 'User'.
+src/components/layouts/Header.tsx(89,52): error TS2339: Property 'photoURL' does not exist on type 'User'.
+src/components/layouts/Sidebar.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/layouts/Sidebar.tsx(35,11): error TS6133: 'theme' is declared but its value is never read.
+src/components/layouts/Sidebar.tsx(125,44): error TS2339: Property 'photoURL' does not exist on type 'User'.
+src/components/layouts/Sidebar.tsx(126,56): error TS2339: Property 'photoURL' does not exist on type 'User'.
+src/components/ui/ProgressBar.tsx(3,40): error TS2307: Cannot find module 'class-variance-authority' or its corresponding type declarations.
+src/components/ui/ProgressBar.tsx(4,20): error TS2307: Cannot find module '@/utils/cn' or its corresponding type declarations.
+src/components/ui/ProgressBar.tsx(42,26): error TS2339: Property 'size' does not exist on type 'ProgressBarProps'.
+npm error Lifecycle script `build` failed with error:
+npm error code 2
+npm error path C:\Documents\Project\FinanceFlow\apps\web
+npm error workspace web@0.0.0
+npm error location C:\Documents\Project\FinanceFlow\apps\web
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c tsc && vite build

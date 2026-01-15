@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
     LayoutDashboard,
@@ -15,8 +14,7 @@ import {
     User
 } from 'lucide-react';
 import { useLayoutStore } from '@/store/layoutStore';
-import { useTheme } from '@financeflow/shared/src/hooks/useTheme';
-import { useAuth } from '@financeflow/shared/src/hooks/useAuth';
+import { useAuth } from '@financeflow/shared';
 import clsx from 'clsx';
 
 const navItems = [
@@ -32,7 +30,6 @@ const navItems = [
 
 export function Sidebar() {
     const { sidebarCollapsed, toggleSidebar, sidebarOpen, setSidebarOpen } = useLayoutStore();
-    const { theme } = useTheme();
     const { user, signOut } = useAuth();
 
     const sidebarClass = clsx(
@@ -122,8 +119,8 @@ export function Sidebar() {
                         <div className="flex items-center items-center overflow-hidden">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 p-[2px]">
                                 <div className="w-full h-full rounded-full bg-white dark:bg-gray-900 p-0.5">
-                                    {user?.photoURL ? (
-                                        <img src={user.photoURL} alt="User" className="w-full h-full rounded-full object-cover" />
+                                    {(user as any)?.photoURL ? (
+                                        <img src={(user as any).photoURL} alt="User" className="w-full h-full rounded-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400">
                                             <User size={16} />

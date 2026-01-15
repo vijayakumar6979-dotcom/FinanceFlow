@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from './utils/cn';
+import { cn } from '@/utils/cn';
 import { useClickOutside } from './utils/useClickOutside';
 
 interface DatePickerProps {

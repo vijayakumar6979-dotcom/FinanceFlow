@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Search, X, Check } from 'lucide-react';
-import { cn } from './utils/cn';
+import { cn } from '@/utils/cn';
 import { useClickOutside } from './utils/useClickOutside';
 
 export interface SelectOption {

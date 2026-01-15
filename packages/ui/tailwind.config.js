@@ -1,5 +1,6 @@
 // packages/ui/tailwind.config.js
 module.exports = {
+    darkMode: 'class',
     theme: {
         extend: {
             colors: {

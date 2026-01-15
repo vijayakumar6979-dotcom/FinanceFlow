@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { cn } from './utils/cn';
+import { cn } from '@/utils/cn';
 import { Skeleton } from './Skeleton';
 import { Checkbox } from './Checkbox';
 

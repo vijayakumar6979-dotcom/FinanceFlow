@@ -1,20 +1,18 @@
-import React from 'react';
 import {
     Menu,
     Search,
     Bell,
     Moon,
-    Sun,
-    ChevronDown
+    Sun
 } from 'lucide-react';
 import { useLayoutStore } from '@/store/layoutStore';
-import { useTheme } from '@financeflow/shared/src/hooks/useTheme';
-import { useAuth } from '@financeflow/shared/src/hooks/useAuth';
-import clsx from 'clsx';
+import { useTheme } from '@financeflow/shared';
+import { useAuth } from '@financeflow/shared';
 
 export function Header() {
-    const { toggleSidebar, setSidebarOpen, setSearchModalOpen, setNotificationPanelOpen } = useLayoutStore();
+    const { setSidebarOpen, setSearchModalOpen, setNotificationPanelOpen } = useLayoutStore();
     const { theme, toggleTheme } = useTheme();
+
     const { user } = useAuth();
 
     return (
@@ -58,15 +56,20 @@ export function Header() {
                 </button>
 
                 {/* Theme Toggle */}
+                {/* Theme Toggle */}
                 <button
-                    onClick={toggleTheme}
-                    className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors relative"
+                    onClick={() => {
+                        console.log('Toggling theme from:', theme);
+                        toggleTheme();
+                    }}
+                    className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
                     aria-label="Toggle Theme"
                 >
-                    <div className="relative w-6 h-6">
-                        <Sun size={22} className={clsx("absolute inset-0 transform transition-all duration-500 rotate-0 dark:-rotate-90 dark:scale-0")} />
-                        <Moon size={22} className={clsx("absolute inset-0 transform transition-all duration-500 rotate-90 scale-0 dark:rotate-0 dark:scale-100")} />
-                    </div>
+                    {theme === 'dark' ? (
+                        <Moon size={22} className="text-blue-500" />
+                    ) : (
+                        <Sun size={22} className="text-orange-500" />
+                    )}
                 </button>
 
                 {/* Notifications */}
@@ -85,8 +88,8 @@ export function Header() {
                     <button className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 p-[1.5px]">
                             <div className="w-full h-full rounded-full bg-white dark:bg-gray-900 overflow-hidden">
-                                {user?.photoURL ? (
-                                    <img src={user.photoURL} alt="Me" className="w-full h-full object-cover" />
+                                {(user as any)?.photoURL ? (
+                                    <img src={(user as any).photoURL} alt="Me" className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-xs font-bold text-gray-500">JD</div>
                                 )}

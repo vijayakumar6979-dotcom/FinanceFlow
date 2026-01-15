@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
-import { cn } from './utils/cn';
+import { cn } from '@/utils/cn';
 
 interface CheckboxProps {
     checked: boolean;

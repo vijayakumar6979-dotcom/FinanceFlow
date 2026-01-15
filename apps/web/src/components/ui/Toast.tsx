@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle, AlertTriangle, Info, AlertCircle } from 'lucide-react';
-import { cn } from './utils/cn';
+import { cn } from '@/utils/cn';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 

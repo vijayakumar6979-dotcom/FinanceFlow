@@ -12,15 +12,20 @@ interface ThemeState {
 export const useTheme = create<ThemeState>()(
     persist(
         (set) => ({
-            theme: 'dark', // Default to dark as per design system
+            theme: 'dark',
             toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
             setTheme: (theme) => set({ theme }),
         }),
         {
             name: 'financeflow-theme',
-            storage: createJSONStorage(() => localStorage), // This might need adjustment for React Native (AsyncStorage)
-            // We will handle storage backend injection or conditional logic if this breaks on mobile
-            // For shared package, we might want to abstract the storage
+            storage: createJSONStorage(() => {
+                if (typeof window !== 'undefined') return localStorage;
+                return {
+                    getItem: () => null,
+                    setItem: () => { },
+                    removeItem: () => { },
+                };
+            }),
         }
     )
 );

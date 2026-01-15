@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { motion, HTMLMotionProps } from 'framer-motion';
-import { cn } from './utils/cn';
+import { cn } from '@/utils/cn';
 import { Spinner } from './Spinner';
 
 interface ButtonProps extends HTMLMotionProps<"button"> {

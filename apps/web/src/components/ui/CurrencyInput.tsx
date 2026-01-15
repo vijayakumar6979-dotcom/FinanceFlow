@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { cn } from './utils/cn';
+import { cn } from '@/utils/cn';
 
 interface CurrencyInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
     value: number;
