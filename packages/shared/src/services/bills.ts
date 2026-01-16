@@ -113,7 +113,7 @@ export class BillService {
     /**
      * Stub for AI Prediction (Mock logic)
      */
-    async predictBillAmount(billId: string): Promise<{ predicted: number, confidence: number }> {
+    async predictBillAmount(_billId: string): Promise<{ predicted: number, confidence: number }> {
         // In future, call GrokService here
         // For now, return mock
         return new Promise(resolve => {

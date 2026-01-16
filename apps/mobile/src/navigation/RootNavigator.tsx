@@ -7,13 +7,17 @@ import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@financeflow/shared/src/hooks/useTheme';
 
 export default function RootNavigator() {
-    const { isAuthenticated } = useAuth();
+    const { user, loading } = useAuth();
     const { theme } = useTheme();
+
+    if (loading) {
+        return null; // Or a splash screen
+    }
 
     return (
         <NavigationContainer>
             <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
-            {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
+            {user ? <AppNavigator /> : <AuthNavigator />}
         </NavigationContainer>
     );
 }

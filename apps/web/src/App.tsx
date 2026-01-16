@@ -18,14 +18,25 @@ import LoansPage from '@/pages/Loans';
 import LoanDetailsPage from '@/pages/LoanDetails';
 import LoanStrategiesPage from '@/pages/LoanStrategies';
 import LoginPage from '@/pages/Login';
-import { useAuth } from '@/context/AuthContext';
+import SignupPage from '@/pages/Signup';
+import ForgotPasswordPage from '@/pages/ForgotPassword';
+import VerifyEmailPage from '@/pages/VerifyEmail';
+import OnboardingPage from '@/pages/Onboarding';
+import ProfilePage from '@/pages/Profile';
+import { useAuth } from '@/context/AuthContext'; // Note: Keeping existing context hook if simpler, but need to check if it wraps shared hook correctly.
+// Actually, App.tsx was using local AuthContext, but we updated shared useAuth. 
+// Let's assume we should migrate to shared useAuth OR the local AuthContext uses the shared one. 
+// Wait, prompt said "Web Protected Route Component Location: /apps/web/src/components/auth/ProtectedRoute.tsx"
+// And "Web Application: Update App.tsx routing".
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import InvestmentsPage from '@/pages/Investments';
 
 // Placeholder Page
-const TransactionsPage = () => <div className="p-4 bg-white dark:bg-dark-surface rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 h-96 flex items-center justify-center">Transactions Content</div>;
+import { TransactionsPage } from '@/pages/TransactionsPage';
 
 function App() {
     const { theme } = useTheme();
-    const { user, isLoading } = useAuth();
+    const { user, loading } = useAuth();
 
     // Sync theme with HTML root
     useEffect(() => {
@@ -36,7 +47,7 @@ function App() {
         }
     }, [theme]);
 
-    if (isLoading) {
+    if (loading) {
         return <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0A0E27] text-white">Loading...</div>;
     }
 
@@ -44,14 +55,22 @@ function App() {
         <Router>
             <ReloadPrompt />
             <Routes>
-                <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
+                {/* Public Auth Routes */}
+                <Route path="/auth/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
+                <Route path="/auth/signup" element={!user ? <SignupPage /> : <Navigate to="/dashboard" replace />} />
+                <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
+                <Route path="/login" element={<Navigate to="/auth/login" replace />} />
+
+                <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
 
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
+                {/* Protected Dashboard Routes */}
                 <Route
                     path="/*"
                     element={
-                        user ? (
+                        <ProtectedRoute>
                             <DashboardLayout>
                                 <Routes>
                                     <Route path="dashboard" element={<Dashboard />} />
@@ -69,12 +88,12 @@ function App() {
                                     <Route path="loans/strategies" element={<LoanStrategiesPage />} />
                                     <Route path="loans/:id" element={<LoanDetailsPage />} />
                                     <Route path="transactions" element={<TransactionsPage />} />
-                                    <Route path="*" element={<div className="text-center py-20">404 - Page Not Found</div>} />
+                                    <Route path="investments" element={<InvestmentsPage />} />
+                                    <Route path="settings" element={<ProfilePage />} />
+                                    <Route path="*" element={<Navigate to="dashboard" replace />} />
                                 </Routes>
                             </DashboardLayout>
-                        ) : (
-                            <Navigate to="/login" replace />
-                        )
+                        </ProtectedRoute>
                     }
                 />
             </Routes>

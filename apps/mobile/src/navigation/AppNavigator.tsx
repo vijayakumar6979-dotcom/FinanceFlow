@@ -13,6 +13,11 @@ import { useLayoutStore } from '../store/layoutStore';
 import { BudgetsScreen, CreateBudgetScreen, BudgetDetailScreen } from '../screens/budgets';
 import { GoalsScreen, CreateGoalScreen, GoalDetailScreen } from '../screens/goals';
 import { BillsScreen, CreateBillScreen, BillDetailScreen } from '../screens/bills';
+import { InvestmentsScreen } from '../screens/InvestmentsScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import SecurityScreen from '../screens/SecurityScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
+// import { AddInvestmentScreen } from '../screens/AddInvestmentScreen'; // TODO: Implement
 
 // Placeholder Screens
 const HomeScreen = () => (
@@ -21,7 +26,7 @@ const HomeScreen = () => (
         <Text className="text-white p-4">Home Screen Content</Text>
     </View>
 );
-const TransactionsScreen = () => <View className="flex-1 items-center justify-center bg-gray-900"><Text className="text-white">Transactions</Text></View>;
+import { TransactionsScreen } from '../screens/TransactionsScreen';
 const AddTransactionScreen = () => <View className="flex-1 items-center justify-center bg-gray-900"><Text className="text-white">Add Transaction</Text></View>;
 const MoreScreen = () => <View className="flex-1 items-center justify-center bg-gray-900"><Text className="text-white">More</Text></View>;
 
@@ -47,7 +52,7 @@ function MainTabs() {
             <Tab.Screen
                 name="Add"
                 component={AddTransactionScreen} // Reusing for now
-                options={{ tabBarLabel: 'Add', presentation: 'modal' }}
+                options={{ tabBarLabel: 'Add' }}
             />
             <Tab.Screen
                 name="Accounts"
@@ -58,9 +63,12 @@ function MainTabs() {
                 }}
             />
             <Tab.Screen
-                name="More"
-                component={MoreScreen}
-                options={{ tabBarLabel: 'More' }}
+                name="Profile"
+                component={ProfileScreen}
+                options={{
+                    tabBarLabel: 'Profile',
+                    // tabBarIcon: ... (if I had an icon)
+                }}
             />
         </Tab.Navigator>
     );
@@ -92,6 +100,17 @@ export default function AppNavigator() {
                 <Stack.Screen name="Bills" component={BillsScreen} />
                 <Stack.Screen name="CreateBill" component={CreateBillScreen} options={{ presentation: 'modal' }} />
                 <Stack.Screen name="BillDetail" component={BillDetailScreen} />
+
+                {/* Investments */}
+                <Stack.Screen name="Investments" component={InvestmentsScreen} />
+                {/* Investments */}
+                <Stack.Screen name="Investments" component={InvestmentsScreen} />
+                {/* <Stack.Screen name="AddInvestment" component={AddInvestmentScreen} options={{ presentation: 'modal' }} /> */}
+
+                {/* Profile & Settings */}
+                <Stack.Screen name="Profile" component={ProfileScreen} />
+                <Stack.Screen name="Security" component={SecurityScreen} />
+                <Stack.Screen name="Onboarding" component={OnboardingScreen} />
             </Stack.Navigator>
 
             <DrawerMenu

@@ -1,49 +1,131 @@
-import { create } from 'zustand';
+import { useState, useEffect } from 'react'
+import { supabase } from '../services/supabase'
+import type { User, Session } from '@supabase/supabase-js'
+import type { Profile } from '../types/auth'
 
-interface User {
-    id: string;
-    email: string;
-    name?: string;
-}
+export function useAuth() {
+    const [user, setUser] = useState<User | null>(null)
+    const [session, setSession] = useState<Session | null>(null)
+    const [loading, setLoading] = useState(true)
 
-interface AuthState {
-    user: User | null;
-    isAuthenticated: boolean;
-    loading: boolean;
-    signIn: (email: string) => Promise<void>;
-    signOut: () => Promise<void>;
-    signUp: (email: string) => Promise<void>;
-}
+    useEffect(() => {
+        // Get initial session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setSession(session)
+            setUser(session?.user ?? null)
+            setLoading(false)
+        })
 
-export const useAuth = create<AuthState>((set) => ({
-    user: { id: 'mock-user-1', email: 'demo@financeflow.app', name: 'Demo User' }, // Mock user for dev
-    isAuthenticated: true, // Mock authenticated
-    loading: false,
-    signIn: async (email) => {
-        set({ loading: true });
-        // Simulate API call
-        setTimeout(() => {
-            set({
-                user: { id: 'mock-user-1', email, name: 'Demo User' },
-                isAuthenticated: true,
-                loading: false
-            });
-        }, 1000);
-    },
-    signOut: async () => {
-        set({ loading: true });
-        setTimeout(() => {
-            set({ user: null, isAuthenticated: false, loading: false });
-        }, 500);
-    },
-    signUp: async (email) => {
-        set({ loading: true });
-        setTimeout(() => {
-            set({
-                user: { id: 'mock-user-1', email, name: 'New User' },
-                isAuthenticated: true,
-                loading: false
-            });
-        }, 1000);
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+            (_event, session) => {
+                setSession(session)
+                setUser(session?.user ?? null)
+                setLoading(false)
+            }
+        )
+
+        return () => subscription.unsubscribe()
+    }, [])
+
+    const signIn = async (email: string, password: string) => {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        })
+
+        if (error) throw error
+        return data
     }
-}));
+
+    const signUp = async (email: string, password: string, fullName: string) => {
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: fullName
+                },
+                emailRedirectTo: window.location.origin + '/auth/callback'
+            }
+        })
+
+        if (error) throw error
+        return data
+    }
+
+    const signInWithGoogle = async () => {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin + '/auth/callback'
+            }
+        })
+
+        if (error) throw error
+        return data
+    }
+
+    const signInWithApple = async () => {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'apple',
+            options: {
+                redirectTo: window.location.origin + '/auth/callback'
+            }
+        })
+
+        if (error) throw error
+        return data
+    }
+
+    const signOut = async () => {
+        const { error } = await supabase.auth.signOut()
+        if (error) throw error
+    }
+
+    const resetPassword = async (email: string) => {
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin + '/auth/reset-password'
+        })
+
+        if (error) throw error
+        return data
+    }
+
+    const updatePassword = async (newPassword: string) => {
+        const { data, error } = await supabase.auth.updateUser({
+            password: newPassword
+        })
+
+        if (error) throw error
+        return data
+    }
+
+    const updateProfile = async (updates: Partial<Profile>) => {
+        if (!user) throw new Error('No user logged in')
+
+        const { data, error } = await supabase
+            .from('profiles')
+            .update(updates)
+            .eq('id', user.id)
+            .select()
+            .single()
+
+        if (error) throw error
+        return data
+    }
+
+    return {
+        user,
+        session,
+        loading,
+        signIn,
+        signUp,
+        signInWithGoogle,
+        signInWithApple,
+        signOut,
+        resetPassword,
+        updatePassword,
+        updateProfile
+    }
+}

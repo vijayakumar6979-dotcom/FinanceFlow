@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+
 import { Budget, BudgetPeriod } from '../types/finance';
 
 // Note: This assumes supabase client is passed or imported from a config
