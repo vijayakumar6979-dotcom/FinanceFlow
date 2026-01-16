@@ -16,7 +16,7 @@ export function Header() {
     const { user } = useAuth();
 
     return (
-        <header className="h-16 fixed top-0 right-0 left-0 lg:left-[280px] bg-white/80 dark:bg-dark-base/80 backdrop-blur-md border-b border-gray-100 dark:border-white/5 z-30 transition-all duration-300 px-4 flex items-center justify-between">
+        <header className="h-16 fixed top-0 right-0 left-0 lg:left-72 bg-white/80 dark:bg-dark-surface/80 backdrop-blur-2xl border-b border-gray-100 dark:border-white/10 z-30 transition-all duration-300 px-4 flex items-center justify-between">
             {/* Left: Mobile Menu & Breadcrumb Placeholder */}
             <div className="flex items-center">
                 <button

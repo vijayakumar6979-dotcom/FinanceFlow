@@ -11,8 +11,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // --- DEV MODE BYPASS ---
+// --- DEV MODE BYPASS (DISABLED) ---
 // Monkey-patch auth methods to return a mock user
 // This allows the app to function without real authentication for development
+/*
 const DEV_USER_ID = '11111111-1111-1111-1111-111111111111';
 const DEV_USER = {
     id: DEV_USER_ID,
@@ -60,3 +62,4 @@ supabase.auth.onAuthStateChange = (callback) => {
 supabase.auth.signOut = async () => {
     return { error: null };
 };
+*/

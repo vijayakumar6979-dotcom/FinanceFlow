@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { MobileBottomNav } from '@/components/dashboard/MobileBottomNav';
 import { useLayoutStore } from '@/store/layoutStore';
 import clsx from 'clsx';
 
@@ -18,8 +19,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <main
                 className={clsx(
-                    "pt-20 pb-8 px-4 sm:px-6 lg:px-8 transition-all duration-300 ease-in-out min-h-screen",
-                    sidebarCollapsed ? "lg:ml-20" : "lg:ml-[280px]"
+                    "pt-20 pb-24 lg:pb-8 px-4 sm:px-6 lg:px-8 transition-all duration-300 ease-in-out min-h-screen",
+                    sidebarCollapsed ? "lg:ml-20" : "lg:ml-72"
                 )}
             >
                 <div className="max-w-7xl mx-auto">
@@ -27,9 +28,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </div>
             </main>
 
+            <MobileBottomNav />
+
             {/* Placeholders for Modals/Panels */}
             {/* <SearchModal /> */}
             {/* <NotificationPanel /> */}
         </div>
     );
 }
+
