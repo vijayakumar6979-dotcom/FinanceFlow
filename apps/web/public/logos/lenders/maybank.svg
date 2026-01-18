@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 60">
+  <rect width="120" height="60" fill="#FFD700" rx="4"/>
+  <text x="60" y="35" font-family="Arial, sans-serif" font-weight="bold" font-size="20" text-anchor="middle" fill="#003087">Maybank</text>
+  <path d="M20 15 L30 25 L20 35 M100 15 L90 25 L100 35" stroke="#003087" stroke-width="2" fill="none"/>
+</svg>

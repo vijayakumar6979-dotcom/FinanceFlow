@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 40">
+  <text x="50" y="30" font-family="Arial, sans-serif" font-weight="900" font-size="35" text-anchor="middle" fill="#E6007E">TIME</text>
+  <circle cx="90" cy="10" r="5" fill="#E6007E"/>
+</svg>

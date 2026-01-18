@@ -16,51 +16,46 @@ const Icon = ({ name, size, color }: { name: string; size: number; color: string
     }
 }
 
+import { useState, useEffect } from 'react';
+import { supabase } from '@/services/supabase';
+import { createTransactionService } from '@financeflow/shared';
+// Types might differ slightly, adapting:
+import { Transaction } from '@financeflow/shared';
+
 export function RecentTransactions() {
     const navigate = useNavigate()
+    const [transactions, setTransactions] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const transactions = [
-        {
-            id: '1',
-            description: 'Starbucks Coffee',
-            amount: 12.50,
-            type: 'expense',
-            category: { name: 'Food & Dining', icon: 'coffee', color: '#FF6B6B' },
-            date: new Date(),
-        },
-        {
-            id: '2',
-            description: 'Monthly Salary',
-            amount: 5000,
-            type: 'income',
-            category: { name: 'Salary', icon: 'dollar-sign', color: '#10B981' },
-            date: new Date(),
-        },
-        {
-            id: '3',
-            description: 'Uber Ride',
-            amount: 25.80,
-            type: 'expense',
-            category: { name: 'Transportation', icon: 'car', color: '#4ECDC4' },
-            date: new Date(),
-        },
-        {
-            id: '4',
-            description: 'Amazon Purchase',
-            amount: 89.99,
-            type: 'expense',
-            category: { name: 'Shopping', icon: 'shopping-bag', color: '#FF8B94' },
-            date: new Date(),
-        },
-        {
-            id: '5',
-            description: 'Freelance Project',
-            amount: 1200,
-            type: 'income',
-            category: { name: 'Business', icon: 'briefcase', color: '#FFA502' },
-            date: new Date(),
-        },
-    ]
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            try {
+                const service = createTransactionService(supabase);
+                const data = await service.getAll({ limit: 5 });
+
+                // Transform data for UI if necessary
+                const formattedData = data.map((t: any) => ({
+                    id: t.id,
+                    description: t.description || 'Untitled Transaction',
+                    amount: t.amount,
+                    type: t.type,
+                    category: {
+                        name: t.category?.name || 'Uncategorized',
+                        icon: t.category?.icon || 'dollar-sign',
+                        color: t.category?.color || '#cbd5e1'
+                    },
+                    date: new Date(t.date)
+                }));
+                setTransactions(formattedData);
+            } catch (error) {
+                console.error("Failed to fetch recent transactions", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchTransactions();
+    }, []);
 
     return (
         <Card className="h-full">

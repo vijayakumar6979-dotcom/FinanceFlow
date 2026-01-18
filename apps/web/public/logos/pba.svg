@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <path d="M50 10 Q80 50 80 70 A30 30 0 0 1 20 70 Q20 50 50 10" fill="#005DAA"/>
+  <text x="50" y="65" font-family="Arial, sans-serif" font-weight="bold" font-size="20" text-anchor="middle" fill="white">PBA</text>
+</svg>

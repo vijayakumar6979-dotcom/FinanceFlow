@@ -27,19 +27,19 @@ export function BankSelector({ type, value, onChange }: BankSelectorProps) {
     );
 
     return (
-        <div className="flex flex-col h-full max-h-[400px]">
-            <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <div className="flex flex-col gap-4">
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
                 <input
                     type="text"
-                    placeholder="Search banks..."
+                    placeholder="Search..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full bg-black/20 border border-white/10 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-blue-500/50 transition-colors"
+                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl pl-9 pr-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500/50 transition-colors placeholder:text-slate-400 dark:placeholder:text-gray-500"
                 />
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 overflow-y-auto pr-2 custom-scrollbar">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 {filteredList.map((item) => (
                     <motion.button
                         key={item.id}
@@ -47,13 +47,13 @@ export function BankSelector({ type, value, onChange }: BankSelectorProps) {
                         whileTap={{ scale: 0.98 }}
                         onClick={() => onChange(item)}
                         className={cn(
-                            "flex flex-col items-center gap-3 p-4 rounded-xl border transition-all",
+                            "flex flex-col items-center gap-3 p-4 rounded-xl border transition-all h-full min-h-[120px] justify-center",
                             value === item.id
-                                ? "bg-blue-600/20 border-blue-500 ring-1 ring-blue-500"
-                                : "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20"
+                                ? "bg-blue-50 dark:bg-blue-600/20 border-blue-500 ring-1 ring-blue-500"
+                                : "bg-white dark:bg-white/5 border-gray-200 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/10 hover:border-blue-300 dark:hover:border-white/20"
                         )}
                     >
-                        <div className="w-10 h-10 relative">
+                        <div className="w-12 h-12 relative flex items-center justify-center p-2 bg-white rounded-lg shadow-sm">
                             <img
                                 src={item.logo}
                                 alt={item.name}
@@ -63,12 +63,12 @@ export function BankSelector({ type, value, onChange }: BankSelectorProps) {
                                 }}
                             />
                             {value === item.id && (
-                                <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center border border-black">
-                                    <Check className="w-2.5 h-2.5 text-white" />
+                                <div className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center border-2 border-white dark:border-black shrink-0 shadow-sm">
+                                    <Check className="w-3 h-3 text-white" />
                                 </div>
                             )}
                         </div>
-                        <span className="text-xs text-center font-medium text-gray-300">
+                        <span className="text-sm text-center font-medium text-slate-700 dark:text-gray-300 line-clamp-2">
                             {item.name}
                         </span>
                     </motion.button>
@@ -76,8 +76,8 @@ export function BankSelector({ type, value, onChange }: BankSelectorProps) {
             </div>
 
             {filteredList.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                    No results found
+                <div className="text-center py-12 text-slate-500 dark:text-gray-500 bg-gray-50 dark:bg-white/5 rounded-xl border border-dashed border-gray-200 dark:border-white/10">
+                    <p>No results found</p>
                 </div>
             )}
         </div>

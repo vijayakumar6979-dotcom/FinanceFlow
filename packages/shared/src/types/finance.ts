@@ -3,13 +3,14 @@ export type Currency = 'MYR' | 'USD' | 'SGD' | 'IDR' | 'THB';
 export interface Budget {
     id: string;
     user_id: string;
-    category_id: string;
+    category_id?: string; // Optional - for category-specific budgets
     name?: string;
     amount: number;
     currency: Currency;
     period: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
     start_date: string;
     end_date?: string;
+    emoji?: string;
     rollover_enabled: boolean;
     rollover_amount: number;
     alert_thresholds: number[];
@@ -61,6 +62,7 @@ export interface Goal {
 export interface GoalMilestone {
     id: string;
     goal_id: string;
+    user_id: string;
     name: string;
     target_amount: number;
     target_percentage?: number;
@@ -94,86 +96,5 @@ export interface BudgetRecommendation {
     generated_at: string;
 }
 
-export type LoanType = 'home' | 'auto' | 'personal' | 'education' | 'business' | 'islamic';
+// Loan types moved to ./loans.ts
 
-export interface LoanProvider {
-    id: string;
-    name: string;
-    fullName: string;
-    logo: string;
-    color: string;
-    loanTypes: LoanType[];
-    website: string;
-    description?: string;
-    interestRates?: {
-        [key in LoanType]?: { min: number; max: number };
-    };
-    isIslamic?: boolean;
-}
-
-export interface Loan {
-    id: string;
-    user_id: string;
-    name: string;
-    lender_id?: string;
-    lender_name?: string;
-    lender_logo?: string;
-    loan_type: LoanType;
-
-    account_number?: string;
-    account_number_masked?: string;
-
-    original_amount: number;
-    current_balance: number;
-    interest_rate: number;
-
-    start_date: string;
-    term_months: number;
-    remaining_months?: number;
-
-    monthly_payment: number;
-    payment_day?: number;
-    next_payment_date?: string;
-
-    collateral_value?: number;
-    prepayment_penalty?: number;
-    late_fee?: number;
-    payment_method?: string;
-    linked_account_id?: string;
-
-    reminder_days?: number[];
-    auto_create_transaction?: boolean;
-    status: 'active' | 'paid_off' | 'defaulted';
-
-    notes?: string;
-    created_at: string;
-    updated_at: string;
-}
-
-export interface AmortizationSchedule {
-    id: string;
-    loan_id: string;
-    payment_number: number;
-    payment_date: string;
-    payment_amount: number;
-    principal_amount: number;
-    interest_amount: number;
-    remaining_balance: number;
-    is_paid: boolean;
-    actual_payment_date?: string;
-    actual_amount?: number;
-}
-
-export interface PayoffStrategy {
-    id: string;
-    user_id: string;
-    strategy_type: 'current' | 'snowball' | 'avalanche' | 'custom';
-    strategy_name?: string;
-    extra_payment_amount: number;
-    loan_priority_order?: string[]; // Array of loan IDs
-    projected_payoff_date?: string;
-    total_interest?: number;
-    interest_saved?: number;
-    months_saved?: number;
-    is_active: boolean;
-}

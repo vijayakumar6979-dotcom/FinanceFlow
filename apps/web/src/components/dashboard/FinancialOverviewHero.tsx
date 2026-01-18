@@ -1,16 +1,83 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Sparkles, Wallet, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react'
 import { ParticleBackground } from '../ui/ParticleBackground'
 import { StatCard3D } from './StatCard3D'
 
-// Mock hook
+import { supabase } from '@/services/supabase';
+
 const useFinancialData = () => {
-    return {
-        totalBalance: 24500.50,
-        monthlyIncome: 8250.00,
-        monthlyExpenses: 3450.25,
-        netWorth: 145000.00
-    }
+    const [data, setData] = useState({
+        totalBalance: 0,
+        monthlyIncome: 0,
+        monthlyExpenses: 0,
+        netWorth: 0,
+        isLoading: true
+    });
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+
+                // 1. Get Accounts for Balance & Net Worth
+                const { data: accounts, error: accountsError } = await supabase
+                    .from('accounts')
+                    .select('balance, type')
+                    .eq('user_id', user.id);
+
+                if (accountsError) throw accountsError;
+
+                const totalBalance = accounts?.reduce((sum, acc) => sum + (Number(acc.balance) || 0), 0) || 0;
+                // Simple Net Worth calc (Assets - Liabilities) - Assuming credit cards are liabilities?
+                // For now, let's just sum positive balances for Assets and subtract Credit Cards if we want to be fancy.
+                // But typically "Total Balance" in dashboard is "Bank Accounts". "Net Worth" is everything.
+                // Let's keep it simple: Net Worth = Total Balance for this MVP unless we have specific liability types.
+                // If account type is 'credit_card', balance is usually positive (amount owed) or negative?
+                // Let's assume balance is what you have (positive) or what you owe (negative would be consistent for liabilities, but often CCs are stored as positive debt).
+                // Let's just sum all for now.
+                const netWorth = totalBalance;
+
+                // 2. Get Transactions for Income/Expense this month
+                const startOfMonth = new Date();
+                startOfMonth.setDate(1);
+                startOfMonth.setHours(0, 0, 0, 0);
+                const startOfMonthStr = startOfMonth.toISOString();
+
+                const { data: transactions, error: txError } = await supabase
+                    .from('transactions')
+                    .select('amount, type')
+                    .eq('user_id', user.id)
+                    .gte('date', startOfMonthStr);
+
+                if (txError) throw txError;
+
+                const monthlyIncome = transactions
+                    ?.filter(t => t.type === 'income')
+                    .reduce((sum, t) => sum + (Number(t.amount) || 0), 0) || 0;
+
+                const monthlyExpenses = transactions
+                    ?.filter(t => t.type === 'expense')
+                    .reduce((sum, t) => sum + (Number(t.amount) || 0), 0) || 0;
+
+                setData({
+                    totalBalance,
+                    monthlyIncome,
+                    monthlyExpenses,
+                    netWorth,
+                    isLoading: false
+                });
+
+            } catch (error) {
+                console.error('Failed to fetch financial data:', error);
+                setData(prev => ({ ...prev, isLoading: false }));
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    return data;
 }
 
 export const FinancialOverviewHero: React.FC = () => {

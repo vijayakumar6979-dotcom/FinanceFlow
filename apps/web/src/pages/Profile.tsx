@@ -1,10 +1,53 @@
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { User, Mail, Globe, Shield, LogOut } from 'lucide-react';
+import { CurrencySelector } from '@/components/settings/CurrencySelector';
+import { supabase } from '@/services/supabase';
+import { toast } from 'react-hot-toast';
 
 export default function ProfilePage() {
     const { user, signOut } = useAuth();
+    const [currency, setCurrency] = useState('MYR');
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (user) loadProfile();
+    }, [user]);
+
+    const loadProfile = async () => {
+        try {
+            const { data } = await supabase
+                .from('profiles')
+                .select('preferred_currency')
+                .eq('id', user?.id)
+                .single();
+
+            if (data) setCurrency(data.preferred_currency || 'MYR');
+        } catch (error) {
+            console.error('Error loading profile:', error);
+        }
+    };
+
+    const updateCurrency = async (newCurrency: string) => {
+        try {
+            setIsLoading(true);
+            const { error } = await supabase
+                .from('profiles')
+                .update({ preferred_currency: newCurrency })
+                .eq('id', user?.id);
+
+            if (error) throw error;
+            setCurrency(newCurrency);
+            toast.success('Currency preference updated');
+        } catch (error) {
+            console.error('Error updating currency:', error);
+            toast.error('Failed to update currency');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
@@ -84,10 +127,25 @@ export default function ProfilePage() {
 
                     <Card className="p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Preferences</h3>
-                        <div className="space-y-4 text-gray-500 dark:text-gray-400">
-                            <p>Currency: MYR</p>
-                            <p>Language: English</p>
-                            <p>Theme: Dark</p>
+                        <div className="space-y-6">
+                            <div className={isLoading ? 'opacity-50 pointer-events-none' : ''}>
+                                <CurrencySelector
+                                    value={currency}
+                                    onChange={updateCurrency}
+                                    label="Default Currency"
+                                    description="Select your preferred currency for display across the app."
+                                />
+                            </div>
+
+                            <div className="pt-4 border-t border-white/10 opacity-50 pointer-events-none">
+                                <p className="text-sm font-medium text-gray-300 mb-2">Language</p>
+                                <div className="p-3 bg-black/20 border border-white/10 rounded-xl">English (Default)</div>
+                            </div>
+
+                            <div className="opacity-50 pointer-events-none">
+                                <p className="text-sm font-medium text-gray-300 mb-2">Theme</p>
+                                <div className="p-3 bg-black/20 border border-white/10 rounded-xl">Dark (Default)</div>
+                            </div>
                         </div>
                     </Card>
                 </div>

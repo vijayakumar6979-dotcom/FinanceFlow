@@ -1,34 +1,65 @@
+export type BillCategory = 'Electricity' | 'Water' | 'Sewerage' | 'Internet' | 'Mobile' | 'TV' | 'Insurance' | 'Streaming' | 'Other';
+export type BillStatus = 'active' | 'archived';
+export type PaymentStatus = 'paid' | 'unpaid' | 'overdue' | 'partial';
+export type BillPaymentMethod = 'Online Banking' | 'Credit Card' | 'Auto Debit' | 'ATM' | 'Cash' | 'Other';
+
 export type BillProvider = {
     id: string;
     name: string;
     fullName: string;
-    category: 'Electricity' | 'Water' | 'Sewerage' | 'Internet' | 'Mobile' | 'TV' | 'Insurance' | 'Loan' | 'Other';
+    category: BillCategory;
     logo?: string;
     color: string;
     website: string;
     isVariable: boolean;
     averageAmount: number;
+    paymentMethods?: string[];
+    dueDay?: number | null;
 };
-
-export type BillStatus = 'active' | 'archived';
-export type PaymentStatus = 'paid' | 'unpaid' | 'overdue' | 'partial';
 
 export interface Bill {
     id: string;
     user_id: string;
+
+    // Provider Info
     provider_id: string;
     provider_name: string;
     provider_logo?: string;
-    provider_category: BillProvider['category'];
+    provider_category: BillCategory;
+
+    // Bill Details
     bill_name: string;
     account_number?: string;
+    account_number_masked?: string;
+
+    // Amount
     is_variable: boolean;
     fixed_amount?: number;
     estimated_amount?: number;
     currency: string;
+
+    // Schedule
     due_day: number;
+    due_date_variable?: boolean;
+    first_bill_date?: string;
+
+    // Payment
+    payment_method?: BillPaymentMethod;
+    linked_account_id?: string;
     auto_pay_enabled: boolean;
+
+    // Reminders
+    reminder_days?: number[];
+    notifications_enabled?: boolean;
+
+    // Budget Integration
+    budget_category_id?: string;
     auto_sync_budget: boolean;
+
+    // Status
+    is_active?: boolean;
+
+    // Metadata
     notes?: string;
     created_at?: string;
     updated_at?: string;
@@ -36,20 +67,132 @@ export interface Bill {
     // Computed helpers (not in DB)
     next_due_date?: string;
     days_until_due?: number;
-    status?: PaymentStatus;
+    current_status?: PaymentStatus;
 }
 
 export interface BillPayment {
     id: string;
     bill_id: string;
     user_id: string;
+
+    // Payment Details
     amount: number;
     due_date: string;
     paid_date?: string;
+    payment_method?: BillPaymentMethod;
+
+    // Status
     status: PaymentStatus;
-    payment_method?: string;
+
+    // Links
     transaction_id?: string;
+    account_id?: string;
+
+    // Anomaly Detection
+    is_anomaly?: boolean;
+    anomaly_reason?: string;
+
+    // Metadata
     notes?: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface BillPrediction {
+    id: string;
+    bill_id: string;
+
+    // Prediction Details
+    prediction_month: string;
+    predicted_amount: number;
+    confidence_score: number;
+
+    // Range
+    amount_range_min: number;
+    amount_range_max: number;
+
+    // AI Reasoning
+    reasoning?: string;
+    factors?: string[];
+    recommendations?: string[];
+
+    // Metadata
+    created_at?: string;
+}
+
+export interface CreateBillDTO {
+    provider_id: string;
+    provider_name: string;
+    provider_logo?: string;
+    provider_category: BillCategory;
+    bill_name: string;
+    account_number?: string;
+    is_variable: boolean;
+    fixed_amount?: number;
+    estimated_amount?: number;
+    currency?: string;
+    due_day: number;
+    first_bill_date?: string;
+    payment_method?: BillPaymentMethod;
+    linked_account_id?: string;
+    auto_pay_enabled?: boolean;
+    reminder_days?: number[];
+    notifications_enabled?: boolean;
+    budget_category_id?: string;
+    auto_sync_budget?: boolean;
+    notes?: string;
+}
+
+export interface UpdateBillDTO extends Partial<CreateBillDTO> {
+    is_active?: boolean;
+}
+
+export interface CreateBillPaymentDTO {
+    bill_id: string;
+    amount: number;
+    due_date: string;
+    paid_date?: string;
+    payment_method?: BillPaymentMethod;
+    status?: PaymentStatus;
+    account_id?: string;
+    notes?: string;
+}
+
+export interface MarkBillAsPaidDTO {
+    bill_id: string;
+    payment_id: string;
+    paid_date: string;
+    paid_amount: number;
+    payment_method?: BillPaymentMethod;
+    account_id?: string;
+    create_transaction?: boolean;
+    notes?: string;
+}
+
+export interface BillSummary {
+    total_monthly: number;
+    due_this_month: {
+        count: number;
+        amount: number;
+    };
+    paid_this_month: {
+        count: number;
+        amount: number;
+    };
+    overdue: {
+        count: number;
+        amount: number;
+    };
+}
+
+export interface BillAnomaly {
+    bill_id: string;
+    payment_id: string;
+    is_anomaly: boolean;
+    severity: 'low' | 'medium' | 'high';
+    percentage_diff: number;
+    message: string;
+    recommendation: string;
 }
 
 export const MALAYSIAN_BILL_PROVIDERS: BillProvider[] = [

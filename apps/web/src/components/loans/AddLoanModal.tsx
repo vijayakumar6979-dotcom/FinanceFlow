@@ -3,44 +3,38 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Home, Car, User, GraduationCap, Briefcase, Star, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { formatCurrency, Loan, LoanType } from '@financeflow/shared';
-import { loanService } from '@/services/loan.service';
+import { formatCurrency, LoanType, LoanService } from '@financeflow/shared';
+import { supabase } from '@/services/supabase';
+import { MALAYSIAN_LOAN_PROVIDERS, LOAN_TYPES } from '@/constants/malaysian-lenders';
 
 interface AddLoanModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (loan: Loan) => void;
+    onSave: (loan: any) => void;
 }
+
+
 
 type Step = 'type' | 'lender' | 'amounts' | 'terms' | 'review';
 
-const LOAN_TYPES: { id: LoanType; name: string; icon: any; color: string }[] = [
-    { id: 'home', name: 'Home Loan', icon: Home, color: 'text-blue-500 bg-blue-500/10' },
-    { id: 'auto', name: 'Auto Loan', icon: Car, color: 'text-red-500 bg-red-500/10' },
-    { id: 'personal', name: 'Personal Loan', icon: User, color: 'text-green-500 bg-green-500/10' },
-    { id: 'education', name: 'Education Loan', icon: GraduationCap, color: 'text-yellow-500 bg-yellow-500/10' },
-    { id: 'business', name: 'Business Loan', icon: Briefcase, color: 'text-purple-500 bg-purple-500/10' },
-    { id: 'islamic', name: 'Islamic Financing', icon: Star, color: 'text-cyan-500 bg-cyan-500/10' },
-];
-
-const MALAYSIAN_BANKS = [
-    { id: 'maybank', name: 'Maybank', color: '#FFD700', logo: 'https://www.google.com/s2/favicons?sz=64&domain=maybank2u.com.my' },
-    { id: 'cimb', name: 'CIMB Bank', color: '#E31837', logo: 'https://www.google.com/s2/favicons?sz=64&domain=cimb.com.my' },
-    { id: 'public', name: 'Public Bank', color: '#ED1C24', logo: 'https://www.google.com/s2/favicons?sz=64&domain=pbebank.com' },
-    { id: 'rhb', name: 'RHB Bank', color: '#003DA5', logo: 'https://www.google.com/s2/favicons?sz=64&domain=rhbgroup.com' },
-    { id: 'hongleong', name: 'Hong Leong Bank', color: '#0047AB', logo: 'https://www.google.com/s2/favicons?sz=64&domain=hlb.com.my' },
-    { id: 'ambank', name: 'AmBank', color: '#C8102E', logo: 'https://www.google.com/s2/favicons?sz=64&domain=ambank.com.my' },
-    { id: 'islam', name: 'Bank Islam', color: '#00A651', logo: 'https://www.google.com/s2/favicons?sz=64&domain=bankislam.com.my' },
-    { id: 'rakyat', name: 'Bank Rakyat', color: '#F37021', logo: 'https://www.google.com/s2/favicons?sz=64&domain=bankrakyat.com.my' },
-];
+// Icon mapping for loan types
+const LOAN_TYPE_ICONS: Record<string, any> = {
+    home: Home,
+    auto: Car,
+    personal: User,
+    education: GraduationCap,
+    business: Briefcase,
+    islamic: Star
+};
 
 export function AddLoanModal({ isOpen, onClose, onSave }: AddLoanModalProps) {
     const [step, setStep] = useState<Step>('type');
     const [isLoading, setIsLoading] = useState(false);
+    const loanService = new LoanService(supabase);
 
     // Form State
     const [loanType, setLoanType] = useState<LoanType | null>(null);
-    const [lender, setLender] = useState<typeof MALAYSIAN_BANKS[0] | null>(null);
+    const [lender, setLender] = useState<typeof MALAYSIAN_LOAN_PROVIDERS[0] | null>(null);
     const [details, setDetails] = useState({
         name: '',
         originalAmount: '',
@@ -103,10 +97,9 @@ export function AddLoanModal({ isOpen, onClose, onSave }: AddLoanModalProps) {
                 loanType
             });
             const payload = {
-                name: details.name || `${lender.name} ${loanType}`,
+                loan_name: details.name || `${lender.name} ${loanType}`,
                 lender_id: lender.id,
                 lender_name: lender.name,
-                lender_logo: lender.logo,
                 loan_type: loanType,
                 original_amount: parseFloat(details.originalAmount),
                 current_balance: parseFloat(details.currentBalance) || parseFloat(details.originalAmount),
@@ -115,11 +108,14 @@ export function AddLoanModal({ isOpen, onClose, onSave }: AddLoanModalProps) {
                 term_months: parseInt(details.termMonths),
                 monthly_payment: parseFloat(details.monthlyPayment),
                 payment_day: parseInt(details.paymentDay),
-                status: 'active' as const // Explicitly cast to literal type
+                status: 'active' as const,
+                currency: 'MYR',
+                auto_add_to_budget: true,
+                reminder_days: [7, 3, 1]
             };
             console.log('Sending payload:', payload);
 
-            const newLoan = await loanService.create(payload);
+            const newLoan = await loanService.createLoan(payload);
             console.log('Loan created successfully:', newLoan);
             onSave(newLoan);
             handleClose();
@@ -175,20 +171,23 @@ export function AddLoanModal({ isOpen, onClose, onSave }: AddLoanModalProps) {
                                 initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
                                 className="grid grid-cols-2 gap-4"
                             >
-                                {LOAN_TYPES.map((type) => (
-                                    <button
-                                        key={type.id}
-                                        onClick={() => { setLoanType(type.id); nextStep(); }}
-                                        className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all gap-4 group text-center"
-                                    >
-                                        <div className={`p-4 rounded-xl ${type.color}`}>
-                                            <type.icon className="w-8 h-8" />
-                                        </div>
-                                        <span className="font-medium text-white group-hover:text-blue-400 transition-colors">
-                                            {type.name}
-                                        </span>
-                                    </button>
-                                ))}
+                                {LOAN_TYPES.map((type) => {
+                                    const IconComponent = LOAN_TYPE_ICONS[type.id];
+                                    return (
+                                        <button
+                                            key={type.id}
+                                            onClick={() => { setLoanType(type.id as LoanType); nextStep(); }}
+                                            className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all gap-4 group text-center"
+                                        >
+                                            <div className="p-4 rounded-xl" style={{ backgroundColor: type.color }}>
+                                                <IconComponent className="w-8 h-8 text-white" />
+                                            </div>
+                                            <span className="font-medium text-white group-hover:text-blue-400 transition-colors">
+                                                {type.name}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
                             </motion.div>
                         )}
 
@@ -200,30 +199,18 @@ export function AddLoanModal({ isOpen, onClose, onSave }: AddLoanModalProps) {
                             >
                                 <Input label="Search Bank" placeholder="Search bank..." className="mb-4" />
                                 <div className="grid grid-cols-2 gap-4">
-                                    {MALAYSIAN_BANKS.map((bank) => (
+                                    {MALAYSIAN_LOAN_PROVIDERS.map((bank) => (
                                         <button
                                             key={bank.id}
                                             onClick={() => { setLender(bank); nextStep(); }}
                                             className="flex items-center p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all gap-3 text-left"
                                         >
-                                            <div className="w-10 h-10 rounded-full bg-white p-1 flex items-center justify-center overflow-hidden">
-                                                {/* Use Bank Logo URL or fallback */}
-                                                <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-[10px] font-bold text-black">
-                                                    {bank.name.substring(0, 2).toUpperCase()}
-                                                </div>
+                                            <div className="w-10 h-10 rounded-lg bg-white p-1.5 flex items-center justify-center overflow-hidden">
+                                                <img src={bank.logo} alt={bank.name} className="w-full h-full object-contain" />
                                             </div>
                                             <span className="font-medium text-white">{bank.name}</span>
                                         </button>
                                     ))}
-                                    <button
-                                        onClick={() => { setLender({ id: 'other', name: 'Other Lender', color: '#666', logo: '' }); nextStep(); }}
-                                        className="flex items-center p-4 rounded-xl bg-white/5 border border-dashed border-white/20 hover:bg-white/10 transition-all gap-3 text-left"
-                                    >
-                                        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                                            <Plus className="w-5 h-5 text-gray-400" />
-                                        </div>
-                                        <span className="font-medium text-gray-300">Other Lender</span>
-                                    </button>
                                 </div>
                             </motion.div>
                         )}
@@ -395,11 +382,3 @@ export function AddLoanModal({ isOpen, onClose, onSave }: AddLoanModalProps) {
     );
 }
 
-function Plus({ className }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-    )
-}

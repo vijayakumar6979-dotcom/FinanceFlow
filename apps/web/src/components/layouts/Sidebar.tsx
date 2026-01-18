@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import {
     LayoutDashboard,
     Receipt,
@@ -18,13 +19,15 @@ import {
 } from 'lucide-react';
 import { useLayoutStore } from '@/store/layoutStore';
 import { useAuth } from '@financeflow/shared';
+import { BillService } from '@financeflow/shared';
+import { supabase } from '@/services/supabase';
 import clsx from 'clsx';
 
 const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
     { id: 'accounts', label: 'Accounts', icon: Wallet, path: '/accounts' },
     { id: 'transactions', label: 'Transactions', icon: ArrowLeftRight, path: '/transactions' },
-    { id: 'bills', label: 'Bills', icon: Receipt, path: '/bills', badge: 2, badgeColor: 'warning' },
+    { id: 'bills', label: 'Bills', icon: Receipt, path: '/bills' }, // Badge will be added dynamically
     { id: 'loans', label: 'Loans', icon: TrendingDown, path: '/loans' },
     { id: 'budgets', label: 'Budgets', icon: Target, path: '/budgets' },
     { id: 'goals', label: 'Goals', icon: Flag, path: '/goals' },
@@ -34,8 +37,40 @@ const navItems = [
 ];
 
 export function Sidebar() {
+    const navigate = useNavigate();
     const { sidebarCollapsed, toggleSidebar, sidebarOpen, setSidebarOpen } = useLayoutStore();
     const { user, signOut } = useAuth();
+    const [unpaidBillsCount, setUnpaidBillsCount] = useState(0);
+
+    // Fetch unpaid bills count
+    useEffect(() => {
+        const fetchUnpaidBills = async () => {
+            try {
+                const billService = new BillService(supabase);
+                const bills = await billService.getBills();
+                const unpaidCount = bills.filter(bill => bill.status === 'unpaid' || bill.status === 'overdue').length;
+                setUnpaidBillsCount(unpaidCount);
+            } catch (error) {
+                console.error('Failed to fetch bills count:', error);
+            }
+        };
+
+        if (user) {
+            fetchUnpaidBills();
+            // Refresh every 5 minutes
+            const interval = setInterval(fetchUnpaidBills, 5 * 60 * 1000);
+            return () => clearInterval(interval);
+        }
+    }, [user]);
+
+    const handleLogout = async () => {
+        try {
+            await signOut();
+            navigate('/auth/login');
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
 
     const sidebarClass = clsx(
         'fixed left-0 top-0 h-full bg-dark-surface/80 backdrop-blur-2xl border-r border-white/10 transition-all duration-500 ease-out z-40 flex flex-col',
@@ -128,14 +163,9 @@ export function Sidebar() {
                                         </span>
 
                                         {/* Badge */}
-                                        {!sidebarCollapsed && item.badge && (
-                                            <div className={clsx(
-                                                "px-2 py-0.5 rounded-full text-xs font-bold animate-pulse shrink-0",
-                                                item.badgeColor === 'warning'
-                                                    ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-                                                    : "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                                            )}>
-                                                {item.badge}
+                                        {!sidebarCollapsed && item.id === 'bills' && unpaidBillsCount > 0 && (
+                                            <div className="px-2 py-0.5 rounded-full text-xs font-bold animate-pulse shrink-0 bg-red-500/20 text-red-400 border border-red-500/30">
+                                                {unpaidBillsCount}
                                             </div>
                                         )}
 
@@ -175,15 +205,16 @@ export function Sidebar() {
                             </div>
 
                             <div className={clsx("ml-3 transition-all duration-200", sidebarCollapsed ? "w-0 opacity-0 hidden" : "w-auto opacity-100")}>
-                                <p className="text-sm font-semibold text-white truncate max-w-[120px]">{user?.name || 'User'}</p>
+                                <p className="text-sm font-semibold text-white truncate max-w-[120px]">{user?.email?.split('@')[0] || 'User'}</p>
                                 <p className="text-xs text-gray-400 truncate max-w-[120px]">{user?.email}</p>
                             </div>
                         </div>
 
                         {!sidebarCollapsed && (
                             <button
-                                onClick={() => signOut()}
+                                onClick={handleLogout}
                                 className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                title="Sign out"
                             >
                                 <LogOut size={18} />
                             </button>

@@ -1,51 +1,60 @@
-import React, { useState } from 'react'
-import { Wallet, ChevronRight } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Wallet } from 'lucide-react'
 import { Widget3D } from '../Widget3D'
 import { CountUp } from '../../ui/CountUp'
 import { useNavigate } from 'react-router-dom'
-
-// Mock Data
-const MOCK_ACCOUNTS = [
-    {
-        id: '1',
-        name: 'Maybank Savings',
-        type: 'Bank',
-        balance: 12450.50,
-        change: 12.5,
-        logo: 'https://www.google.com/s2/favicons?sz=64&domain=maybank2u.com.my'
-    },
-    {
-        id: '2',
-        name: 'Maybank Visa',
-        type: 'Credit Card',
-        balance: -2450.00,
-        change: -5.4,
-        logo: 'https://www.google.com/s2/favicons?sz=64&domain=maybank2u.com.my'
-    },
-    {
-        id: '3',
-        name: 'GrabPay',
-        type: 'E-Wallet',
-        balance: 150.00,
-        change: 2.1,
-        logo: 'https://www.google.com/s2/favicons?sz=64&domain=grab.com'
-    },
-    {
-        id: '4',
-        name: 'Cash',
-        type: 'Cash',
-        balance: 450.00,
-        change: 0,
-        logo: 'https://ui-avatars.com/api/?name=Cash&background=10B981&color=fff'
-    }
-]
+import { accountService } from '@/services/account.service'
+import { AccountProps } from '@/components/accounts/AccountCard'
 
 export const AccountsWidget: React.FC = () => {
     const [expanded, setExpanded] = useState(false)
+    const [accounts, setAccounts] = useState<AccountProps[]>([])
+    const [isLoading, setIsLoading] = useState(true)
     const navigate = useNavigate()
 
-    const accounts = MOCK_ACCOUNTS
-    const totalBalance = accounts.reduce((acc, curr) => acc + (curr.type !== 'Credit Card' ? curr.balance : 0), 0)
+    useEffect(() => {
+        const fetchAccounts = async () => {
+            try {
+                const data = await accountService.getAll();
+                setAccounts(data);
+            } catch (error) {
+                console.error("Failed to fetch accounts", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchAccounts();
+    }, []);
+
+    const totalBalance = accounts.reduce((acc, curr) => acc + (curr.type !== 'credit_card' ? (curr.balance || 0) : 0), 0)
+
+    if (isLoading) {
+        return (
+            <Widget3D title="Accounts" icon={<Wallet size={20} />} gradient="from-blue-500/20 to-purple-500/20">
+                <div className="animate-pulse space-y-3">
+                    <div className="h-20 bg-white/5 rounded-xl"></div>
+                    <div className="h-16 bg-white/5 rounded-xl"></div>
+                </div>
+            </Widget3D>
+        )
+    }
+
+    if (accounts.length === 0) {
+        return (
+            <Widget3D title="Accounts" icon={<Wallet size={20} />} gradient="from-blue-500/20 to-purple-500/20">
+                <div className="text-center py-6 text-gray-400">
+                    <p>No accounts found.</p>
+                    <button
+                        onClick={() => navigate('/accounts')}
+                        className="mt-2 text-blue-400 hover:text-blue-300 text-sm"
+                    >
+                        Add Account
+                    </button>
+                </div>
+            </Widget3D>
+        )
+    }
 
     return (
         <Widget3D
@@ -68,7 +77,7 @@ export const AccountsWidget: React.FC = () => {
                 {accounts.slice(0, expanded ? accounts.length : 3).map((account) => (
                     <div
                         key={account.id}
-                        onClick={() => navigate(`/accounts/${account.id}`)}
+                        onClick={() => navigate(`/accounts`)} // Redirect to accounts page mostly, or detail if implemented
                         className="
               flex items-center gap-3 p-3 rounded-xl
               bg-white/5 border border-white/10
@@ -79,23 +88,28 @@ export const AccountsWidget: React.FC = () => {
                     >
                         {/* Bank Logo */}
                         <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center overflow-hidden">
-                            <img src={account.logo} alt={account.name} className="w-6 h-6 object-contain" />
+                            {account.institution?.logo ? (
+                                <img src={account.institution.logo} alt={account.name} className="w-6 h-6 object-contain" />
+                            ) : (
+                                <Wallet className="w-6 h-6 text-white/50" />
+                            )}
                         </div>
 
                         {/* Account Info */}
                         <div className="flex-1">
                             <p className="text-white font-medium text-sm">{account.name}</p>
-                            <p className="text-gray-400 text-xs">{account.type}</p>
+                            <p className="text-gray-400 text-xs capitalize">{account.type.replace('_', ' ')}</p>
                         </div>
 
                         {/* Balance */}
                         <div className="text-right">
                             <p className="text-white font-semibold">
-                                RM {account.balance.toLocaleString()}
+                                {account.currency || 'RM'} {account.balance.toLocaleString()}
                             </p>
-                            <p className={`text-xs ${account.change > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {/* Change not available in DB yet, hiding */}
+                            {/* <p className={`text-xs ${account.change > 0 ? 'text-green-400' : 'text-red-400'}`}>
                                 {account.change > 0 ? '+' : ''}{account.change}%
-                            </p>
+                            </p> */}
                         </div>
                     </div>
                 ))}

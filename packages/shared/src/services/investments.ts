@@ -77,13 +77,42 @@ export const createInvestmentService = (supabase: SupabaseClient) => ({
     },
 
     addTransaction: async (transaction: Omit<InvestmentTransaction, 'id' | 'created_at'>) => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('User not authenticated');
+
+        // Create investment transaction
         const { data, error } = await supabase
             .from('investment_transactions')
-            .insert(transaction)
+            .insert({ ...transaction, user_id: user.id })
             .select()
             .single();
 
         if (error) throw error;
+
+        // Auto-create transaction
+        try {
+            const totalAmount = transaction.quantity * transaction.price + (transaction.fees || 0);
+
+            await supabase
+                .from('transactions')
+                .insert({
+                    user_id: user.id,
+                    type: transaction.type === 'buy' ? 'expense' : 'income',
+                    amount: totalAmount,
+                    description: `${transaction.type === 'buy' ? 'Buy' : 'Sell'} ${transaction.quantity} ${transaction.symbol} @ RM ${transaction.price.toFixed(2)}`,
+                    account_id: transaction.account_id,
+                    date: transaction.transaction_date,
+                    investment_transaction_id: data.id,
+                    notes: transaction.fees ? `Fees: RM ${transaction.fees.toFixed(2)}` : undefined,
+                    tags: ['investment', transaction.symbol.toLowerCase(), transaction.type]
+                });
+
+            console.log(`✅ Auto-created transaction for investment ${transaction.type}: ${data.id}`);
+        } catch (txError) {
+            console.error('Failed to auto-create transaction for investment:', txError);
+            // Don't fail the investment transaction if transaction creation fails
+        }
+
         return data as InvestmentTransaction;
     },
 

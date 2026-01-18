@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import { X, Calendar, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { formatCurrency, Loan } from '@financeflow/shared';
-import { loanService } from '@/services/loan.service';
+import { formatCurrency, Loan, LoanService } from '@financeflow/shared';
+import { supabase } from '@/services/supabase';
 
 interface MakePaymentModalProps {
     isOpen: boolean;
@@ -18,6 +18,7 @@ export function MakePaymentModal({ isOpen, onClose, loan, onPaymentSuccess }: Ma
     const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
     const [paymentType, setPaymentType] = useState<'regular' | 'extra' | 'lump_sum'>('regular');
     const [isLoading, setIsLoading] = useState(false);
+    const loanService = new LoanService(supabase);
 
     const handlePayment = async () => {
         setIsLoading(true);
@@ -30,7 +31,7 @@ export function MakePaymentModal({ isOpen, onClose, loan, onPaymentSuccess }: Ma
 
             const newBalance = Math.max(0, loan.current_balance - principalPortion);
 
-            await loanService.update(loan.id, {
+            await loanService.updateLoan(loan.id, {
                 current_balance: newBalance
             });
 

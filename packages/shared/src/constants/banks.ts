@@ -158,38 +158,147 @@ export const malaysianBanks: Institution[] = [
 export const creditCardProviders: Institution[] = [
     {
         id: 'maybank-cc',
-        name: 'Maybank Credit Card',
-        fullName: 'Maybank',
+        name: 'Maybank',
+        fullName: 'Malayan Banking Berhad',
         logo: 'https://www.google.com/s2/favicons?sz=64&domain=maybank2u.com.my',
         color: '#FFD700',
-        types: ['Visa', 'Mastercard', 'American Express']
+        types: ['Visa', 'Mastercard', 'American Express'],
+        website: 'https://www.maybank.com.my'
     },
     {
         id: 'cimb-cc',
-        name: 'CIMB Credit Card',
-        fullName: 'CIMB',
+        name: 'CIMB Bank',
+        fullName: 'CIMB Bank Berhad',
         logo: 'https://www.google.com/s2/favicons?sz=64&domain=cimb.com.my',
         color: '#E31837',
-        types: ['Visa', 'Mastercard']
-    },
-    // Add other banks as needed
-    {
-        id: 'visa',
-        name: 'Visa',
-        logo: 'https://www.google.com/s2/favicons?sz=64&domain=visa.com',
-        color: '#1A1F71'
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.cimb.com.my'
     },
     {
-        id: 'mastercard',
-        name: 'Mastercard',
-        logo: 'https://www.google.com/s2/favicons?sz=64&domain=mastercard.com',
-        color: '#EB001B'
+        id: 'public-bank-cc',
+        name: 'Public Bank',
+        fullName: 'Public Bank Berhad',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=pbebank.com',
+        color: '#ED1C24',
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.pbebank.com'
     },
     {
-        id: 'amex',
-        name: 'American Express',
-        logo: 'https://www.google.com/s2/favicons?sz=64&domain=americanexpress.com',
-        color: '#006FCF'
+        id: 'rhb-cc',
+        name: 'RHB Bank',
+        fullName: 'RHB Bank Berhad',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=rhbgroup.com',
+        color: '#003DA5',
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.rhbgroup.com'
+    },
+    {
+        id: 'hong-leong-cc',
+        name: 'Hong Leong Bank',
+        fullName: 'Hong Leong Bank Berhad',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=hlb.com.my',
+        color: '#0047AB',
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.hlb.com.my'
+    },
+    {
+        id: 'ambank-cc',
+        name: 'AmBank',
+        fullName: 'AmBank (M) Berhad',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=ambank.com.my',
+        color: '#C8102E',
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.ambank.com.my'
+    },
+    {
+        id: 'bsn-cc',
+        name: 'Bank Simpanan Nasional',
+        fullName: 'Bank Simpanan Nasional',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=bsn.com.my',
+        color: '#003DA5',
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.bsn.com.my'
+    },
+    {
+        id: 'affin-cc',
+        name: 'Affin Bank',
+        fullName: 'Affin Bank Berhad',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=affinbank.com.my',
+        color: '#00A651',
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.affinbank.com.my'
+    },
+    {
+        id: 'alliance-cc',
+        name: 'Alliance Bank',
+        fullName: 'Alliance Bank Malaysia Berhad',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=allianceonline.com.my',
+        color: '#E31937',
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.allianceonline.com.my'
+    },
+    {
+        id: 'bank-islam-cc',
+        name: 'Bank Islam',
+        fullName: 'Bank Islam Malaysia Berhad',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=bankislam.com.my',
+        color: '#00A651',
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.bankislam.com.my'
+    },
+    {
+        id: 'bank-rakyat-cc',
+        name: 'Bank Rakyat',
+        fullName: 'Bank Rakyat',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=bankrakyat.com.my',
+        color: '#FF6B35',
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.bankrakyat.com.my'
+    },
+    {
+        id: 'ocbc-cc',
+        name: 'OCBC Bank',
+        fullName: 'OCBC Bank (Malaysia) Berhad',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=ocbc.com.my',
+        color: '#EC1C24',
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.ocbc.com.my'
+    },
+    {
+        id: 'hsbc-cc',
+        name: 'HSBC Bank',
+        fullName: 'HSBC Bank Malaysia Berhad',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=hsbc.com.my',
+        color: '#DB0011',
+        types: ['Visa', 'Mastercard', 'American Express'],
+        website: 'https://www.hsbc.com.my'
+    },
+    {
+        id: 'standard-chartered-cc',
+        name: 'Standard Chartered',
+        fullName: 'Standard Chartered Bank Malaysia Berhad',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=sc.com',
+        color: '#007A33',
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.sc.com/my'
+    },
+    {
+        id: 'uob-cc',
+        name: 'UOB Bank',
+        fullName: 'United Overseas Bank (Malaysia) Bhd',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=uob.com.my',
+        color: '#0B3B8C',
+        types: ['Visa', 'Mastercard'],
+        website: 'https://www.uob.com.my'
+    },
+    {
+        id: 'other-cc',
+        name: 'Other Bank',
+        fullName: 'Other Credit Card Provider',
+        logo: 'https://www.google.com/s2/favicons?sz=64&domain=google.com',
+        color: '#6B7280',
+        types: ['Visa', 'Mastercard', 'American Express'],
+        website: ''
     }
 ];
 

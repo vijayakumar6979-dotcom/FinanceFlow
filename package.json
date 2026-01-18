@@ -13,10 +13,13 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "turbo": "latest",
+    "eslint": "^8.0.0",
     "prettier": "^3.0.0",
-    "typescript": "^5.0.0",
-    "eslint": "^8.0.0"
+    "turbo": "latest",
+    "typescript": "^5.0.0"
   },
-  "packageManager": "npm@10.0.0"
+  "packageManager": "npm@10.0.0",
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.19"
+  }
 }

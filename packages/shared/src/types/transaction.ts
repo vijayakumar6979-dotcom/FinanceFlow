@@ -69,7 +69,9 @@ export interface Transaction {
     // account?: Account; // Avoid circular dependency if possible
 }
 
-export interface CreateTransactionDTO extends Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'recurrence_rule' | 'splits' | 'category'> {
+export interface CreateTransactionDTO extends Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'recurrence_rule' | 'splits' | 'category' | 'is_recurring' | 'is_split'> {
+    is_recurring?: boolean; // Optional - only if database has these columns
+    is_split?: boolean; // Optional - only if database has these columns
     recurrence_rule?: Omit<RecurrenceRule, 'id' | 'transaction_id' | 'created_at'>;
     splits?: Omit<TransactionSplit, 'id' | 'transaction_id' | 'created_at'>[];
 }

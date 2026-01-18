@@ -23,6 +23,13 @@ export interface AccountProps {
     linked_phone?: string;
     linked_email?: string;
     isFavorite?: boolean;
+    // Credit card specific fields
+    statement_date?: number; // Day of month (1-31)
+    payment_due_date?: number; // Day of month (1-31)
+    minimum_payment_percentage?: number; // Percentage (e.g., 5.0)
+    interest_rate?: number; // APR percentage
+    annual_fee?: number; // Annual fee amount
+    card_network?: string; // 'Visa', 'Mastercard', 'American Express', etc.
 }
 
 interface AccountCardProps {

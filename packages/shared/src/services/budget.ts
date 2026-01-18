@@ -91,21 +91,47 @@ export class BudgetService {
         return Math.round(finalScore);
     }
 
-    /**
-     * Get current budget periods for active budgets
-     * This would typically involve a join or separate query
-     */
-    async getCurrentPeriods(userId: string): Promise<BudgetPeriod[]> {
+    async getCurrentPeriods(budgetIds: string[]): Promise<BudgetPeriod[]> {
         const today = new Date().toISOString().split('T')[0];
 
         const { data, error } = await this.supabase
             .from('budget_periods')
             .select('*')
-            .eq('user_id', userId)
+            .in('budget_id', budgetIds)
             .lte('period_start', today)
             .gte('period_end', today);
 
         if (error) throw error;
         return data || [];
+    }
+
+    /**
+     * Calculate rollover for a budget
+     */
+    async calculateRollover(budgetId: string): Promise<number> {
+        // Get the most recent completed period
+        const today = new Date().toISOString().split('T')[0];
+        const { data: lastPeriod, error } = await this.supabase
+            .from('budget_periods')
+            .select('*')
+            .eq('budget_id', budgetId)
+            .lt('period_end', today)
+            .order('period_end', { ascending: false })
+            .limit(1)
+            .single();
+
+        if (error || !lastPeriod) return 0;
+
+        // If spent less than budget, rollover the difference if enabled
+        const { data: budget } = await this.supabase
+            .from('budgets')
+            .select('rollover_enabled')
+            .eq('id', budgetId)
+            .single();
+
+        if (!budget?.rollover_enabled) return 0;
+
+        const remaining = Math.max(0, lastPeriod.budget_amount - lastPeriod.spent_amount);
+        return remaining;
     }
 }

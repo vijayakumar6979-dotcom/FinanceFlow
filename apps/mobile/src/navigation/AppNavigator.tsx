@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, Text } from 'react-native';
-import { Wallet } from 'lucide-react-native';
+import { Wallet, BarChart2 } from 'lucide-react-native';
 import { AccountsScreen } from '../screens/accounts/AccountsScreen';
 import { AddAccountScreen } from '../screens/accounts/AddAccountScreen';
 import { AccountDetailScreen } from '../screens/accounts/AccountDetailScreen';
@@ -17,6 +17,7 @@ import { InvestmentsScreen } from '../screens/InvestmentsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SecurityScreen from '../screens/SecurityScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
+import AnalyticsScreen from '../screens/AnalyticsScreen';
 // import { AddInvestmentScreen } from '../screens/AddInvestmentScreen'; // TODO: Implement
 
 // Placeholder Screens
@@ -43,6 +44,14 @@ function MainTabs() {
                 name="Home"
                 component={HomeScreen}
                 options={{ tabBarLabel: 'Home' }}
+            />
+            <Tab.Screen
+                name="Analytics"
+                component={AnalyticsScreen}
+                options={{
+                    tabBarLabel: 'Analytics',
+                    tabBarIcon: ({ color }) => <BarChart2 size={24} color={color} />
+                }}
             />
             <Tab.Screen
                 name="Transactions"
@@ -101,8 +110,6 @@ export default function AppNavigator() {
                 <Stack.Screen name="CreateBill" component={CreateBillScreen} options={{ presentation: 'modal' }} />
                 <Stack.Screen name="BillDetail" component={BillDetailScreen} />
 
-                {/* Investments */}
-                <Stack.Screen name="Investments" component={InvestmentsScreen} />
                 {/* Investments */}
                 <Stack.Screen name="Investments" component={InvestmentsScreen} />
                 {/* <Stack.Screen name="AddInvestment" component={AddInvestmentScreen} options={{ presentation: 'modal' }} /> */}

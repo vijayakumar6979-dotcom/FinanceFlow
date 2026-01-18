@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Building2, CreditCard, Wallet, Banknote, ChevronRight, Check } from 'lucide-react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { X, Building2, CreditCard, Wallet, Banknote } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { BankSelector } from './BankSelector';
-import { formatCurrency, Institution } from '@financeflow/shared';
+import { CurrencySelector } from '@/components/settings/CurrencySelector';
+import { Institution } from '@financeflow/shared';
 
 interface AddAccountModalProps {
     isOpen: boolean;
@@ -22,6 +23,7 @@ export function AddAccountModal({ isOpen, onClose, onSave }: AddAccountModalProp
     const [formData, setFormData] = useState({
         name: '',
         balance: '',
+        currency: 'MYR',
         accountNumber: '',
         creditLimit: '',
         linkedPhone: '',
@@ -31,7 +33,7 @@ export function AddAccountModal({ isOpen, onClose, onSave }: AddAccountModalProp
         setStep('type_selection');
         setAccountType(null);
         setInstitution(null);
-        setFormData({ name: '', balance: '', accountNumber: '', creditLimit: '', linkedPhone: '' });
+        setFormData({ name: '', balance: '', currency: 'MYR', accountNumber: '', creditLimit: '', linkedPhone: '' });
     };
 
     const handleClose = () => {
@@ -53,7 +55,7 @@ export function AddAccountModal({ isOpen, onClose, onSave }: AddAccountModalProp
             type: accountType === 'bank' ? 'bank_checking' : accountType,
             name: formData.name,
             balance: parseFloat(formData.balance) || 0,
-            currency: 'MYR',
+            currency: formData.currency,
             institution: institution ? {
                 name: institution.name,
                 logo: institution.logo,
@@ -141,6 +143,14 @@ export function AddAccountModal({ isOpen, onClose, onSave }: AddAccountModalProp
                             onChange={(e) => setFormData(prev => ({ ...prev, balance: e.target.value }))}
                             placeholder="0.00"
                         />
+                    </div>
+
+                    <CurrencySelector
+                        value={formData.currency}
+                        onChange={(code) => setFormData(prev => ({ ...prev, currency: code }))}
+                    />
+
+                    <div className="grid grid-cols-2 gap-4">
                         {isCard && (
                             <Input
                                 label="Credit Limit"

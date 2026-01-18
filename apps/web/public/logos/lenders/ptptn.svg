@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 60">
+  <rect width="120" height="60" fill="#0066CC" rx="4"/>
+  <text x="60" y="38" font-family="Arial, sans-serif" font-weight="900" font-size="28" text-anchor="middle" fill="white">PTPTN</text>
+  <path d="M30 15 L35 20 L30 25 M90 15 L85 20 L90 25" stroke="white" stroke-width="2" fill="none"/>
+</svg>

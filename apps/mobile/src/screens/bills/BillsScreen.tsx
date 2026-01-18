@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Plus, Calendar, Clock, CheckCircle } from 'lucide-react-native';
 import { useTheme, MALAYSIAN_BILL_PROVIDERS, Bill, formatCurrency } from '@financeflow/shared';
 import clsx from 'clsx';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function BillsScreen() {
     const navigation = useNavigation();

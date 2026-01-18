@@ -64,20 +64,52 @@ export class GoalService {
 
     /**
      * Add a contribution to a goal
+     * Auto-creates a transaction for the contribution
      */
     async addContribution(contribution: Omit<GoalContribution, 'id' | 'created_at'>): Promise<GoalContribution> {
+        const { data: { user } } = await this.supabase.auth.getUser();
+        if (!user) throw new Error('User not authenticated');
+
+        // Create contribution
         const { data, error } = await this.supabase
             .from('goal_contributions')
-            .insert(contribution)
+            .insert({ ...contribution, user_id: user.id })
             .select()
             .single();
 
         if (error) throw error;
 
         // Automatically update goal current_amount
-        // Note: Ideally this is done via a database trigger or edge function for consistency
-        // But for client-side optimitic updates, we can do it here too or let the realtime subscription handle it
         await this.updateGoalAmount(contribution.goal_id, contribution.amount);
+
+        // Auto-create transaction
+        try {
+            // Get goal details for transaction description
+            const { data: goal } = await this.supabase
+                .from('goals')
+                .select('name')
+                .eq('id', contribution.goal_id)
+                .single();
+
+            await this.supabase
+                .from('transactions')
+                .insert({
+                    user_id: user.id,
+                    type: 'expense', // Deducted from source account
+                    amount: contribution.amount,
+                    description: `Contribution to ${goal?.name || 'Goal'}`,
+                    account_id: contribution.source_account_id,
+                    date: contribution.contribution_date || new Date().toISOString(),
+                    goal_contribution_id: data.id,
+                    notes: contribution.notes || 'Auto-created from goal contribution',
+                    tags: ['goal', 'savings', goal?.name?.toLowerCase() || 'goal']
+                });
+
+            console.log(`✅ Auto-created transaction for goal contribution: ${data.id}`);
+        } catch (txError) {
+            console.error('Failed to auto-create transaction for goal contribution:', txError);
+            // Don't fail the contribution if transaction creation fails
+        }
 
         return data;
     }
@@ -116,17 +148,63 @@ export class GoalService {
     }
 
     /**
+     * Update milestone status for a goal
+     */
+    async checkMilestones(goalId: string): Promise<void> {
+        const { data: goal } = await this.supabase
+            .from('goals')
+            .select('current_amount, target_amount')
+            .eq('id', goalId)
+            .single();
+
+        if (!goal) return;
+
+        const milestones = await this.getMilestones(goalId);
+
+        for (const milestone of milestones) {
+            const milestoneTarget = milestone.target_percentage
+                ? (goal.target_amount * (milestone.target_percentage / 100))
+                : milestone.target_amount;
+
+            if (goal.current_amount >= milestoneTarget && !milestone.is_completed) {
+                await this.supabase
+                    .from('goal_milestones')
+                    .update({
+                        is_completed: true,
+                        completed_at: new Date().toISOString()
+                    })
+                    .eq('id', milestone.id);
+            }
+        }
+
+        // Check if goal is complete
+        if (goal.current_amount >= goal.target_amount) {
+            await this.updateGoal(goalId, {
+                status: 'completed',
+                completed_at: new Date().toISOString()
+            });
+        }
+    }
+
+    /**
      * Calculate monthly contribution needed to reach goal by target date
      */
-    calculateMonthlyContributionRaw(targetAmount: number, currentAmount: number, targetDate: Date): number {
+    calculateMonthlyContribution(goal: Goal): number {
+        const targetDate = new Date(goal.target_date);
         const now = new Date();
+
         if (targetDate <= now) return 0;
 
-        const monthsRemaining = (targetDate.getFullYear() - now.getFullYear()) * 12 + (targetDate.getMonth() - now.getMonth());
+        // Calculate months remaining
+        const years = targetDate.getFullYear() - now.getFullYear();
+        const months = targetDate.getMonth() - now.getMonth();
+        const monthsRemaining = years * 12 + months;
 
-        if (monthsRemaining <= 0) return targetAmount - currentAmount;
+        if (monthsRemaining <= 0) {
+            return Math.max(0, goal.target_amount - goal.current_amount);
+        }
 
-        const remaining = targetAmount - currentAmount;
+        const remaining = Math.max(0, goal.target_amount - goal.current_amount);
         return remaining / monthsRemaining;
     }
 }

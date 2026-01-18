@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle2, Clock, MoreVertical, Edit2, Trash2, Calendar, Zap, Droplets, Wifi, Smartphone, Tv, Shield } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
@@ -24,6 +25,8 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 };
 
 export function BillCard({ bill, onPay, onEdit, onDelete }: BillCardProps) {
+    const navigate = useNavigate();
+
     // Mock status logic (replace with real date math later)
     const isPaid = bill.status === 'paid';
     const isOverdue = bill.status === 'overdue';
@@ -35,7 +38,8 @@ export function BillCard({ bill, onPay, onEdit, onDelete }: BillCardProps) {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             whileHover={{ y: -4 }}
-            className="group"
+            className="group cursor-pointer"
+            onClick={() => navigate(`/bills/${bill.id}`)}
         >
             <Card className={cn(
                 "relative overflow-hidden border transition-all duration-300",
@@ -81,10 +85,10 @@ export function BillCard({ bill, onPay, onEdit, onDelete }: BillCardProps) {
 
                         {/* Actions Dropdown Trigger (Simplified to buttons for now) */}
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-blue-500" onClick={() => onEdit?.(bill)}>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-blue-500" onClick={(e) => { e.stopPropagation(); onEdit?.(bill); }}>
                                 <Edit2 size={14} />
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-red-500" onClick={() => onDelete?.(bill)}>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-red-500" onClick={(e) => { e.stopPropagation(); onDelete?.(bill); }}>
                                 <Trash2 size={14} />
                             </Button>
                         </div>
@@ -120,7 +124,7 @@ export function BillCard({ bill, onPay, onEdit, onDelete }: BillCardProps) {
                                     isDueSoon ? "bg-amber-500 hover:bg-amber-600 text-white" :
                                         "bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-white/20"
                             )}
-                            onClick={() => onPay?.(bill)}
+                            onClick={(e) => { e.stopPropagation(); onPay?.(bill); }}
                         >
                             {isOverdue ? "Pay Immediately" : "Mark as Paid"}
                         </Button>

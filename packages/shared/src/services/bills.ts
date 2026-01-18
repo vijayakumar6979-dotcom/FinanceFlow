@@ -8,7 +8,7 @@ export class BillService {
     }
 
     /**
-     * Get all bills for the current user
+     * Get all bills for the current user with calculated status
      */
     async getBills(): Promise<Bill[]> {
         const { data, error } = await this.supabase
@@ -18,7 +18,73 @@ export class BillService {
 
         if (error) throw error;
 
-        return data as Bill[];
+        // Get current month's date range
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        const startOfMonth = new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
+        const endOfMonth = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
+
+        // Get all payments for current month
+        const { data: payments } = await this.supabase
+            .from('bill_payments')
+            .select('bill_id, status, paid_date, amount')
+            .gte('due_date', startOfMonth)
+            .lte('due_date', endOfMonth);
+
+        // Calculate status for each bill
+        const billsWithStatus = (data as Bill[]).map(bill => {
+            // Get ALL paid payments for this bill in current month
+            const currentMonthPayments = payments?.filter(
+                (p: any) => p.bill_id === bill.id && p.status === 'paid'
+            ) || [];
+
+            // Calculate this month's due date
+            const dueDay = bill.due_day || 1;
+            const thisMonthDueDate = new Date(currentYear, currentMonth, dueDay);
+
+            // Set time to end of day for fair comparison
+            thisMonthDueDate.setHours(23, 59, 59, 999);
+
+            // Calculate days difference
+            const daysDiff = Math.ceil((thisMonthDueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+            // Determine status
+            let status: 'paid' | 'unpaid' | 'overdue' = 'unpaid';
+            let nextDueDate = thisMonthDueDate;
+            let actualPaidAmount = 0;
+
+            if (currentMonthPayments.length > 0) {
+                // Bill is paid for this month (has at least one payment)
+                status = 'paid';
+                // Sum all payment amounts
+                actualPaidAmount = currentMonthPayments.reduce(
+                    (sum: number, p: any) => sum + parseFloat(p.amount || 0),
+                    0
+                );
+                // Next due date is next month
+                nextDueDate = new Date(currentYear, currentMonth + 1, dueDay);
+            } else if (daysDiff < 0) {
+                // Due date has passed and not paid = overdue
+                status = 'overdue';
+                // Next due date is still this month's due date (to show how overdue it is)
+                nextDueDate = thisMonthDueDate;
+            } else {
+                // Not yet due and not paid = unpaid
+                status = 'unpaid';
+                nextDueDate = thisMonthDueDate;
+            }
+
+            return {
+                ...bill,
+                status,
+                next_due_date: nextDueDate.toISOString().split('T')[0],
+                days_until_due: daysDiff,
+                actual_paid_amount: actualPaidAmount
+            };
+        });
+
+        return billsWithStatus;
     }
 
     /**
@@ -95,11 +161,13 @@ export class BillService {
 
     /**
      * Mark a bill as paid
+     * Auto-creates a transaction for the payment
      */
     async markAsPaid(payment: Partial<BillPayment>): Promise<BillPayment> {
         const { data: { user } } = await this.supabase.auth.getUser();
         if (!user) throw new Error('User not authenticated');
 
+        // Create bill payment
         const { data, error } = await this.supabase
             .from('bill_payments')
             .insert({ ...payment, user_id: user.id, status: 'paid', paid_date: new Date().toISOString() })
@@ -107,6 +175,37 @@ export class BillService {
             .single();
 
         if (error) throw error;
+
+        // Auto-create transaction
+        try {
+            // Get bill details for transaction description
+            const { data: bill } = await this.supabase
+                .from('bills')
+                .select('name, category_id')
+                .eq('id', payment.bill_id)
+                .single();
+
+            // Create transaction linked to this bill payment
+            await this.supabase
+                .from('transactions')
+                .insert({
+                    user_id: user.id,
+                    type: 'expense',
+                    amount: payment.amount,
+                    description: `Bill Payment: ${bill?.name || 'Unknown Bill'}`,
+                    category_id: bill?.category_id || null,
+                    account_id: payment.account_id,
+                    date: payment.paid_date || new Date().toISOString(),
+                    bill_payment_id: data.id,
+                    notes: `Auto-created from bill payment`
+                });
+
+            console.log(`✅ Auto-created transaction for bill payment: ${data.id}`);
+        } catch (txError) {
+            console.error('Failed to auto-create transaction for bill payment:', txError);
+            // Don't fail the payment if transaction creation fails
+        }
+
         return data as BillPayment;
     }
 

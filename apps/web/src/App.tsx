@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { useTheme } from '@financeflow/shared';
 import Dashboard from '@/pages/Dashboard';
 import AccountsPage from '@/pages/Accounts';
+import CreateAccountPage from '@/pages/CreateAccountPage';
 import AccountDetailsPage from '@/pages/AccountDetails';
 import BudgetsDashboard from '@/pages/budgets/BudgetsDashboard';
 import CreateBudget from '@/pages/budgets/CreateBudget';
@@ -13,6 +15,9 @@ import CreateGoal from '@/pages/goals/CreateGoal';
 import GoalDetails from '@/pages/goals/GoalDetails';
 import BillsDashboard from '@/pages/bills/BillsDashboard';
 import CreateBill from '@/pages/bills/CreateBill';
+import BillDetails from '@/pages/bills/BillDetails';
+import EditBill from '@/pages/bills/EditBill';
+import BillsAnalytics from '@/pages/bills/BillsAnalytics';
 import { ReloadPrompt } from '@/components/ReloadPrompt';
 import LoansPage from '@/pages/Loans';
 import LoanDetailsPage from '@/pages/LoanDetails';
@@ -23,15 +28,10 @@ import ForgotPasswordPage from '@/pages/ForgotPassword';
 import VerifyEmailPage from '@/pages/VerifyEmail';
 import OnboardingPage from '@/pages/Onboarding';
 import ProfilePage from '@/pages/Profile';
-import { useAuth } from '@/context/AuthContext'; // Note: Keeping existing context hook if simpler, but need to check if it wraps shared hook correctly.
-// Actually, App.tsx was using local AuthContext, but we updated shared useAuth. 
-// Let's assume we should migrate to shared useAuth OR the local AuthContext uses the shared one. 
-// Wait, prompt said "Web Protected Route Component Location: /apps/web/src/components/auth/ProtectedRoute.tsx"
-// And "Web Application: Update App.tsx routing".
+import { useAuth } from '@/context/AuthContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import InvestmentsPage from '@/pages/Investments';
-
-// Placeholder Page
+import AnalyticsPage from '@/pages/Analytics';
 import { TransactionsPage } from '@/pages/TransactionsPage';
 
 function App() {
@@ -53,6 +53,7 @@ function App() {
 
     return (
         <Router>
+            <Toaster position="top-right" />
             <ReloadPrompt />
             <Routes>
                 {/* Public Auth Routes */}
@@ -64,7 +65,8 @@ function App() {
 
                 <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
 
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                {/* Root path - redirect based on auth status */}
+                <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Navigate to="/auth/login" replace />} />
 
                 {/* Protected Dashboard Routes */}
                 <Route
@@ -74,7 +76,9 @@ function App() {
                             <DashboardLayout>
                                 <Routes>
                                     <Route path="dashboard" element={<Dashboard />} />
+                                    <Route path="analytics" element={<AnalyticsPage />} />
                                     <Route path="accounts" element={<AccountsPage />} />
+                                    <Route path="accounts/new" element={<CreateAccountPage />} />
                                     <Route path="accounts/:id" element={<AccountDetailsPage />} />
                                     <Route path="budgets" element={<BudgetsDashboard />} />
                                     <Route path="budgets/new" element={<CreateBudget />} />
@@ -83,7 +87,10 @@ function App() {
                                     <Route path="goals/new" element={<CreateGoal />} />
                                     <Route path="goals/:id" element={<GoalDetails />} />
                                     <Route path="bills" element={<BillsDashboard />} />
+                                    <Route path="bills/analytics" element={<BillsAnalytics />} />
                                     <Route path="bills/new" element={<CreateBill />} />
+                                    <Route path="bills/:id" element={<BillDetails />} />
+                                    <Route path="bills/:id/edit" element={<EditBill />} />
                                     <Route path="loans" element={<LoansPage />} />
                                     <Route path="loans/strategies" element={<LoanStrategiesPage />} />
                                     <Route path="loans/:id" element={<LoanDetailsPage />} />

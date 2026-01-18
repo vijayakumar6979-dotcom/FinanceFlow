@@ -140,4 +140,231 @@ export class GrokService {
             return null;
         }
     }
+
+    /**
+     * Generate debt payoff strategy recommendations for loans
+     */
+    async generateDebtPayoffStrategy(input: {
+        loans: Array<{
+            name: string;
+            balance: number;
+            interestRate: number;
+            monthlyPayment: number;
+            type: string;
+        }>;
+        extraPayment: number;
+        monthlyIncome?: number;
+    }) {
+        const prompt = `
+            Analyze these loans and provide personalized debt payoff recommendations for a Malaysian user:
+
+            **Loans:**
+            ${input.loans.map((loan, i) => `${i + 1}. ${loan.name} (${loan.type}): RM ${loan.balance.toLocaleString()} at ${loan.interestRate}% (RM ${loan.monthlyPayment}/month)`).join('\n')}
+
+            **Extra Payment Available:** RM ${input.extraPayment}/month
+            ${input.monthlyIncome ? `**Monthly Income:** RM ${input.monthlyIncome.toLocaleString()}` : ''}
+
+            Provide valid JSON ONLY with this structure:
+            {
+                "customAdvice": ["tip 1", "tip 2", "tip 3"],
+                "quickWins": ["action 1", "action 2", "action 3"],
+                "milestones": [
+                    {
+                        "achievement": "First loan paid off",
+                        "estimatedDate": "2026-12-01",
+                        "impact": "Free up RM X/month"
+                    }
+                ]
+            }
+
+            Consider Malaysian context (EPF, PTPTN, local banks). Be specific with amounts and dates.
+        `;
+
+        const response = await this.callGrok([
+            { role: 'system', content: 'You are a Malaysian financial advisor specializing in debt management. Only return valid JSON.' },
+            { role: 'user', content: prompt }
+        ], 0.7);
+
+        try {
+            const cleanJson = response.replace(/```json\n?|```/g, '');
+            return JSON.parse(cleanJson);
+        } catch (e) {
+            console.error('Failed to parse Grok JSON:', e);
+            // Return fallback
+            return this.getFallbackDebtStrategy(input.loans, input.extraPayment);
+        }
+    }
+
+    /**
+     * Analyze refinancing opportunities
+     */
+    async analyzeRefinancing(input: {
+        loanName: string;
+        currentBalance: number;
+        currentRate: number;
+        remainingMonths: number;
+        newRate: number;
+    }) {
+        const prompt = `
+            Analyze this refinancing opportunity for a Malaysian borrower:
+
+            **Current Loan:** ${input.loanName}
+            - Balance: RM ${input.currentBalance.toLocaleString()}
+            - Current Rate: ${input.currentRate}%
+            - Remaining: ${input.remainingMonths} months
+
+            **Potential New Rate:** ${input.newRate}%
+
+            Provide valid JSON ONLY:
+            {
+                "recommendation": "Clear yes/no/maybe with brief explanation",
+                "pros": ["pro 1", "pro 2", "pro 3"],
+                "cons": ["con 1", "con 2"],
+                "actionSteps": ["step 1", "step 2", "step 3"]
+            }
+
+            Consider Malaysian context (legal fees, stamp duty, lock-in periods).
+        `;
+
+        const response = await this.callGrok([
+            { role: 'system', content: 'You are a Malaysian loan refinancing expert. Only return valid JSON.' },
+            { role: 'user', content: prompt }
+        ], 0.6);
+
+        try {
+            const cleanJson = response.replace(/```json\n?|```/g, '');
+            return JSON.parse(cleanJson);
+        } catch (e) {
+            console.error('Failed to parse Grok JSON:', e);
+            return this.getFallbackRefinancing(input.currentRate, input.newRate);
+        }
+    }
+
+    /**
+     * Generate loan insights
+     */
+    async generateLoanInsights(input: {
+        loanName: string;
+        loanType: string;
+        balance: number;
+        interestRate: number;
+        monthlyPayment: number;
+    }) {
+        const prompt = `
+            Analyze this loan and provide insights for a Malaysian borrower:
+
+            **Loan:** ${input.loanName} (${input.loanType})
+            - Balance: RM ${input.balance.toLocaleString()}
+            - Interest Rate: ${input.interestRate}%
+            - Monthly Payment: RM ${input.monthlyPayment.toLocaleString()}
+
+            Provide valid JSON ONLY:
+            {
+                "insights": ["insight 1", "insight 2"],
+                "warnings": ["warning 1"],
+                "opportunities": ["opportunity 1", "opportunity 2"]
+            }
+
+            Be specific and actionable. Consider Malaysian financial products.
+        `;
+
+        const response = await this.callGrok([
+            { role: 'system', content: 'You are a Malaysian financial advisor. Only return valid JSON.' },
+            { role: 'user', content: prompt }
+        ], 0.7);
+
+        try {
+            const cleanJson = response.replace(/```json\n?|```/g, '');
+            return JSON.parse(cleanJson);
+        } catch (e) {
+            console.error('Failed to parse Grok JSON:', e);
+            return this.getFallbackInsights(input.interestRate);
+        }
+    }
+
+    /**
+     * Fallback debt strategy when API fails
+     */
+    private getFallbackDebtStrategy(loans: any[], extraPayment: number) {
+        return {
+            customAdvice: [
+                `Focus your RM ${extraPayment} extra payment on the loan with the highest interest rate`,
+                'Consider the Avalanche method to maximize interest savings',
+                'Set up automatic payments to never miss a due date',
+                'Review your budget monthly to find additional funds for debt payoff'
+            ],
+            quickWins: [
+                'Set up auto-debit for all loan payments this week',
+                'Call your bank to negotiate a lower interest rate',
+                'Cut one unnecessary subscription and redirect to debt',
+                'Create a visual debt payoff tracker'
+            ],
+            milestones: [
+                {
+                    achievement: 'First loan paid off',
+                    estimatedDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    impact: 'Free up monthly cash flow'
+                },
+                {
+                    achievement: '50% debt-free',
+                    estimatedDate: new Date(Date.now() + 730 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    impact: 'Halfway to financial freedom!'
+                }
+            ]
+        };
+    }
+
+    /**
+     * Fallback refinancing analysis
+     */
+    private getFallbackRefinancing(currentRate: number, newRate: number) {
+        const rateDiff = currentRate - newRate;
+        const isWorthwhile = rateDiff >= 0.5;
+
+        return {
+            recommendation: isWorthwhile
+                ? `Yes, refinancing could save you money with a ${rateDiff.toFixed(2)}% rate reduction`
+                : `Maybe not - the rate difference is only ${rateDiff.toFixed(2)}%`,
+            pros: [
+                'Lower monthly payments',
+                'Reduced total interest',
+                'Potential to pay off faster',
+                'Improved cash flow'
+            ],
+            cons: [
+                'Legal fees and stamp duty costs',
+                'Possible lock-in penalties',
+                'Time and paperwork required'
+            ],
+            actionSteps: [
+                'Get quotes from at least 3 banks',
+                'Calculate total costs including fees',
+                'Check for prepayment penalties',
+                'Compare savings vs. costs',
+                'Negotiate with current bank'
+            ]
+        };
+    }
+
+    /**
+     * Fallback loan insights
+     */
+    private getFallbackInsights(interestRate: number) {
+        return {
+            insights: [
+                `Your ${interestRate}% rate is ${interestRate > 6 ? 'above' : 'within'} typical range`,
+                'Extra payments can significantly reduce total interest',
+                'Consider refinancing if rates have dropped'
+            ],
+            warnings: [
+                'High interest compounds quickly - prioritize for extra payments',
+                'Missing payments damages credit score'
+            ],
+            opportunities: [
+                'Negotiate with lender for rate reduction',
+                'Make bi-weekly payments to save interest',
+                'Round up payments to accelerate payoff'
+            ]
+        };
+    }
 }
