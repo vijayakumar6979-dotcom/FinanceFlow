@@ -76,7 +76,7 @@ export const IncomeExpenseChart = () => {
                         <Tooltip
                             contentStyle={{ backgroundColor: '#1A1F3A', border: 'none', borderRadius: '12px' }}
                             itemStyle={{ color: '#fff' }}
-                            formatter={(value: number) => formatCurrency(value)}
+                            formatter={(value: any) => formatCurrency(value)}
                             cursor={{ fill: 'transparent' }}
                         />
                         <Legend iconType="circle" />

@@ -62,16 +62,16 @@ export const sendMilestoneAchievedNotification = async (
     let emoji = '🎯';
     let celebration = '';
 
-    if (milestone.percentage >= 100 || milestone.target_amount >= goal.target_amount) {
+    if ((milestone.target_percentage || 0) >= 100 || milestone.target_amount >= goal.target_amount) {
         emoji = '🎉';
         celebration = ' Congratulations!';
-    } else if (milestone.percentage >= 75) {
+    } else if ((milestone.target_percentage || 0) >= 75) {
         emoji = '🌟';
         celebration = ' Almost there!';
-    } else if (milestone.percentage >= 50) {
+    } else if ((milestone.target_percentage || 0) >= 50) {
         emoji = '🚀';
         celebration = ' Halfway there!';
-    } else if (milestone.percentage >= 25) {
+    } else if ((milestone.target_percentage || 0) >= 25) {
         emoji = '✨';
         celebration = ' Great start!';
     }
@@ -81,17 +81,17 @@ export const sendMilestoneAchievedNotification = async (
         goalId: goal.id,
         goalName: goal.name,
         title: `${emoji} Milestone Achieved: ${goal.name}`,
-        body: `${celebration} You've reached ${milestone.percentage}% of your goal! Current: RM ${goal.current_amount.toLocaleString()} / RM ${goal.target_amount.toLocaleString()}. Keep going!`,
+        body: `${celebration} You've reached ${milestone.target_percentage || 0}% of your goal! Current: RM ${goal.current_amount.toLocaleString()} / RM ${goal.target_amount.toLocaleString()}. Keep going!`,
         data: {
             goalId: goal.id,
             milestoneId: milestone.id,
-            percentage: milestone.percentage,
+            percentage: milestone.target_percentage || 0,
             currentAmount: goal.current_amount,
             targetAmount: goal.target_amount,
         },
         icon: goal.emoji || emoji,
         badge: '/badge-icon.png',
-        tag: `goal-${goal.id}-milestone-${milestone.percentage}`,
+        tag: `goal-${goal.id}-milestone-${milestone.target_percentage || 0}`,
         actions: [
             { action: 'view', title: 'View Goal' },
             { action: 'contribute', title: 'Add More' },
@@ -125,8 +125,8 @@ export const sendProgressUpdateNotification = async (
         goalName: goal.name,
         title: `💰 Contribution Added: ${goal.name}`,
         body: `+RM ${contribution.amount.toLocaleString()} added! Progress: ${newProgress}% (RM ${goal.current_amount.toLocaleString()} / RM ${goal.target_amount.toLocaleString()}). ${remaining > 0
-                ? `RM ${remaining.toLocaleString()} to go in ${daysLeft} days.`
-                : 'Goal achieved!'
+            ? `RM ${remaining.toLocaleString()} to go in ${daysLeft} days.`
+            : 'Goal achieved!'
             }`,
         data: {
             goalId: goal.id,
@@ -172,8 +172,8 @@ export const sendDeadlineReminderNotification = async (
         goalName: goal.name,
         title: `${emoji} ${urgency}Goal Deadline: ${goal.name}`,
         body: `${daysLeft} day${daysLeft !== 1 ? 's' : ''} left! Progress: ${progress}%. ${remaining > 0
-                ? `Need RM ${remaining.toLocaleString()} more (RM ${dailyRequired.toFixed(0)}/day).`
-                : 'You\'re ahead of schedule!'
+            ? `Need RM ${remaining.toLocaleString()} more (RM ${dailyRequired.toFixed(0)}/day).`
+            : 'You\'re ahead of schedule!'
             }`,
         data: {
             goalId: goal.id,

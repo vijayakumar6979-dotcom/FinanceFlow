@@ -77,6 +77,7 @@ export interface LoanPayment {
     late_fee_charged?: number;
 
     transaction_id?: string;
+    account_id?: string;
     notes?: string;
     created_at: string;
 }

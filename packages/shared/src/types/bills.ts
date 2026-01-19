@@ -67,7 +67,8 @@ export interface Bill {
     // Computed helpers (not in DB)
     next_due_date?: string;
     days_until_due?: number;
-    current_status?: PaymentStatus;
+    status?: PaymentStatus;
+    actual_paid_amount?: number;
 }
 
 export interface BillPayment {

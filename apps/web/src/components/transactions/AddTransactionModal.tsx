@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Modal, ModalBody, ModalFooter } from '@/components/ui/Modal';
 import { CategorySelect } from './CategorySelect';
 import { Button } from '@/components/ui/Button';
@@ -21,7 +22,7 @@ const accountService = createAccountService(supabase);
 
 interface AddTransactionModalProps {
     onClose: () => void;
-    onSave: () => void;
+    onSave?: () => void;
 }
 
 export function AddTransactionModal({ onClose, onSave }: AddTransactionModalProps) {
@@ -87,7 +88,8 @@ export function AddTransactionModal({ onClose, onSave }: AddTransactionModalProp
             };
 
             await transactionService.create(payload);
-            onSave();
+            onSave?.();
+            onClose();
         } catch (error) {
             console.error('Failed to save transaction', error);
         } finally {
@@ -103,8 +105,10 @@ export function AddTransactionModal({ onClose, onSave }: AddTransactionModalProp
                 {/* Type Selector */}
                 <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-xl">
                     {(['income', 'expense', 'transfer'] as const).map((t) => (
-                        <button
+                        <motion.button
                             key={t}
+                            whileHover={{ scale: 1.02, y: -1 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => setType(t)}
                             className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg font-medium transition-all ${type === t
                                 ? t === 'income' ? 'bg-green-100 text-green-700 shadow-sm' :
@@ -117,7 +121,7 @@ export function AddTransactionModal({ onClose, onSave }: AddTransactionModalProp
                             {t === 'expense' && <TrendingDown size={18} />}
                             {t === 'transfer' && <ArrowRightLeft size={18} />}
                             <span className="capitalize">{t}</span>
-                        </button>
+                        </motion.button>
                     ))}
                 </div>
 
@@ -174,18 +178,28 @@ export function AddTransactionModal({ onClose, onSave }: AddTransactionModalProp
 
                 {/* Advanced Options Toggles */}
                 <div className="flex gap-4 pt-2">
-                    <button
+                    <motion.button
+                        whileHover={{ scale: 1.02, y: -1 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => setIsRecurring(!isRecurring)}
                         className={`px-4 py-2 rounded-lg border flex items-center gap-2 transition-colors ${isRecurring ? 'bg-blue-50 border-blue-200 text-blue-600' : 'border-gray-200 dark:border-white/10 text-gray-500'}`}
                     >
                         <Repeat size={16} /> Recurring
-                    </button>
-                    <button className="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-gray-500 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-white/5">
+                    </motion.button>
+                    <motion.button
+                        whileHover={{ scale: 1.02, y: -1 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-gray-500 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-white/5"
+                    >
                         <Split size={16} /> Split
-                    </button>
-                    <button className="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-gray-500 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-white/5">
+                    </motion.button>
+                    <motion.button
+                        whileHover={{ scale: 1.02, y: -1 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-gray-500 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-white/5"
+                    >
                         <Sparkles size={16} /> AI Auto-fill
-                    </button>
+                    </motion.button>
                 </div>
 
             </ModalBody>

@@ -191,7 +191,7 @@ export class LoanService {
                 .insert({
                     user_id: user.id,
                     type: 'expense',
-                    amount: payment.payment_amount,
+                    amount: payment.amount,
                     description: `Loan Payment: ${loan?.lender_name || 'Unknown Lender'}`,
                     notes: `Principal: RM ${payment.principal_amount.toFixed(2)}, Interest: RM ${payment.interest_amount.toFixed(2)}`,
                     account_id: payment.account_id,

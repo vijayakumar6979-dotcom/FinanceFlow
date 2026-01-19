@@ -39,3 +39,8 @@ export * from './services/loans';
 export * from './constants/loanProviders';
 export * from './utils/loanCalculations';
 export * from './services/paymentReminders';
+
+// Novu Notification Service
+export * from './services/novu';
+export * from './constants/notification-templates';
+export * from './utils/notification-helpers';

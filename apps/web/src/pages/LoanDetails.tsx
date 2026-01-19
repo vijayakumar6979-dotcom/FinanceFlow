@@ -47,6 +47,10 @@ export default function LoanDetailsPage() {
     const loadLoan = async () => {
         try {
             const data = await loanService.getLoanById(id!);
+            if (!data) {
+                setLoan(null);
+                return;
+            }
             setLoan(data);
 
             // Generate amortization schedule
@@ -55,7 +59,7 @@ export default function LoanDetailsPage() {
                 data.current_balance,
                 data.interest_rate,
                 data.remaining_months || data.term_months,
-                new Date().toISOString(),
+                new Date(data.start_date || new Date()).toISOString(),
                 data.monthly_payment
             );
             setSchedule(amortization);

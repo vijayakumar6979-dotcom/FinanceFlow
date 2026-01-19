@@ -73,7 +73,7 @@ export function Sidebar() {
     };
 
     const sidebarClass = clsx(
-        'fixed left-0 top-0 h-full bg-dark-surface/80 backdrop-blur-2xl border-r border-white/10 transition-all duration-500 ease-out z-40 flex flex-col',
+        'fixed left-0 top-0 h-full backdrop-blur-2xl transition-all duration-500 ease-out z-40 flex flex-col glass-card',
         {
             'w-20': sidebarCollapsed,
             'w-72': !sidebarCollapsed,

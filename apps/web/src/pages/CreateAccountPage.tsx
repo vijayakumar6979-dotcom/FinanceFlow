@@ -186,6 +186,7 @@ export default function CreateAccountPage() {
                                         Statement Date (Day of Month)
                                     </label>
                                     <Input
+                                        label="Statement Date"
                                         type="number"
                                         min="1"
                                         max="31"
@@ -200,6 +201,7 @@ export default function CreateAccountPage() {
                                         Payment Due Date (Day of Month)
                                     </label>
                                     <Input
+                                        label="Due Date"
                                         type="number"
                                         min="1"
                                         max="31"
@@ -218,6 +220,7 @@ export default function CreateAccountPage() {
                                         Interest Rate (APR %)
                                     </label>
                                     <Input
+                                        label="Interest Rate"
                                         type="number"
                                         step="0.01"
                                         min="0"
@@ -233,6 +236,7 @@ export default function CreateAccountPage() {
                                         Minimum Payment (%)
                                     </label>
                                     <Input
+                                        label="Minimum Payment"
                                         type="number"
                                         step="0.01"
                                         min="1"
@@ -267,6 +271,7 @@ export default function CreateAccountPage() {
                                         Annual Fee (Optional)
                                     </label>
                                     <Input
+                                        label="Annual Fee"
                                         type="number"
                                         step="0.01"
                                         min="0"

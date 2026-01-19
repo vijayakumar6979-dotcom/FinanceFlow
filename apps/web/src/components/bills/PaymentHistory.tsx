@@ -32,7 +32,7 @@ export function PaymentHistory({ bill }: PaymentHistoryProps) {
     }
 
     // Calculate statistics
-    const totalPaid = payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + (p.paid_amount || p.amount), 0);
+    const totalPaid = payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
     const avgAmount = totalPaid / payments.filter(p => p.status === 'paid').length || 0;
     const onTimePayments = payments.filter(p => p.status === 'paid' && p.paid_date && p.paid_date <= p.due_date).length;
     const onTimeRate = payments.filter(p => p.status === 'paid').length > 0
@@ -113,10 +113,10 @@ export function PaymentHistory({ bill }: PaymentHistoryProps) {
                             >
                                 <div className="flex items-center gap-4">
                                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${payment.status === 'paid'
-                                            ? 'bg-green-500/20'
-                                            : isOverdue
-                                                ? 'bg-red-500/20'
-                                                : 'bg-yellow-500/20'
+                                        ? 'bg-green-500/20'
+                                        : isOverdue
+                                            ? 'bg-red-500/20'
+                                            : 'bg-yellow-500/20'
                                         }`}>
                                         {payment.status === 'paid' ? (
                                             <CheckCircle className="w-5 h-5 text-green-500" />
@@ -153,7 +153,7 @@ export function PaymentHistory({ bill }: PaymentHistoryProps) {
 
                                 <div className="text-right">
                                     <p className="text-lg font-bold text-white">
-                                        RM {(payment.paid_amount || payment.amount).toFixed(2)}
+                                        RM {payment.amount.toFixed(2)}
                                     </p>
                                     <p className="text-xs text-slate-400 capitalize">{payment.status}</p>
                                 </div>

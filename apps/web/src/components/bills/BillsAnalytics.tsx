@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { BarChart3, PieChart, TrendingUp, Calendar, DollarSign } from 'lucide-react';
 import { useBills, useBillSummary } from '@/hooks/useBills';
 import { BILL_CATEGORIES } from '@financeflow/shared';
+import { CategoryIcon } from '@/components/transactions/CategoryIcon';
 
 export function BillsAnalytics() {
     const { data: bills } = useBills();
@@ -148,12 +149,16 @@ export function BillsAnalytics() {
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        {Icon && (
+                                        {categoryInfo?.icon && (
                                             <div
                                                 className="w-8 h-8 rounded-lg flex items-center justify-center"
                                                 style={{ backgroundColor: `${categoryInfo.color}20` }}
                                             >
-                                                <Icon className="w-4 h-4" style={{ color: categoryInfo.color }} />
+                                                <CategoryIcon
+                                                    iconName={categoryInfo.icon.toLowerCase()}
+                                                    color={categoryInfo.color}
+                                                    size={16}
+                                                />
                                             </div>
                                         )}
                                         <div>

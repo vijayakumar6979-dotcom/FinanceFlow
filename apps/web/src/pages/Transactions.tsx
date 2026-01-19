@@ -50,31 +50,37 @@ export default function TransactionsPage() {
                     </div>
 
                     <div className="flex gap-3">
-                        <button
+                        <motion.button
+                            whileHover={{ y: -2 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => setShowFilters(!showFilters)}
                             className={`px-4 py-2 rounded-xl flex items-center gap-2 transition-all ${showFilters
-                                    ? 'bg-gradient-to-r from-[#0066FF] to-[#8B5CF6] text-white'
-                                    : 'bg-[#1A1F3A] text-[#94A3B8] hover:bg-[#252B4A]'
+                                ? 'bg-gradient-to-r from-[#0066FF] to-[#8B5CF6] text-white shadow-glow-blue'
+                                : 'bg-[#1A1F3A] text-[#94A3B8] hover:bg-[#252B4A]'
                                 }`}
                         >
                             <Filter className="w-5 h-5" />
                             Filters
-                        </button>
+                        </motion.button>
 
-                        <button
+                        <motion.button
+                            whileHover={{ y: -2 }}
+                            whileTap={{ scale: 0.95 }}
                             className="px-4 py-2 rounded-xl bg-[#1A1F3A] text-[#94A3B8] hover:bg-[#252B4A] flex items-center gap-2 transition-all"
                         >
                             <Download className="w-5 h-5" />
                             Export
-                        </button>
+                        </motion.button>
 
-                        <button
+                        <motion.button
+                            whileHover={{ scale: 1.05, y: -2 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => setShowAddModal(true)}
-                            className="px-6 py-2 rounded-xl bg-gradient-to-r from-[#0066FF] to-[#8B5CF6] text-white hover:shadow-[0_0_20px_rgba(0,102,255,0.5)] flex items-center gap-2 transition-all"
+                            className="px-6 py-2 rounded-xl bg-gradient-to-r from-[#0066FF] to-[#8B5CF6] text-white shadow-glow-blue flex items-center gap-2 transition-all"
                         >
                             <Plus className="w-5 h-5" />
                             Add Transaction
-                        </button>
+                        </motion.button>
                     </div>
                 </motion.div>
 
@@ -136,7 +142,6 @@ export default function TransactionsPage() {
             {/* Add Transaction Modal */}
             {showAddModal && (
                 <AddTransactionModal
-                    isOpen={showAddModal}
                     onClose={() => setShowAddModal(false)}
                 />
             )}

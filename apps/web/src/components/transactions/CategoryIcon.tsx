@@ -6,7 +6,7 @@ import {
     ShoppingCart, Utensils, Coffee, Wine, // Food
     Book, GraduationCap, BookOpen, Pen, // Education
     ShoppingBag, Shirt, Film, Repeat, Activity, Plane, Smile, Heart, Pill, Dog, Baby, HeartHandshake, // Lifestyle
-    Shield, FileText, AlertCircle, CreditCard, AlertTriangle, ArrowRightLeft // Financial
+    Shield, FileText, AlertCircle, CreditCard, AlertTriangle, ArrowRightLeft, Tag // Financial
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 

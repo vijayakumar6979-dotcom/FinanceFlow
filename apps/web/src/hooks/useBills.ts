@@ -52,7 +52,7 @@ async function fetchBills(): Promise<Bill[]> {
             ...bill,
             next_due_date: nextDueDate.toISOString().split('T')[0],
             days_until_due: daysUntilDue,
-            current_status: currentStatus,
+            status: currentStatus,
         };
     });
 }
@@ -86,9 +86,9 @@ async function fetchBillSummary(): Promise<BillSummary> {
         return sum + amount;
     }, 0);
 
-    const dueThisMonth = bills.filter(b => b.current_status !== 'paid');
-    const paidThisMonth = bills.filter(b => b.current_status === 'paid');
-    const overdue = bills.filter(b => b.current_status === 'overdue');
+    const dueThisMonth = bills.filter(b => b.status !== 'paid');
+    const paidThisMonth = bills.filter(b => b.status === 'paid');
+    const overdue = bills.filter(b => b.status === 'overdue');
 
     return {
         total_monthly: totalMonthly,

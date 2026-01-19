@@ -137,7 +137,7 @@ export function generateRepaymentScenarios(
     const minPayment = calculateMinimumPayment(balance, minPaymentPercentage);
 
     // Calculate minimum payment scenario for comparison
-    const minMonths = calculatePayoffMonths(balance, minPayment, aprPercentage);
+    // Calculate minimum payment scenario for comparison
     const minInterest = calculateTotalInterest(balance, minPayment, aprPercentage);
 
     // Aggressive Plan: 6 months
@@ -210,7 +210,6 @@ export function calculateCustomScenario(
 
     const months = calculatePayoffMonths(balance, monthlyPayment, aprPercentage);
     const totalInterest = calculateTotalInterest(balance, monthlyPayment, aprPercentage);
-    const minMonths = calculatePayoffMonths(balance, minPayment, aprPercentage);
     const minInterest = calculateTotalInterest(balance, minPayment, aprPercentage);
 
     return {

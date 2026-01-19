@@ -51,7 +51,7 @@ export interface Goal {
     linked_account_id?: string;
     auto_contribute_enabled: boolean;
     auto_contribute_amount?: number;
-    auto_contribute_frequency?: 'weekly' | 'monthly';
+    auto_contribute_frequency?: 'weekly' | 'biweekly' | 'monthly';
     auto_contribute_day?: number;
     status: 'active' | 'completed' | 'paused' | 'archived';
     completed_at?: string;

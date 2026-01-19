@@ -1,13 +1,13 @@
 import {
     Menu,
     Search,
-    Bell,
     Moon,
     Sun
 } from 'lucide-react';
 import { useLayoutStore } from '@/store/layoutStore';
 import { useTheme } from '@financeflow/shared';
 import { useAuth } from '@financeflow/shared';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 
 export function Header() {
     const { setSidebarOpen, setSearchModalOpen, setNotificationPanelOpen } = useLayoutStore();
@@ -72,16 +72,8 @@ export function Header() {
                     )}
                 </button>
 
-                {/* Notifications */}
-                <div className="relative">
-                    <button
-                        onClick={() => setNotificationPanelOpen(true)}
-                        className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
-                    >
-                        <Bell size={22} />
-                        <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 border-2 border-white dark:border-dark-base rounded-full"></span>
-                    </button>
-                </div>
+                {/* Notifications - Novu Notification Center */}
+                <NotificationCenter />
 
                 {/* Mobile Profile Dropdown Trigger (visible on sm) */}
                 <div className="flex items-center pl-2 border-l border-gray-200 dark:border-white/10">

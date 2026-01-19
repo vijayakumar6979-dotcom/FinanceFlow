@@ -29,7 +29,7 @@ export default function Bills() {
 
         // Apply status filter
         if (filter !== 'all') {
-            filtered = filtered.filter(bill => bill.current_status === filter);
+            filtered = filtered.filter(bill => bill.status === filter);
         }
 
         // Apply search
@@ -131,8 +131,10 @@ export default function Bills() {
                 </div>
                 <div className="flex gap-2">
                     {(['all', 'unpaid', 'paid', 'overdue'] as const).map((status) => (
-                        <button
+                        <motion.button
                             key={status}
+                            whileHover={{ y: -2 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => setFilter(status)}
                             className={`px-4 py-3 rounded-xl font-medium transition-all ${filter === status
                                 ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
@@ -140,7 +142,7 @@ export default function Bills() {
                                 }`}
                         >
                             {status.charAt(0).toUpperCase() + status.slice(1)}
-                        </button>
+                        </motion.button>
                     ))}
                 </div>
             </div>
@@ -159,9 +161,13 @@ export default function Bills() {
                         }
                     </p>
                     {!searchQuery && filter === 'all' && (
-                        <button className="px-6 py-3 bg-gradient-to-r from-primary-500 to-purple-500 rounded-xl text-white font-semibold">
+                        <motion.button
+                            whileHover={{ scale: 1.05, y: -2 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="px-6 py-3 bg-gradient-to-r from-primary-500 to-purple-500 rounded-xl text-white font-semibold shadow-glow-blue"
+                        >
                             Add Bill
-                        </button>
+                        </motion.button>
                     )}
                 </div>
             ) : (
@@ -224,7 +230,7 @@ interface BillCardProps {
 }
 
 function BillCard({ bill }: BillCardProps) {
-    const statusConfig = getPaymentStatusConfig(bill.current_status || 'unpaid');
+    const statusConfig = getPaymentStatusConfig(bill.status || 'unpaid');
     const categoryConfig = getBillCategoryConfig(bill.provider_category);
     const amount = bill.is_variable ? (bill.estimated_amount || 0) : (bill.fixed_amount || 0);
 
@@ -282,7 +288,7 @@ function BillCard({ bill }: BillCardProps) {
                         }) : `${bill.due_day}th of month`}
                     </p>
                 </div>
-                {bill.days_until_due !== undefined && bill.current_status !== 'paid' && (
+                {bill.days_until_due !== undefined && bill.status !== 'paid' && (
                     <div className="text-right">
                         <p className="text-slate-400">Days Until Due</p>
                         <p className={`font-medium ${bill.days_until_due < 0 ? 'text-red-400' :

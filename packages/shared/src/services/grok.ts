@@ -285,7 +285,7 @@ export class GrokService {
     /**
      * Fallback debt strategy when API fails
      */
-    private getFallbackDebtStrategy(loans: any[], extraPayment: number) {
+    private getFallbackDebtStrategy(_loans: any[], extraPayment: number) {
         return {
             customAdvice: [
                 `Focus your RM ${extraPayment} extra payment on the loan with the highest interest rate`,

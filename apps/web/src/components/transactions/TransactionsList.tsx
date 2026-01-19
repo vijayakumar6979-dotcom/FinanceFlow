@@ -119,10 +119,9 @@ function TransactionCard({ transaction, index, isSelected, onSelect }: Transacti
     const [showMenu, setShowMenu] = useState(false);
 
     const isIncome = transaction.type === 'income';
-    const hasReceipt = transaction.receipt_urls && transaction.receipt_urls.length > 0;
-    const isAnomaly = transaction.is_anomaly;
-    const isLinked = transaction.bill_payment_id || transaction.loan_payment_id ||
-        transaction.goal_contribution_id || transaction.investment_transaction_id;
+    const hasReceipt = (transaction as any).receipt_urls && (transaction as any).receipt_urls.length > 0;
+    const isAnomaly = (transaction as any).is_anomaly;
+    const isLinked = transaction.linked_id;
 
     return (
         <motion.div
@@ -130,8 +129,8 @@ function TransactionCard({ transaction, index, isSelected, onSelect }: Transacti
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.05 }}
             className={`relative group bg-[rgba(255,255,255,0.05)] backdrop-blur-[24px] border rounded-2xl p-6 hover:transform hover:-translate-y-1 transition-all ${isSelected
-                    ? 'border-[#0066FF] shadow-[0_0_20px_rgba(0,102,255,0.5)]'
-                    : 'border-[rgba(255,255,255,0.18)] hover:border-[rgba(255,255,255,0.3)]'
+                ? 'border-[#0066FF] shadow-[0_0_20px_rgba(0,102,255,0.5)]'
+                : 'border-[rgba(255,255,255,0.18)] hover:border-[rgba(255,255,255,0.3)]'
                 }`}
         >
             <div className="flex items-center justify-between">
@@ -147,8 +146,8 @@ function TransactionCard({ transaction, index, isSelected, onSelect }: Transacti
 
                     {/* Icon */}
                     <div className={`p-3 rounded-xl bg-gradient-to-r ${isIncome
-                            ? 'from-[#10B981] to-[#059669]'
-                            : 'from-[#EF4444] to-[#DC2626]'
+                        ? 'from-[#10B981] to-[#059669]'
+                        : 'from-[#EF4444] to-[#DC2626]'
                         }`}>
                         {transaction.category?.icon ? (
                             <span className="text-2xl">{transaction.category.icon}</span>
@@ -178,7 +177,7 @@ function TransactionCard({ transaction, index, isSelected, onSelect }: Transacti
                         <div className="flex items-center gap-3 text-sm text-[#94A3B8]">
                             <span>{transaction.category?.name || 'Uncategorized'}</span>
                             <span>•</span>
-                            <span>{transaction.account?.name || 'Unknown Account'}</span>
+                            <span>{(transaction as any).account?.name || 'Unknown Account'}</span>
                             {transaction.tags && transaction.tags.length > 0 && (
                                 <>
                                     <span>•</span>

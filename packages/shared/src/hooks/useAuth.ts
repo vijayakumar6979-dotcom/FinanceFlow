@@ -9,12 +9,26 @@ export function useAuth() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session)
-            setUser(session?.user ?? null)
-            setLoading(false)
-        })
+        // Get initial session with timeout
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise<{ data: { session: null }; error: null }>((resolve) => {
+            setTimeout(() => resolve({ data: { session: null }, error: null }), 3000);
+        });
+
+        Promise.race([sessionPromise, timeoutPromise])
+            .then(({ data }) => {
+                // @ts-ignore - data structure mismatch between sessionPromise and timeoutPromise
+                const session = data?.session;
+                setSession(session)
+                setUser(session?.user ?? null)
+                setLoading(false)
+            })
+            .catch((error) => {
+                console.error('Failed to get session:', error)
+                setSession(null)
+                setUser(null)
+                setLoading(false)
+            })
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(

@@ -43,10 +43,10 @@ export function ExportBills({ bills, payments }: ExportBillsProps) {
                 bill.is_variable ? 'Variable' : 'Fixed',
                 bill.is_variable ? bill.estimated_amount : bill.fixed_amount,
                 bill.due_day,
-                bill.current_status || 'N/A',
+                bill.status || 'N/A',
                 bill.auto_pay_enabled ? 'Yes' : 'No',
                 bill.notifications_enabled ? 'Yes' : 'No',
-                new Date(bill.created_at).toLocaleDateString('en-MY'),
+                bill.created_at ? new Date(bill.created_at).toLocaleDateString('en-MY') : 'N/A',
             ]);
 
             // Create CSV content
@@ -97,7 +97,7 @@ export function ExportBills({ bills, payments }: ExportBillsProps) {
                 payment.bill_id,
                 payment.due_date,
                 payment.amount,
-                payment.paid_amount || '',
+                payment.amount,
                 payment.paid_date || '',
                 payment.status,
                 payment.payment_method || '',

@@ -28,6 +28,7 @@ export interface InvestmentTransaction {
     type: InvestmentTransactionType;
     quantity: number;
     price_per_unit: number;
+    account_id?: string;
     total_amount: number;
     fees: number;
     transaction_date: string;

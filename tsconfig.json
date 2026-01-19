@@ -20,5 +20,4 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "extends": "expo/tsconfig.base"
 }

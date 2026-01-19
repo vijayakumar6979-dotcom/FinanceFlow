@@ -1,4 +1,4 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 /**
  * Transaction Auto-Creation Service
@@ -15,14 +15,7 @@ interface BillPayment {
     notes?: string;
 }
 
-interface Bill {
-    id: string;
-    bill_name: string;
-    provider_name: string;
-    budget_category_id?: string;
-    linked_account_id?: string;
-    currency: string;
-}
+
 
 export class TransactionAutoCreationService {
     constructor(private supabase: SupabaseClient) { }

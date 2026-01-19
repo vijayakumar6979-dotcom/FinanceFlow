@@ -20,10 +20,7 @@ export function RefinanceAnalyzer({ loan }: RefinanceAnalyzerProps) {
 
         setTimeout(() => {
             const result = RefinanceCalc.analyzeOpportunity(
-                loan.current_balance,
-                loan.interest_rate,
-                loan.remaining_months || loan.term_months,
-                loan.monthly_payment,
+                loan,
                 newRate,
                 closingCosts
             );
@@ -149,8 +146,8 @@ export function RefinanceAnalyzer({ loan }: RefinanceAnalyzerProps) {
                 >
                     {/* Recommendation Banner */}
                     <div className={`p-4 rounded-lg border-2 ${isRecommended
-                            ? 'bg-green-50 dark:bg-green-500/10 border-green-500 dark:border-green-500/30'
-                            : 'bg-orange-50 dark:bg-orange-500/10 border-orange-500 dark:border-orange-500/30'
+                        ? 'bg-green-50 dark:bg-green-500/10 border-green-500 dark:border-green-500/30'
+                        : 'bg-orange-50 dark:bg-orange-500/10 border-orange-500 dark:border-orange-500/30'
                         }`}>
                         <div className="flex items-start gap-3">
                             {isRecommended ? (

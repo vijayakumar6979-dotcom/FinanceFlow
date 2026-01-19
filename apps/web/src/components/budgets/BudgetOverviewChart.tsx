@@ -50,7 +50,7 @@ export function BudgetOverviewChart({ budgets, periods }: BudgetOverviewChartPro
                                 borderRadius: '8px',
                                 color: '#fff'
                             }}
-                            formatter={(value: number) => `RM ${value.toLocaleString()}`}
+                            formatter={(value: any) => `RM ${value.toLocaleString()}`}
                         />
                         <Legend verticalAlign="bottom" height={36} />
                     </PieChart>

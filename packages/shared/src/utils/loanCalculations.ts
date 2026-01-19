@@ -32,7 +32,7 @@ export class LoanCalculator {
         principal: number,
         annualRate: number,
         termMonths: number,
-        startDate: Date,
+        startDate: Date | string,
         monthlyPayment?: number
     ): AmortizationScheduleEntry[] {
         const schedule: AmortizationScheduleEntry[] = [];
@@ -113,7 +113,7 @@ export class LoanCalculator {
         annualRate: number,
         monthlyPayment: number,
         extraPayment: number = 0,
-        startDate: Date = new Date()
+        startDate: Date | string = new Date()
     ): Date {
         const totalPayment = monthlyPayment + extraPayment;
         const monthlyRate = annualRate / 100 / 12;

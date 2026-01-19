@@ -168,7 +168,7 @@ export class PaymentReminderService {
     static async sendPushNotification(
         userId: string,
         reminder: PaymentReminder,
-        fcmToken: string
+        _fcmToken: string
     ): Promise<boolean> {
         const message = this.generateNotificationMessage(reminder);
 

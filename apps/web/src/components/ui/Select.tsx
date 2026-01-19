@@ -121,8 +121,8 @@ export function Select({
                 className={cn(
                     "relative min-h-[48px] w-full bg-white dark:bg-dark-surface border rounded-xl transition-all duration-200 cursor-pointer flex items-center justify-between px-4 py-2",
                     disabled ? "opacity-50 cursor-not-allowed bg-gray-50 dark:bg-white/5" : "hover:border-primary-300 dark:hover:border-primary-700",
-                    isOpen ? "ring-2 ring-primary-500/20 border-primary-500" : "border-gray-200 dark:border-white/10",
-                    error && "border-red-500 hover:border-red-500",
+                    isOpen ? "ring-2 ring-primary-500/20 border-primary-500 shadow-glow-blue" : "border-gray-200 dark:border-white/10",
+                    error && "border-red-500 hover:border-red-500 shadow-glow-red",
                 )}
             >
                 <div className="flex-grow">{displayValue()}</div>
@@ -141,7 +141,7 @@ export function Select({
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: -10 }}
                         transition={{ duration: 0.1 }}
-                        className="absolute z-50 w-full mt-1 bg-white dark:bg-dark-elevated border border-gray-100 dark:border-white/10 rounded-xl shadow-xl overflow-hidden"
+                        className="absolute z-50 w-full mt-1 bg-white/95 dark:bg-dark-elevated/95 backdrop-blur-xl border border-gray-100 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden"
                     >
                         {searchable && (
                             <div className="p-2 border-b border-gray-100 dark:border-white/10 sticky top-0 bg-white dark:bg-dark-elevated">

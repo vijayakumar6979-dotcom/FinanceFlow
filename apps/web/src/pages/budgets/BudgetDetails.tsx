@@ -41,8 +41,10 @@ export default function BudgetDetails() {
 
         await updateBudget.mutateAsync({
             id: budget.id,
-            alert_thresholds: alertThresholds,
-            notifications_enabled: notificationsEnabled,
+            updates: {
+                alert_thresholds: alertThresholds,
+                notifications_enabled: notificationsEnabled,
+            },
         });
         setShowAlertSettings(false);
     };
@@ -98,7 +100,7 @@ export default function BudgetDetails() {
 
     // Historical performance data (last 6 periods)
     const historicalData = periods.slice(0, 6).reverse().map((p, index) => ({
-        period: format(new Date(p.start_date), 'MMM yyyy'),
+        period: format(new Date(p.period_start), 'MMM yyyy'),
         spent: p.spent_amount,
         budget: budget.amount,
         status: p.status,

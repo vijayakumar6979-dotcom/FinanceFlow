@@ -64,7 +64,7 @@ export const billBudgetService = {
                 .insert({
                     user_id: user.id,
                     category_id: categoryId,
-                    amount: payment.paid_amount || payment.amount,
+                    amount: payment.amount,
                     type: 'expense',
                     description: `${bill.bill_name} - ${bill.provider_name}`,
                     date: payment.paid_date || new Date().toISOString().split('T')[0],

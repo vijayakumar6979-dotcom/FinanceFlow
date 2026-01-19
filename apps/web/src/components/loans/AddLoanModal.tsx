@@ -98,6 +98,7 @@ export function AddLoanModal({ isOpen, onClose, onSave }: AddLoanModalProps) {
             });
             const payload = {
                 loan_name: details.name || `${lender.name} ${loanType}`,
+                name: details.name || `${lender.name} ${loanType}`,
                 lender_id: lender.id,
                 lender_name: lender.name,
                 loan_type: loanType,

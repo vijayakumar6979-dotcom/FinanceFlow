@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { FinancialHealthScore, FinancialSnapshot, AnalyticsInsight } from '../types/analytics';
+import { FinancialHealthScore, FinancialSnapshot } from '../types/analytics';
 
 export const createAnalyticsService = (supabase: SupabaseClient) => {
 
@@ -206,7 +206,7 @@ export const createAnalyticsService = (supabase: SupabaseClient) => {
 
             const income = await getMonthlyIncome(userId, startOfMonth, endOfMonth);
             const expenses = await getMonthlyExpenses(userId, startOfMonth, endOfMonth);
-            const debt = await getTotalDebt(userId);
+
 
             // Calculate Net Worth (Assets - Liabilities)
             // Need accounts for assets

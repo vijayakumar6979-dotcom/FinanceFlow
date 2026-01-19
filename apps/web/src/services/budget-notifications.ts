@@ -81,11 +81,11 @@ export const sendBudgetThresholdAlert = async (
     const notification: BudgetNotificationPayload = {
         type: BudgetNotificationType.THRESHOLD_ALERT,
         budgetId: budget.id,
-        budgetName: budget.name,
+        budgetName: budget.name || 'Budget',
         title: `${emoji} Budget Alert: ${budget.name}`,
         body: `You've spent ${percentage}% (RM ${period.spent_amount.toLocaleString()}) of your RM ${budget.amount.toLocaleString()} budget. ${percentage >= 100
-                ? 'Budget exceeded!'
-                : `RM ${(budget.amount - period.spent_amount).toLocaleString()} remaining.`
+            ? 'Budget exceeded!'
+            : `RM ${(budget.amount - period.spent_amount).toLocaleString()} remaining.`
             }`,
         data: {
             budgetId: budget.id,
@@ -207,8 +207,8 @@ export const sendMonthEndSummary = async (
         budgetName: 'Month End Summary',
         title: `${performanceEmoji} Month-End Budget Report`,
         body: `${performanceText} Spent: RM ${totalSpent.toLocaleString()} (${percentageUsed}%). ${remaining > 0
-                ? `Saved: RM ${remaining.toLocaleString()}. `
-                : `Over by: RM ${Math.abs(remaining).toLocaleString()}. `
+            ? `Saved: RM ${remaining.toLocaleString()}. `
+            : `Over by: RM ${Math.abs(remaining).toLocaleString()}. `
             }Keep up the good work!`,
         data: {
             totalBudget,
@@ -237,7 +237,7 @@ export const sendBudgetExceededAlert = async (
     const notification: BudgetNotificationPayload = {
         type: BudgetNotificationType.BUDGET_EXCEEDED,
         budgetId: budget.id,
-        budgetName: budget.name,
+        budgetName: budget.name || 'Budget',
         title: `🚨 Budget Exceeded: ${budget.name}`,
         body: `You've exceeded your ${budget.name} budget by RM ${excessAmount.toLocaleString()}. Total spent: RM ${period.spent_amount.toLocaleString()} of RM ${budget.amount.toLocaleString()}. Consider adjusting your spending.`,
         data: {
@@ -266,7 +266,7 @@ export const sendRolloverNotification = async (
     const notification: BudgetNotificationPayload = {
         type: BudgetNotificationType.ROLLOVER_NOTIFICATION,
         budgetId: budget.id,
-        budgetName: budget.name,
+        budgetName: budget.name || 'Budget',
         title: `💰 Budget Rollover: ${budget.name}`,
         body: `RM ${rolloverAmount.toLocaleString()} has been rolled over to your new ${budget.period} budget starting ${new Date(newPeriodStart).toLocaleDateString()}. New total: RM ${(budget.amount + rolloverAmount).toLocaleString()}.`,
         data: {

@@ -5,7 +5,7 @@ import { Spinner } from './Spinner';
 
 interface ButtonProps extends HTMLMotionProps<"button"> {
     variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-    size?: 'sm' | 'md' | 'lg';
+    size?: 'sm' | 'md' | 'lg' | 'icon';
     loading?: boolean;
     disabled?: boolean;
     icon?: React.ReactNode;
@@ -33,6 +33,7 @@ const sizes = {
     sm: 'h-8 px-4 text-xs',
     md: 'h-10 px-6 text-sm',
     lg: 'h-12 px-8 text-base',
+    icon: 'h-10 w-10 p-2',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
@@ -50,7 +51,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
     return (
         <motion.button
             ref={ref}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.96 }}
             className={cn(
                 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-dark-base',
                 variants[variant],

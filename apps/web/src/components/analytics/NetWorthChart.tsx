@@ -82,7 +82,7 @@ export const NetWorthChart = () => {
                         <Tooltip
                             contentStyle={{ backgroundColor: '#1A1F3A', border: 'none', borderRadius: '12px' }}
                             itemStyle={{ color: '#fff' }}
-                            formatter={(value: number) => [formatCurrency(value), 'Net Worth']}
+                            formatter={(value: any) => [formatCurrency(value), 'Net Worth']}
                             labelFormatter={(label) => format(new Date(label), 'MMMM yyyy')}
                         />
                         <Area

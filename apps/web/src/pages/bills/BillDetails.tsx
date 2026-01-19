@@ -60,7 +60,7 @@ export default function BillDetails() {
         );
     }
 
-    const statusConfig = getPaymentStatusConfig(bill.current_status || 'unpaid');
+    const statusConfig = getPaymentStatusConfig(bill.status || 'unpaid');
     const categoryConfig = getBillCategoryConfig(bill.provider_category);
     const amount = bill.is_variable ? (bill.estimated_amount || 0) : (bill.fixed_amount || 0);
 
@@ -154,7 +154,7 @@ export default function BillDetails() {
                                             year: 'numeric'
                                         }) : `${bill.due_day}th of month`}
                                     </p>
-                                    {bill.days_until_due !== undefined && bill.current_status !== 'paid' && (
+                                    {bill.days_until_due !== undefined && bill.status !== 'paid' && (
                                         <p className={`text-sm mt-1 ${bill.days_until_due < 0 ? 'text-red-400' :
                                             bill.days_until_due <= 3 ? 'text-orange-400' :
                                                 'text-green-400'
@@ -204,7 +204,7 @@ export default function BillDetails() {
                     {/* Right Column - Quick Stats */}
                     <div className="space-y-6">
                         {/* Quick Actions */}
-                        {bill.current_status !== 'paid' && (
+                        {bill.status !== 'paid' && (
                             <motion.div
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
