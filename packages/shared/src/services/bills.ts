@@ -39,46 +39,51 @@ export class BillService {
                 (p: any) => p.bill_id === bill.id && p.status === 'paid'
             ) || [];
 
+            const isPaidCurrentMonth = currentMonthPayments.length > 0;
+
             // Calculate this month's due date
             const dueDay = bill.due_day || 1;
-            const thisMonthDueDate = new Date(currentYear, currentMonth, dueDay);
+            let targetDueDate = new Date(currentYear, currentMonth, dueDay);
+            targetDueDate.setHours(23, 59, 59, 999);
 
-            // Set time to end of day for fair comparison
-            thisMonthDueDate.setHours(23, 59, 59, 999);
+            // If paid for this month, show NEXT month's bill
+            if (isPaidCurrentMonth) {
+                targetDueDate = new Date(currentYear, currentMonth + 1, dueDay);
+                targetDueDate.setHours(23, 59, 59, 999);
+            }
 
             // Calculate days difference
-            const daysDiff = Math.ceil((thisMonthDueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            const diffTime = targetDueDate.getTime() - now.getTime();
+            const daysDiff = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
             // Determine status
             let status: 'paid' | 'unpaid' | 'overdue' = 'unpaid';
-            let nextDueDate = thisMonthDueDate;
             let actualPaidAmount = 0;
 
-            if (currentMonthPayments.length > 0) {
-                // Bill is paid for this month (has at least one payment)
-                status = 'paid';
-                // Sum all payment amounts
+            if (isPaidCurrentMonth) {
+                // Determine paid amount for history
                 actualPaidAmount = currentMonthPayments.reduce(
                     (sum: number, p: any) => sum + parseFloat(p.amount || 0),
                     0
                 );
-                // Next due date is next month
-                nextDueDate = new Date(currentYear, currentMonth + 1, dueDay);
-            } else if (daysDiff < 0) {
-                // Due date has passed and not paid = overdue
-                status = 'overdue';
-                // Next due date is still this month's due date (to show how overdue it is)
-                nextDueDate = thisMonthDueDate;
-            } else {
-                // Not yet due and not paid = unpaid
+                // Status for the returned object (Next Due Date) is 'unpaid' so it shows up as upcoming
+                // Unless we want to explicitly mark it as 'upcoming'
                 status = 'unpaid';
-                nextDueDate = thisMonthDueDate;
+            } else {
+                // Not paid for current month
+                // Check if overdue
+                // Note: daysDiff based on 'targetDueDate' (which is this month).
+                if (daysDiff < 0) {
+                    status = 'overdue';
+                } else {
+                    status = 'unpaid';
+                }
             }
 
             return {
                 ...bill,
-                status,
-                next_due_date: nextDueDate.toISOString().split('T')[0],
+                status, // 'unpaid' or 'overdue' (allows it to show in Dashboard)
+                next_due_date: targetDueDate.toISOString().split('T')[0],
                 days_until_due: daysDiff,
                 actual_paid_amount: actualPaidAmount
             };

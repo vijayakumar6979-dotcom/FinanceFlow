@@ -6,1575 +6,412 @@ Following the global rules, redesign the Dashboard with a cutting-edge, futurist
 
 Create an ultra-modern, futuristic dashboard that:
 - Showcases all financial data at a glance
-- Uses 3D cards with depth and perspective
 - Implements advanced glassmorphism and neumorphism
 - Features ambient animations and particle effects
 - AI-powered smart widgets that adapt to user behavior
 - Real-time data updates with smooth transitions
-- Holographic-style data visualization
-- Gesture-controlled interactions (mobile)
-- Voice command support (future-ready)
 - Responsive layout that transforms beautifully across devices
 - Dark theme with neon accents (primary)
 - Light theme with clean, minimalist aesthetics
 
----
 
-## 🌌 DESIGN PHILOSOPHY - FUTURISTIC AESTHETICS
+Here is my propose Layout 
 
-### Visual Design Language
-
-**"Neo-Fintech" Style:**
-- Inspired by: Cyberpunk interfaces, Sci-fi HUDs, Premium fintech apps
-- Primary aesthetic: Dark with electric blue/purple/cyan accents
-- Secondary aesthetic: Pristine white with subtle color pops
-- Depth: Multi-layered 3D cards with parallax
-- Effects: Holographic glows, particle systems, ambient animations
-- Typography: Sharp, modern, bold headings with thin body text
-- Motion: Smooth, purposeful animations (no random movements)
-
-### Core Visual Elements
-
-**1. Glassmorphism 2.0 (Enhanced):**
-```css
-/* Advanced glass effect with multi-layer depth */
-.glass-card {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 255, 255, 0.04) 100%
-  );
-  backdrop-filter: blur(32px) saturate(180%);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-```
-
-**2. Holographic Glow:**
-```css
-.holo-glow {
-  position: relative;
-  overflow: hidden;
-}
-
-.holo-glow::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(
-    from 0deg,
-    transparent,
-    rgba(0, 102, 255, 0.3),
-    transparent 60deg
-  );
-  animation: rotate 4s linear infinite;
-}
-
-@keyframes rotate {
-  to { transform: rotate(360deg); }
-}
-```
-
-**3. Neon Borders:**
-```css
-.neon-border {
-  border: 2px solid transparent;
-  background: 
-    linear-gradient(#0A0E27, #0A0E27) padding-box,
-    linear-gradient(90deg, #0066FF, #8B5CF6, #EC4899) border-box;
-  box-shadow: 
-    0 0 20px rgba(0, 102, 255, 0.3),
-    inset 0 0 20px rgba(0, 102, 255, 0.1);
-}
-```
-
-**4. Particle Background:**
-```css
-/* Animated particle system in background */
-.particle-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* Individual particles float and glow */
-.particle {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: radial-gradient(circle, #0066FF, transparent);
-  animation: float 20s infinite;
-}
-```
-
-**5. 3D Card Transforms:**
-```css
-.card-3d {
-  transform-style: preserve-3d;
-  perspective: 1000px;
-  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.card-3d:hover {
-  transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
-}
-
-.card-3d-inner {
-  transform: translateZ(20px);
-}
-```
-
----
-
-## 🌐 WEB DASHBOARD - FUTURISTIC REDESIGN
-
-### Layout Structure (Desktop)
-┌────────────────────────────────────────────────────────────────┐
-│  NAVBAR (Transparent glass, fixed)                             │
-│  Logo | Search | Notifications | Profile                       │
-├──────┬─────────────────────────────────────────────────────────┤
-│      │                                                          │
-│  S   │  MAIN CONTENT AREA                                      │
-│  I   │                                                          │
-│  D   │  ┌─────────────────────────────────────────────┐       │
-│  E   │  │ HERO SECTION - Financial Overview          │       │
-│  B   │  │ (3D card with holographic glow)             │       │
-│  A   │  └─────────────────────────────────────────────┘       │
-│  R   │                                                          │
-│      │  ┌──────────────┐  ┌──────────────┐  ┌─────────┐      │
-│      │  │ Quick Stats  │  │ Quick Stats  │  │ More... │      │
-│  80  │  │ (Glass cards │  │ (Animated)   │  │         │      │
-│  px  │  └──────────────┘  └──────────────┘  └─────────┘      │
-│      │                                                          │
-│      │  ┌────────────────────────────────────────────┐        │
-│      │  │ WIDGETS GRID (Masonry layout)              │        │
-│      │  │ ├─ Accounts ├─ Transactions ├─ Bills ─┤   │        │
-│      │  │ ├─ Budgets  ├─ Goals        ├─ Loans ─┤   │        │
-│      │  │ ├─ Investments ├─ Analytics ├─ AI ────┤   │        │
-│      │  └────────────────────────────────────────────┘        │
-│      │                                                          │
-└──────┴─────────────────────────────────────────────────────────┘
-### Sidebar (Collapsible, 80px collapsed / 280px expanded)
-
-**Enhanced Sidebar Design:**
-```typescript
-// Sidebar component with futuristic styling
-
-const SidebarNav = () => {
-  const [collapsed, setCollapsed] = useState(false)
-  
-  const navItems = [
-    { id: 'dashboard', icon: 'LayoutDashboard', label: 'Dashboard', path: '/' },
-    { id: 'accounts', icon: 'Wallet', label: 'Accounts', path: '/accounts', badge: 3 },
-    { id: 'transactions', icon: 'ArrowLeftRight', label: 'Transactions', path: '/transactions' },
-    { id: 'bills', icon: 'Receipt', label: 'Bills', path: '/bills', badge: 2, badgeColor: 'warning' },
-    { id: 'loans', icon: 'TrendingDown', label: 'Loans', path: '/loans' },
-    { id: 'budgets', icon: 'Target', label: 'Budgets', path: '/budgets' },
-    { id: 'goals', icon: 'Flag', label: 'Goals', path: '/goals' },
-    { id: 'investments', icon: 'TrendingUp', label: 'Investments', path: '/investments' },
-    { id: 'analytics', icon: 'BarChart3', label: 'Analytics', path: '/analytics' },
-  ]
-  
-  return (
-    <aside className={`
-      fixed left-0 top-0 h-screen
-      ${collapsed ? 'w-20' : 'w-72'}
-      bg-dark-surface/80 backdrop-blur-2xl
-      border-r border-white/10
-      transition-all duration-500 ease-out
-      z-40
-    `}>
-      {/* Logo Section */}
-      <div className="h-16 flex items-center justify-center border-b border-white/10">
-        {collapsed ? (
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-            <span className="text-white font-bold text-xl">F</span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center relative">
-              <span className="text-white font-bold text-xl">F</span>
-              {/* Pulsing glow effect */}
-              <div className="absolute inset-0 rounded-xl bg-blue-500/30 blur-xl animate-pulse"></div>
-            </div>
-            <div>
-              <h1 className="text-white font-bold text-lg">FinanceFlow</h1>
-              <p className="text-xs text-gray-400">AI Powered</p>
-            </div>
-          </div>
-        )}
-      </div>
-      
-      {/* Navigation Items */}
-      <nav className="mt-6 px-3">
-        {navItems.map((item, index) => {
-          const Icon = item.icon
-          
-          return (
-            <NavLink
-              key={item.id}
-              to={item.path}
-              className={({ isActive }) => `
-                flex items-center gap-4 px-4 py-3 mb-2
-                rounded-xl transition-all duration-300
-                group relative overflow-hidden
-                ${isActive 
-                  ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white' 
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }
-              `}
-              style={{
-                animationDelay: `${index * 50}ms`
-              }}
-            >
-              {/* Active indicator - neon left border */}
-              {isActive && (
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-purple-500 rounded-r-full">
-                  <div className="w-full h-full bg-blue-500 blur-md"></div>
-                </div>
-              )}
-              
-              {/* Icon with glow on active */}
-              <div className={`
-                relative flex items-center justify-center w-6 h-6
-                ${isActive ? 'text-blue-400' : ''}
-              `}>
-                <Icon size={24} />
-                {isActive && (
-                  <div className="absolute inset-0 bg-blue-500/30 blur-lg animate-pulse"></div>
-                )}
-              </div>
-              
-              {/* Label */}
-              {!collapsed && (
-                <span className="flex-1 font-medium">{item.label}</span>
-              )}
-              
-              {/* Badge */}
-              {!collapsed && item.badge && (
-                <div className={`
-                  px-2 py-0.5 rounded-full text-xs font-bold
-                  ${item.badgeColor === 'warning' 
-                    ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' 
-                    : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                  }
-                  animate-pulse
-                `}>
-                  {item.badge}
-                </div>
-              )}
-              
-              {/* Hover glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            </NavLink>
-          )
-        })}
-      </nav>
-      
-      {/* Collapse Toggle */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-dark-elevated border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all"
-      >
-        <ChevronLeft className={`transition-transform ${collapsed ? 'rotate-180' : ''}`} size={20} />
-      </button>
-    </aside>
-  )
-}
-```
-
----
-
-### Hero Section - Financial Overview (3D Holographic Card)
-
-**Design:**
-- Full-width card with 3D depth
-- Holographic border animation
-- Particle background effect
-- Real-time data updates with smooth transitions
-```typescript
-const FinancialOverviewHero = () => {
-  const { totalBalance, monthlyIncome, monthlyExpenses, netWorth } = useFinancialData()
-  
-  return (
-    <div className="relative mb-8 group">
-      {/* Particle background */}
-      <div className="absolute inset-0 overflow-hidden rounded-3xl">
-        <ParticleBackground count={50} />
-      </div>
-      
-      {/* Main card with 3D transform */}
-      <div className="
-        relative p-8 rounded-3xl
-        bg-gradient-to-br from-dark-elevated/90 to-dark-surface/90
-        backdrop-blur-2xl
-        border border-white/10
-        transform-gpu
-        transition-transform duration-700 ease-out
-        hover:scale-[1.01]
-        hover:shadow-2xl hover:shadow-blue-500/20
-      "
-      style={{
-        transformStyle: 'preserve-3d',
-        perspective: '1000px'
-      }}>
-        {/* Holographic rotating border */}
-        <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-conic from-blue-500 via-purple-500 to-pink-500 opacity-30 blur-xl animate-spin-slow"></div>
-        </div>
-        
-        {/* Content with depth */}
-        <div className="relative z-10" style={{ transform: 'translateZ(20px)' }}>
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-3xl font-bold text-white mb-1">
-                Financial Overview
-              </h2>
-              <p className="text-gray-400">Real-time snapshot of your wealth</p>
-            </div>
-            
-            {/* AI Badge */}
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30">
-              <Sparkles size={16} className="text-blue-400 animate-pulse" />
-              <span className="text-blue-400 text-sm font-semibold">AI Powered</span>
-            </div>
-          </div>
-          
-          {/* Stats Grid with glassmorphism cards */}
-          <div className="grid grid-cols-4 gap-6">
-            {/* Total Balance */}
-            <StatCard
-              label="Total Balance"
-              value={totalBalance}
-              change="+12.5%"
-              trend="up"
-              icon={<Wallet size={32} />}
-              gradient="from-blue-500 to-cyan-500"
-            />
-            
-            {/* Monthly Income */}
-            <StatCard
-              label="Monthly Income"
-              value={monthlyIncome}
-              change="+8.2%"
-              trend="up"
-              icon={<TrendingUp size={32} />}
-              gradient="from-green-500 to-emerald-500"
-            />
-            
-            {/* Monthly Expenses */}
-            <StatCard
-              label="Monthly Expenses"
-              value={monthlyExpenses}
-              change="-5.4%"
-              trend="down"
-              icon={<TrendingDown size={32} />}
-              gradient="from-red-500 to-pink-500"
-            />
-            
-            {/* Net Worth */}
-            <StatCard
-              label="Net Worth"
-              value={netWorth}
-              change="+15.3%"
-              trend="up"
-              icon={<BarChart3 size={32} />}
-              gradient="from-purple-500 to-fuchsia-500"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Individual stat card with 3D effect
-const StatCard = ({ label, value, change, trend, icon, gradient }) => {
-  return (
-    <div className="
-      relative p-6 rounded-2xl
-      bg-white/5 backdrop-blur-xl
-      border border-white/10
-      transform-gpu transition-all duration-500
-      hover:scale-105 hover:bg-white/10
-      cursor-pointer group
-    "
-    style={{
-      transformStyle: 'preserve-3d'
-    }}>
-      {/* Gradient glow on hover */}
-      <div className={`
-        absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100
-        bg-gradient-to-br ${gradient}
-        blur-2xl transition-opacity duration-500
-        -z-10
-      `}></div>
-      
-      {/* Icon with gradient */}
-      <div className={`
-        w-16 h-16 rounded-2xl mb-4
-        bg-gradient-to-br ${gradient}
-        flex items-center justify-center
-        shadow-lg
-      `}
-      style={{ transform: 'translateZ(10px)' }}>
-        <div className="text-white">
-          {icon}
-        </div>
-      </div>
-      
-      {/* Label */}
-      <p className="text-gray-400 text-sm mb-2">{label}</p>
-      
-      {/* Value with counting animation */}
-      <h3 className="text-3xl font-bold text-white mb-2 font-mono">
-        <CountUp end={value} duration={2} prefix="RM " separator="," />
-      </h3>
-      
-      {/* Trend */}
-      <div className={`
-        flex items-center gap-1
-        ${trend === 'up' ? 'text-green-400' : 'text-red-400'}
-      `}>
-        {trend === 'up' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
-        <span className="text-sm font-semibold">{change}</span>
-        <span className="text-gray-500 text-xs ml-1">vs last month</span>
-      </div>
-    </div>
-  )
-}
-```
-
----
-
-### Quick Action Cards (Floating)
-
-**Design:**
-- 4-5 floating action cards
-- Glassmorphism with depth
-- Hover effects with 3D rotation
-- Icon animations
-```typescript
-const QuickActions = () => {
-  const actions = [
-    {
-      id: 'add-transaction',
-      label: 'Add Transaction',
-      icon: <Plus size={24} />,
-      gradient: 'from-blue-500 to-cyan-500',
-      onClick: () => navigate('/transactions/new')
-    },
-    {
-      id: 'pay-bill',
-      label: 'Pay Bill',
-      icon: <Receipt size={24} />,
-      gradient: 'from-orange-500 to-yellow-500',
-      badge: 2,
-      onClick: () => navigate('/bills')
-    },
-    {
-      id: 'check-budget',
-      label: 'Check Budget',
-      icon: <Target size={24} />,
-      gradient: 'from-purple-500 to-pink-500',
-      onClick: () => navigate('/budgets')
-    },
-    {
-      id: 'view-analytics',
-      label: 'View Analytics',
-      icon: <BarChart2 size={24} />,
-      gradient: 'from-green-500 to-teal-500',
-      onClick: () => navigate('/analytics')
-    }
-  ]
-  
-  return (
-    <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
-      {actions.map((action, index) => (
-        <button
-          key={action.id}
-          onClick={action.onClick}
-          className="
-            relative group
-            min-w-[200px] p-4 rounded-2xl
-            bg-white/5 backdrop-blur-xl
-            border border-white/10
-            hover:bg-white/10
-            transform-gpu transition-all duration-500
-            hover:scale-105 hover:-translate-y-1
-            cursor-pointer
-          "
-          style={{
-            animationDelay: `${index * 100}ms`,
-            transformStyle: 'preserve-3d'
-          }}
-        >
-          {/* Gradient glow */}
-          <div className={`
-            absolute inset-0 rounded-2xl
-            bg-gradient-to-br ${action.gradient}
-            opacity-0 group-hover:opacity-20
-            blur-xl transition-opacity duration-500
-            -z-10
-          `}></div>
-          
-          {/* Content */}
-          <div className="flex items-center gap-3">
-            {/* Icon */}
-            <div className={`
-              w-12 h-12 rounded-xl
-              bg-gradient-to-br ${action.gradient}
-              flex items-center justify-center
-              shadow-lg
-              group-hover:scale-110 transition-transform
-            `}>
-              <div className="text-white">
-                {action.icon}
-              </div>
-            </div>
-            
-            {/* Label */}
-            <div className="flex-1 text-left">
-              <p className="text-white font-semibold">{action.label}</p>
-              {action.badge && (
-                <span className="text-xs text-orange-400">{action.badge} pending</span>
-              )}
-            </div>
-            
-            {/* Arrow */}
-            <ChevronRight size={20} className="text-gray-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
-          </div>
-        </button>
-      ))}
-    </div>
-  )
-}
-```
-
----
-
-### Widget Grid (Masonry Layout with 3D Cards)
-
-**Design:**
-- Masonry grid layout (responsive columns)
-- Each widget is a 3D card with depth
-- Hover effects with tilt and glow
-- Real-time data updates
-- Expandable widgets
-```typescript
-const DashboardWidgets = () => {
-  return (
-    <Masonry
-      breakpointCols={{
-        default: 3,
-        1536: 3,
-        1280: 2,
-        1024: 2,
-        768: 1
-      }}
-      className="masonry-grid"
-      columnClassName="masonry-grid-column"
-    >
-      {/* Accounts Widget */}
-      <AccountsWidget />
-      
-      {/* Recent Transactions */}
-      <TransactionsWidget />
-      
-      {/* Bills Due */}
-      <BillsDueWidget />
-      
-      {/* Budget Progress */}
-      <BudgetProgressWidget />
-      
-      {/* Goals Progress */}
-      <GoalsWidget />
-      
-      {/* Loan Payoff */}
-      <LoansWidget />
-      
-      {/* Investment Portfolio */}
-      <InvestmentsWidget />
-      
-      {/* AI Insights */}
-      <AIInsightsWidget />
-      
-      {/* Spending Breakdown */}
-      <SpendingBreakdownWidget />
-      
-      {/* Cash Flow */}
-      <CashFlowWidget />
-    </Masonry>
-  )
-}
-```
-
-**Individual Widget Example - Accounts Widget:**
-```typescript
-const AccountsWidget = () => {
-  const { accounts, totalBalance } = useAccounts()
-  const [expanded, setExpanded] = useState(false)
-  
-  return (
-    <Widget3D
-      title="Accounts"
-      icon={<Wallet size={20} />}
-      expanded={expanded}
-      onToggle={() => setExpanded(!expanded)}
-      gradient="from-blue-500/20 to-purple-500/20"
-    >
-      {/* Total Balance */}
-      <div className="mb-6">
-        <p className="text-gray-400 text-sm mb-1">Total Balance</p>
-        <h3 className="text-4xl font-bold text-white font-mono">
-          <CountUp end={totalBalance} duration={2} prefix="RM " separator="," />
-        </h3>
-      </div>
-      
-      {/* Account List */}
-      <div className="space-y-3">
-        {accounts.slice(0, expanded ? accounts.length : 3).map((account) => (
-          <div
-            key={account.id}
-            className="
-              flex items-center gap-3 p-3 rounded-xl
-              bg-white/5 border border-white/10
-              hover:bg-white/10 hover:border-white/20
-              transition-all duration-300
-              cursor-pointer
-            "
-          >
-            {/* Bank Logo */}
-            <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-              <img src={account.logo} alt={account.name} className="w-6 h-6" />
-            </div>
-            
-            {/* Account Info */}
-            <div className="flex-1">
-              <p className="text-white font-medium text-sm">{account.name}</p>
-              <p className="text-gray-400 text-xs">{account.type}</p>
-            </div>
-            
-            {/* Balance */}
-            <div className="text-right">
-              <p className="text-white font-semibold">
-                RM {account.balance.toLocaleString()}
-              </p>
-              <p className={`text-xs ${account.change > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {account.change > 0 ? '+' : ''}{account.change}%
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      {/* View All */}
-      {!expanded && accounts.length > 3 && (
-        <button
-          onClick={() => setExpanded(true)}
-          className="w-full mt-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all"
-        >
-          View {accounts.length - 3} more accounts
-        </button>
-      )}
-    </Widget3D>
-  )
-}
-```
-
-**Base Widget3D Component:**
-```typescript
-const Widget3D = ({ title, icon, children, expanded, onToggle, gradient }) => {
-  const cardRef = useRef(null)
-  
-  // 3D tilt effect on mouse move
-  const handleMouseMove = (e) => {
-    if (!cardRef.current) return
-    
-    const card = cardRef.current
-    const rect = card.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    
-    const centerX = rect.width / 2
-    const centerY = rect.height / 2
-    
-    const rotateX = (y - centerY) / 20
-    const rotateY = (centerX - x) / 20
-    
-    card.style.transform = `
-      perspective(1000px)
-      rotateX(${rotateX}deg)
-      rotateY(${rotateY}deg)
-      translateZ(10px)
-    `
-  }
-  
-  const handleMouseLeave = () => {
-    if (!cardRef.current) return
-    cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)'
-  }
-  
-  return (
-    <div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="
-        relative p-6 rounded-3xl
-        bg-gradient-to-br from-dark-elevated/90 to-dark-surface/90
-        backdrop-blur-2xl
-        border border-white/10
-        transform-gpu transition-all duration-500
-        hover:shadow-2xl
-        mb-6
-      "
-      style={{
-        transformStyle: 'preserve-3d',
-        willChange: 'transform'
-      }}
-    >
-      {/* Gradient overlay */}
-      <div className={`
-        absolute inset-0 rounded-3xl
-        bg-gradient-to-br ${gradient}
-        opacity-0 group-hover:opacity-100
-        transition-opacity duration-500
-        pointer-events-none
-      `}></div>
-      
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <div className="text-blue-400">{icon}</div>
-          <h3 className="text-lg font-bold text-white">{title}</h3>
-        </div>
-        
-        {onToggle && (
-          <button
-            onClick={onToggle}
-            className="p-2 rounded-lg hover:bg-white/10 transition-colors"
-          >
-            <ChevronDown
-              size={20}
-              className={`text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''}`}
-            />
-          </button>
-        )}
-      </div>
-      
-      {/* Content */}
-      <div className="relative z-10" style={{ transform: 'translateZ(20px)' }}>
-        {children}
-      </div>
-    </div>
-  )
-}
-```
-
-## 📱 MOBILE DASHBOARD - FUTURISTIC REDESIGN
-
-/* Mobile breakpoints */
-- Small: 320px - 374px (iPhone SE, older devices)
-- Medium: 375px - 413px (iPhone 12/13/14, standard Android)
-- Large: 414px - 428px (iPhone Pro Max, large Android)
-- Tablet: 768px+ (iPad, Android tablets)
-
-/* Minimum touch targets */
-- Primary buttons: 48px × 48px minimum
-- Secondary buttons: 44px × 44px minimum
-- List items: 56px height minimum
-- Bottom nav items: 64px height
-- Floating action button: 56px × 56px
-```
-
-### Mobile Layout Structure
-```
-┌─────────────────────────────────────┐
-│  STATUS BAR (System)                │
-├─────────────────────────────────────┤
-│  HEADER BAR (Fixed, 60px)           │
-│  Logo | Notifications | Profile     │
-├─────────────────────────────────────┤
-│                                     │
-│  SCROLLABLE CONTENT AREA            │
-│                                     │
-│  ┌───────────────────────────────┐ │
-│  │ Financial Overview Card       │ │
-│  │ (Swipeable, 3D glass effect)  │ │
-│  └───────────────────────────────┘ │
-│                                     │
-│  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ │
-│  │Quick│ │Quick│ │Quick│ │More │ │
-│  │Act 1│ │Act 2│ │Act 3│ │ ... │ │
-│  └─────┘ └─────┘ └─────┘ └─────┘ │
-│  (Horizontal scroll)               │
-│                                     │
-│  ┌───────────────────────────────┐ │
-│  │ Widget Card 1 - Accounts      │ │
-│  └───────────────────────────────┘ │
-│                                     │
-│  ┌───────────────────────────────┐ │
-│  │ Widget Card 2 - Transactions  │ │
-│  └───────────────────────────────┘ │
-│                                     │
-│  [More widgets stacked vertically] │
-│                                     │
-├─────────────────────────────────────┤
-│  BOTTOM NAVIGATION (Fixed, 64px)   │
-│  [Home][Accounts][Add][Goals][More]│
-└─────────────────────────────────────┘
-
-🎨 MOBILE UI COMPONENTS
-1. Header Bar (Fixed Top)
-typescriptconst MobileHeader = () => {
-  const { unreadNotifications } = useNotifications()
-  
-  return (
-    <header className="
-      fixed top-0 left-0 right-0 z-50
-      h-16 px-4
-      bg-dark-surface/80 backdrop-blur-2xl
-      border-b border-white/10
-      flex items-center justify-between
-    ">
-      {/* Logo */}
-      <div className="flex items-center gap-2">
-        <div className="
-          w-10 h-10 rounded-xl
-          bg-gradient-to-br from-blue-500 to-purple-600
-          flex items-center justify-center
-          relative
-        ">
-          <span className="text-white font-bold text-xl">F</span>
-          <div className="absolute inset-0 rounded-xl bg-blue-500/30 blur-lg animate-pulse"></div>
-        </div>
-        <div>
-          <h1 className="text-white font-bold text-base">FinanceFlow</h1>
-          <p className="text-xs text-gray-400">Mobile</p>
-        </div>
-      </div>
-      
-      {/* Right Actions */}
-      <div className="flex items-center gap-3">
-        {/* Notifications */}
-        <button className="relative p-2 rounded-lg hover:bg-white/5 active:scale-95 transition-all">
-          <Bell size={22} className="text-gray-400" />
-          {unreadNotifications > 0 && (
-            <div className="
-              absolute -top-1 -right-1
-              w-5 h-5 rounded-full
-              bg-red-500 border-2 border-dark-surface
-              flex items-center justify-center
-              text-white text-xs font-bold
-              animate-pulse
-            ">
-              {unreadNotifications}
-            </div>
-          )}
-        </button>
-        
-        {/* Profile */}
-        <button className="
-          w-9 h-9 rounded-full
-          bg-gradient-to-br from-blue-500 to-purple-600
-          flex items-center justify-center
-          active:scale-95 transition-transform
-        ">
-          <User size={20} className="text-white" />
-        </button>
-      </div>
-    </header>
-  )
-}
-
-2. Financial Overview Card (Hero, Swipeable)
-typescriptconst MobileFinancialOverview = () => {
-  const { totalBalance, monthlyIncome, monthlyExpenses, netWorth } = useFinancialData()
-  const [activeCard, setActiveCard] = useState(0)
-  
-  const cards = [
-    {
-      label: 'Total Balance',
-      value: totalBalance,
-      change: '+12.5%',
-      trend: 'up',
-      icon: <Wallet size={24} />,
-      gradient: 'from-blue-500 to-cyan-500'
-    },
-    {
-      label: 'Monthly Income',
-      value: monthlyIncome,
-      change: '+8.2%',
-      trend: 'up',
-      icon: <TrendingUp size={24} />,
-      gradient: 'from-green-500 to-emerald-500'
-    },
-    {
-      label: 'Monthly Expenses',
-      value: monthlyExpenses,
-      change: '-5.4%',
-      trend: 'down',
-      icon: <TrendingDown size={24} />,
-      gradient: 'from-red-500 to-pink-500'
-    },
-    {
-      label: 'Net Worth',
-      value: netWorth,
-      change: '+15.3%',
-      trend: 'up',
-      icon: <BarChart3 size={24} />,
-      gradient: 'from-purple-500 to-fuchsia-500'
-    }
-  ]
-  
-  return (
-    <div className="px-4 pt-20 pb-4">
-      {/* Swipeable Cards Container */}
-      <div className="relative">
-        {/* Cards */}
-        <Swiper
-          spaceBetween={16}
-          slidesPerView={1.1}
-          centeredSlides={true}
-          onSlideChange={(swiper) => setActiveCard(swiper.activeIndex)}
-          className="!pb-10"
-        >
-          {cards.map((card, index) => (
-            <SwiperSlide key={index}>
-              <FinancialCard {...card} isActive={activeCard === index} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-        
-        {/* Pagination Dots */}
-        <div className="flex justify-center gap-2 mt-4">
-          {cards.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setActiveCard(index)}
-              className={`
-                h-2 rounded-full transition-all duration-300
-                ${activeCard === index 
-                  ? 'w-6 bg-blue-500' 
-                  : 'w-2 bg-gray-600'
-                }
-              `}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const FinancialCard = ({ label, value, change, trend, icon, gradient, isActive }) => {
-  return (
-    <div className={`
-      relative p-6 rounded-3xl
-      bg-gradient-to-br from-dark-elevated/90 to-dark-surface/90
-      backdrop-blur-2xl
-      border border-white/10
-      transform transition-all duration-500
-      ${isActive ? 'scale-100' : 'scale-95 opacity-70'}
-    `}>
-      {/* Gradient glow */}
-      <div className={`
-        absolute inset-0 rounded-3xl
-        bg-gradient-to-br ${gradient}
-        opacity-20 blur-2xl
-        transition-opacity duration-500
-      `}></div>
-      
-      {/* Content */}
-      <div className="relative z-10">
-        {/* Icon */}
-        <div className={`
-          w-14 h-14 rounded-2xl mb-4
-          bg-gradient-to-br ${gradient}
-          flex items-center justify-center
-          shadow-lg
-        `}>
-          <div className="text-white">{icon}</div>
-        </div>
-        
-        {/* Label */}
-        <p className="text-gray-400 text-sm mb-2">{label}</p>
-        
-        {/* Value */}
-        <h2 className="text-4xl font-bold text-white mb-2 font-mono">
-          <CountUp end={value} duration={2} prefix="RM " separator="," />
-        </h2>
-        
-        {/* Trend */}
-        <div className={`
-          inline-flex items-center gap-1 px-3 py-1 rounded-full
-          ${trend === 'up' 
-            ? 'bg-green-500/20 text-green-400' 
-            : 'bg-red-500/20 text-red-400'
-          }
-        `}>
-          {trend === 'up' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
-          <span className="text-sm font-semibold">{change}</span>
-          <span className="text-xs opacity-70">vs last month</span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-3. Quick Actions (Horizontal Scroll)
-typescriptconst MobileQuickActions = () => {
-  const actions = [
-    {
-      id: 'add-transaction',
-      label: 'Add Transaction',
-      icon: <Plus size={24} />,
-      gradient: 'from-blue-500 to-cyan-500',
-      onClick: () => navigate('/transactions/new')
-    },
-    {
-      id: 'pay-bill',
-      label: 'Pay Bill',
-      icon: <Receipt size={24} />,
-      gradient: 'from-orange-500 to-yellow-500',
-      badge: 2,
-      onClick: () => navigate('/bills')
-    },
-    {
-      id: 'check-budget',
-      label: 'Budget',
-      icon: <Target size={24} />,
-      gradient: 'from-purple-500 to-pink-500',
-      onClick: () => navigate('/budgets')
-    },
-    {
-      id: 'scan',
-      label: 'Scan Receipt',
-      icon: <Camera size={24} />,
-      gradient: 'from-teal-500 to-green-500',
-      onClick: () => openCamera()
-    },
-    {
-      id: 'analytics',
-      label: 'Analytics',
-      icon: <BarChart2 size={24} />,
-      gradient: 'from-indigo-500 to-blue-500',
-      onClick: () => navigate('/analytics')
-    }
-  ]
-  
-  return (
-    <div className="px-4 pb-4">
-      <h3 className="text-white font-semibold mb-3">Quick Actions</h3>
-      
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-        {actions.map((action, index) => (
-          <button
-            key={action.id}
-            onClick={action.onClick}
-            className="
-              relative flex-shrink-0
-              w-28 p-4 rounded-2xl
-              bg-white/5 backdrop-blur-xl
-              border border-white/10
-              active:scale-95 active:bg-white/10
-              transition-all duration-200
-            "
-            style={{
-              animationDelay: `${index * 50}ms`
-            }}
-          >
-            {/* Gradient background */}
-            <div className={`
-              absolute inset-0 rounded-2xl
-              bg-gradient-to-br ${action.gradient}
-              opacity-10
-            `}></div>
-            
-            {/* Icon */}
-            <div className={`
-              relative w-12 h-12 mx-auto mb-2 rounded-xl
-              bg-gradient-to-br ${action.gradient}
-              flex items-center justify-center
-              shadow-lg
-            `}>
-              <div className="text-white">{action.icon}</div>
-              
-              {/* Badge */}
-              {action.badge && (
-                <div className="
-                  absolute -top-1 -right-1
-                  w-5 h-5 rounded-full
-                  bg-red-500 border-2 border-dark-surface
-                  flex items-center justify-center
-                  text-white text-xs font-bold
-                ">
-                  {action.badge}
-                </div>
-              )}
-            </div>
-            
-            {/* Label */}
-            <p className="text-white text-xs font-medium text-center leading-tight">
-              {action.label}
-            </p>
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-4. Widget Cards (Stacked Vertically)
-typescriptconst MobileWidgetStack = () => {
-  return (
-    <div className="px-4 space-y-4 pb-24">
-      {/* Accounts Widget */}
-      <MobileAccountsWidget />
-      
-      {/* Recent Transactions */}
-      <MobileTransactionsWidget />
-      
-      {/* Bills Due */}
-      <MobileBillsWidget />
-      
-      {/* Budget Progress */}
-      <MobileBudgetWidget />
-      
-      {/* Goals */}
-      <MobileGoalsWidget />
-      
-      {/* Loans */}
-      <MobileLoansWidget />
-      
-      {/* Investments */}
-      <MobileInvestmentsWidget />
-      
-      {/* AI Insights */}
-      <MobileAIInsightsWidget />
-    </div>
-  )
-}
-
-// Example: Mobile Accounts Widget
-const MobileAccountsWidget = () => {
-  const { accounts, totalBalance } = useAccounts()
-  const [expanded, setExpanded] = useState(false)
-  
-  return (
-    <MobileWidgetCard
-      title="Accounts"
-      icon={<Wallet size={20} />}
-      action={
-        <button
-          onClick={() => navigate('/accounts')}
-          className="text-blue-400 text-sm font-semibold active:scale-95 transition-transform"
-        >
-          View All
-        </button>
-      }
-    >
-      {/* Total Balance */}
-      <div className="mb-4 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20">
-        <p className="text-gray-400 text-xs mb-1">Total Balance</p>
-        <h3 className="text-3xl font-bold text-white font-mono">
-          <CountUp end={totalBalance} duration={2} prefix="RM " separator="," />
-        </h3>
-      </div>
-      
-      {/* Account List */}
-      <div className="space-y-2">
-        {accounts.slice(0, expanded ? accounts.length : 3).map((account) => (
-          <button
-            key={account.id}
-            onClick={() => navigate(`/accounts/${account.id}`)}
-            className="
-              w-full flex items-center gap-3 p-3 rounded-xl
-              bg-white/5 border border-white/10
-              active:bg-white/10 active:scale-98
-              transition-all duration-200
-            "
-          >
-            {/* Bank Logo */}
-            <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
-              <img src={account.logo} alt={account.name} className="w-6 h-6" />
-            </div>
-            
-            {/* Account Info */}
-            <div className="flex-1 text-left min-w-0">
-              <p className="text-white font-medium text-sm truncate">{account.name}</p>
-              <p className="text-gray-400 text-xs">{account.type}</p>
-            </div>
-            
-            {/* Balance */}
-            <div className="text-right flex-shrink-0">
-              <p className="text-white font-semibold text-sm">
-                RM {account.balance.toLocaleString()}
-              </p>
-              <p className={`text-xs ${account.change > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {account.change > 0 ? '+' : ''}{account.change}%
-              </p>
-            </div>
-            
-            <ChevronRight size={16} className="text-gray-400 flex-shrink-0" />
-          </button>
-        ))}
-      </div>
-      
-      {/* Expand/Collapse */}
-      {accounts.length > 3 && (
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="
-            w-full mt-3 py-2 rounded-lg
-            bg-white/5 active:bg-white/10
-            text-gray-400 text-sm font-medium
-            active:scale-98 transition-all
-          "
-        >
-          {expanded ? 'Show Less' : `Show ${accounts.length - 3} More`}
-        </button>
-      )}
-    </MobileWidgetCard>
-  )
-}
-
-// Base Mobile Widget Card
-const MobileWidgetCard = ({ title, icon, action, children }) => {
-  return (
-    <div className="
-      relative p-4 rounded-3xl
-      bg-gradient-to-br from-dark-elevated/90 to-dark-surface/90
-      backdrop-blur-2xl
-      border border-white/10
-    ">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="text-blue-400">{icon}</div>
-          <h3 className="text-base font-bold text-white">{title}</h3>
-        </div>
-        {action}
-      </div>
-      
-      {/* Content */}
-      {children}
-    </div>
-  )
-}
-
-5. Bottom Navigation (Fixed)
-typescriptconst MobileBottomNav = () => {
-  const location = useLocation()
-  const navigate = useNavigate()
-  
-  const navItems = [
-    {
-      id: 'home',
-      label: 'Home',
-      icon: <Home size={24} />,
-      path: '/'
-    },
-    {
-      id: 'accounts',
-      label: 'Accounts',
-      icon: <Wallet size={24} />,
-      path: '/accounts'
-    },
-    {
-      id: 'add',
-      label: 'Add',
-      icon: <Plus size={28} />,
-      path: '/add',
-      isSpecial: true
-    },
-    {
-      id: 'goals',
-      label: 'Goals',
-      icon: <Flag size={24} />,
-      path: '/goals'
-    },
-    {
-      id: 'more',
-      label: 'More',
-      icon: <MoreHorizontal size={24} />,
-      path: '/more'
-    }
-  ]
-  
-  return (
-    <nav className="
-      fixed bottom-0 left-0 right-0 z-50
-      h-16 px-2
-      bg-dark-surface/80 backdrop-blur-2xl
-      border-t border-white/10
-      flex items-center justify-around
-      safe-area-inset-bottom
-    ">
-      {navItems.map((item) => {
-        const isActive = location.pathname === item.path
-        
-        if (item.isSpecial) {
-          // Special FAB button in center
-          return (
-            <button
-              key={item.id}
-              onClick={() => navigate(item.path)}
-              className="
-                relative -mt-8
-                w-14 h-14 rounded-full
-                bg-gradient-to-br from-blue-500 to-purple-600
-                flex items-center justify-center
-                shadow-lg shadow-blue-500/50
-                active:scale-95 transition-transform
-              "
-            >
-              <div className="text-white">{item.icon}</div>
-              <div className="absolute inset-0 rounded-full bg-blue-500/30 blur-lg animate-pulse"></div>
-            </button>
-          )
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FinanceFlow | Modular Control Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C3AED",
+                        secondary: "#06B6D4",
+                        "background-dark": "#030407",
+                        "card-dark": "rgba(10, 12, 18, 0.8)",
+                        "accent-green": "#10B981",
+                        "accent-red": "#EF4444",
+                    },
+                    fontFamily: {
+                        display: ["Plus Jakarta Sans", "sans-serif"],
+                        sans: ["Plus Jakarta Sans", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "12px",
+                        'xl': '18px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                    },
+                },
+            },
+        };
+    </script>
+<style type="text/tailwindcss">
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-purple: #7C3AED;
+            --neon-blue: #06B6D4;
         }
-        
-        return (
-          <button
-            key={item.id}
-            onClick={() => navigate(item.path)}
-            className={`
-              flex flex-col items-center justify-center
-              min-w-[60px] py-2
-              active:scale-95 transition-all
-              ${isActive ? 'text-blue-400' : 'text-gray-400'}
-            `}
-          >
-            <div className="relative">
-              {item.icon}
-              {isActive && (
-                <div className="absolute inset-0 bg-blue-500/30 blur-lg animate-pulse"></div>
-              )}
-            </div>
-            <span className="text-xs font-medium mt-1">{item.label}</span>
-            
-            {/* Active indicator */}
-            {isActive && (
-              <div className="
-                absolute bottom-0 left-1/2 -translate-x-1/2
-                w-1 h-1 rounded-full
-                bg-blue-400
-              "></div>
-            )}
-          </button>
-        )
-      })}
-    </nav>
-  )
-}
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030407;
+            background-image: radial-gradient(circle at 20% 0%, rgba(124, 58, 237, 0.08) 0%, transparent 40%),
+                              radial-gradient(circle at 80% 100%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
+        }
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+        .glow-purple { box-shadow: 0 0 30px rgba(124, 58, 237, 0.1); }
+        .minimalist-metallic-card {
+            background: linear-gradient(135deg, #111111 0%, #222222 50%, #111111 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .minimalist-metallic-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.05) 50%, transparent 52%);
+            pointer-events: none;
+        }
+        .ai-pulse {
+            animation: pulse-glow 3s infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(124, 58, 237, 0.2); border-color: rgba(124, 58, 237, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(6, 182, 212, 0.4); border-color: rgba(6, 182, 212, 0.5); }
+        }
+        .drag-handle {
+            cursor: grab;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .glass-card:hover .drag-handle {
+            opacity: 1;
+        }
+        .module-resize-handle {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 12px;
+            height: 12px;
+            cursor: nwse-resize;
+            border-right: 2px solid rgba(255,255,255,0.1);
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+        .chat-bubble-ai {
+            background: rgba(124, 58, 237, 0.08);
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            border-bottom-left-radius: 4px;
+        }
+        .chat-bubble-user {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom-right-radius: 4px;
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen">
+<div class="flex min-h-screen relative">
+<aside class="w-64 border-r border-white/5 flex flex-col fixed inset-y-0 left-0 z-50 bg-[#05070A]/90 backdrop-blur-2xl">
+<div class="p-8 flex items-center space-x-3">
+<div class="w-9 h-9 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-primary/20">F</div>
+<span class="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">FinanceFlow</span>
+</div>
+<nav class="flex-1 px-4 space-y-1 mt-4">
+<p class="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4 opacity-70">Insights</p>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-white/5 text-primary font-bold" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+<span>Assets</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined text-xl">swap_horiz</span>
+<span>Transactions</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined text-xl">insights</span>
+<span>Predictions</span>
+</a>
+<p class="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-8 mb-4 opacity-70">Management</p>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined text-xl">settings_input_component</span>
+<span>Customize UI</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined text-xl">receipt_long</span>
+<span>Reports</span>
+</a>
+</nav>
+<div class="p-6 border-t border-white/5">
+<div class="flex items-center p-3 rounded-2xl glass-card">
+<img alt="Profile" class="w-9 h-9 rounded-full border border-primary/30 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQhF-PsO1-QWcHtPdPYlPklNoJq98ijt5EUGO25hTuJYsM5M9RPuVk1GTWgtzAn64IXIumY0uI5-O8vb-SIhr7hAWTtrOIQsutefmwjNaq2PdsDFbYpoEcFehpGejeU4vZjE52-O8-h2Vs9lEAMYssCAPivGwQTqoPaREjipg9jTxub5iAooAFrIabDp5BJCLWfg3sN5QZFJhvuJxa5qIvpoanO44D_dWigNPHk5Z6svUAO6Zv8FcnEsjGiNwVdlDU3bAxM4d4D0eK"/>
+<div class="ml-3">
+<p class="text-xs font-bold text-white">Gustavo Franci</p>
+<p class="text-[9px] text-primary font-bold uppercase tracking-wider">Titanium Elite</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="ml-64 flex-1 p-10">
+<header class="flex justify-between items-center mb-8">
+<div>
+<h1 class="text-2xl font-bold tracking-tight text-white">Control Center <span class="text-primary/60 text-sm ml-2 font-medium tracking-widest uppercase">Modular</span></h1>
+<p class="text-slate-400 text-sm mt-0.5">Drag and resize modules to optimize your workspace</p>
+</div>
+<div class="flex items-center space-x-4">
+<button class="flex items-center space-x-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all">
+<span class="material-symbols-outlined text-lg">add_box</span>
+<span class="text-sm font-bold">Add Module</span>
+</button>
+<div class="w-10 h-10 flex items-center justify-center rounded-xl glass-card text-slate-400 hover:text-white transition-all cursor-pointer">
+<span class="material-symbols-outlined">notifications</span>
+</div>
+</div>
+</header>
+<div class="grid grid-cols-12 gap-6 items-start">
+<div class="col-span-3 glass-card p-5 rounded-2xl group">
+<div class="drag-handle absolute top-2 right-2 text-slate-600"><span class="material-symbols-outlined text-sm">drag_indicator</span></div>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Portfolio Value</p>
+<p class="text-2xl font-bold text-white">$142,502.20</p>
+<div class="flex items-center text-accent-green text-[10px] mt-2 font-bold">
+<span class="material-symbols-outlined text-sm mr-0.5">trending_up</span>
+<span>+4.2% today</span>
+</div>
+<div class="module-resize-handle"></div>
+</div>
+<div class="col-span-3 glass-card p-5 rounded-2xl group">
+<div class="drag-handle absolute top-2 right-2 text-slate-600"><span class="material-symbols-outlined text-sm">drag_indicator</span></div>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Available Liquidity</p>
+<p class="text-2xl font-bold text-white">$18,940.00</p>
+<div class="flex items-center text-slate-500 text-[10px] mt-2 font-bold">
+<span class="material-symbols-outlined text-sm mr-0.5">history</span>
+<span>Updated just now</span>
+</div>
+<div class="module-resize-handle"></div>
+</div>
+<div class="col-span-3 glass-card p-5 rounded-2xl group">
+<div class="drag-handle absolute top-2 right-2 text-slate-600"><span class="material-symbols-outlined text-sm">drag_indicator</span></div>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Monthly Yield</p>
+<p class="text-2xl font-bold text-white">$2,410.50</p>
+<div class="flex items-center text-accent-green text-[10px] mt-2 font-bold">
+<span class="material-symbols-outlined text-sm mr-0.5">add</span>
+<span>$120 vs last month</span>
+</div>
+<div class="module-resize-handle"></div>
+</div>
+<div class="col-span-3 glass-card p-5 rounded-2xl group">
+<div class="drag-handle absolute top-2 right-2 text-slate-600"><span class="material-symbols-outlined text-sm">drag_indicator</span></div>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Risk Score</p>
+<p class="text-2xl font-bold text-secondary">32/100</p>
+<div class="flex items-center text-secondary text-[10px] mt-2 font-bold">
+<span class="material-symbols-outlined text-sm mr-0.5">verified_user</span>
+<span>Low Volatility Profile</span>
+</div>
+<div class="module-resize-handle"></div>
+</div>
+<div class="col-span-8 glass-card p-8 rounded-3xl group">
+<div class="drag-handle absolute top-4 right-4 text-slate-600"><span class="material-symbols-outlined text-sm">drag_indicator</span></div>
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-bold text-lg">Card Management</h3>
+<div class="flex space-x-2">
+<button class="text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-white px-3 py-1 bg-white/5 rounded-lg">Default</button>
+<button class="text-xs font-bold text-slate-500 uppercase tracking-widest hover:text-white px-3 py-1">Virtual</button>
+</div>
+</div>
+<div class="grid grid-cols-5 gap-8 items-center">
+<div class="col-span-3">
+<div class="minimalist-metallic-card w-full aspect-[1.58/1] rounded-2xl p-8 border border-white/5 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div class="space-y-1">
+<p class="text-[10px] font-black tracking-[0.2em] text-white/40 uppercase">Titanium Reserve</p>
+<p class="text-sm font-bold text-white/80">Active Access Point</p>
+</div>
+<div class="text-right">
+<p class="text-xl font-bold italic text-white/90">VISA</p>
+<p class="text-[8px] font-bold text-white/40 tracking-[0.2em]">INFINITE</p>
+</div>
+</div>
+<div class="flex justify-between items-end">
+<div class="space-y-4">
+<p class="text-xl font-medium tracking-[0.3em] text-white/90">
+                                        4520 <span class="mx-0.5"></span> 8821 <span class="mx-0.5"></span> 0092 <span class="mx-0.5"></span> 7281
+                                    </p>
+<div class="flex space-x-8">
+<div>
+<p class="text-[8px] uppercase font-bold text-white/30 tracking-widest mb-1">Holder</p>
+<p class="text-[10px] font-bold text-white/80 uppercase tracking-wide">G. FRANCI</p>
+</div>
+<div>
+<p class="text-[8px] uppercase font-bold text-white/30 tracking-widest mb-1">Expiry</p>
+<p class="text-[10px] font-bold text-white/80 tracking-widest">09/28</p>
+</div>
+</div>
+</div>
+<div class="w-10 h-7 rounded bg-white/10 border border-white/5"></div>
+</div>
+</div>
+</div>
+<div class="col-span-2 space-y-4">
+<div class="p-4 rounded-xl bg-white/5 border border-white/5">
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Daily Limit</p>
+<div class="flex justify-between items-end">
+<p class="text-lg font-bold text-white">$5,000</p>
+<p class="text-[10px] text-accent-green font-bold">82% REMAINING</p>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-white/5 border border-white/5">
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Status</p>
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-accent-green"></span>
+<p class="text-sm font-bold text-white">Universal Ready</p>
+</div>
+</div>
+<button class="w-full py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest hover:bg-primary/20 transition-all">
+                            Freeze Card
+                        </button>
+</div>
+</div>
+<div class="module-resize-handle"></div>
+</div>
+<div class="col-span-4 glass-card p-8 rounded-3xl group h-full">
+<div class="drag-handle absolute top-4 right-4 text-slate-600"><span class="material-symbols-outlined text-sm">drag_indicator</span></div>
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-bold text-lg">Spending Limit</h3>
+<button class="text-slate-500 hover:text-white"><span class="material-symbols-outlined text-xl">settings</span></button>
+</div>
+<div class="relative flex flex-col justify-center items-center py-4">
+<svg class="w-40 h-40 -rotate-90" viewBox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="44" stroke="rgba(255,255,255,0.05)" stroke-width="8"></circle>
+<circle cx="50" cy="50" fill="none" r="44" stroke="url(#budget-grad)" stroke-dasharray="276" stroke-dashoffset="82.8" stroke-linecap="round" stroke-width="8"></circle>
+<defs>
+<linearGradient id="budget-grad" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="var(--neon-purple)"></stop>
+<stop offset="100%" stop-color="var(--neon-blue)"></stop>
+</linearGradient>
+</defs>
+</svg>
+<div class="absolute text-center">
+<p class="text-3xl font-black text-white">70%</p>
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">of $8,000</p>
+</div>
+</div>
+<div class="space-y-4 mt-6">
+<div class="space-y-2">
+<div class="flex justify-between text-[11px] font-bold">
+<span class="text-slate-400 uppercase tracking-widest">Housing &amp; Bills</span>
+<span class="text-white">$2,400 / $2,500</span>
+</div>
+<div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-accent-red rounded-full" style="width: 96%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[11px] font-bold">
+<span class="text-slate-400 uppercase tracking-widest">Lifestyle</span>
+<span class="text-white">$1,120 / $2,000</span>
+</div>
+<div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 56%"></div>
+</div>
+</div>
+</div>
+<div class="module-resize-handle"></div>
+</div>
+<div class="col-span-4 glass-card p-6 rounded-3xl border-primary/20 group bg-primary/[0.02]">
+<div class="drag-handle absolute top-4 right-4 text-slate-600"><span class="material-symbols-outlined text-sm">drag_indicator</span></div>
+<div class="flex items-center space-x-3 mb-6">
+<div class="w-8 h-8 rounded-xl bg-primary flex items-center justify-center ai-pulse border border-primary/30">
+<span class="material-symbols-outlined text-white text-base">auto_awesome</span>
+</div>
+<div>
+<h3 class="font-bold text-white text-md leading-none">Wealth AI</h3>
+<p class="text-[9px] text-primary/70 font-bold uppercase tracking-widest mt-1">Grok-Enabled</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="chat-bubble-ai p-4 rounded-2xl text-[11px] leading-relaxed text-slate-200">
+                        Tech sector exposure is currently <span class="text-secondary font-bold">15% above target</span>. Rebalancing suggested for portfolio stability.
+                    </div>
+<div class="chat-bubble-ai p-4 rounded-2xl text-[11px] leading-relaxed text-slate-200">
+                        Analyzing 3 premium bonds and 2 ETF options matching your current risk profile...
+                    </div>
+<div class="p-3 bg-black/40 rounded-xl border border-white/5 space-y-2">
+<div class="flex justify-between text-[10px]">
+<span class="text-secondary font-medium">Global Tech ETF</span>
+<span class="font-bold text-white">8.2% APY</span>
+</div>
+</div>
+</div>
+<div class="module-resize-handle"></div>
+</div>
+<div class="col-span-8 glass-card p-8 rounded-3xl group">
+<div class="drag-handle absolute top-4 right-4 text-slate-600"><span class="material-symbols-outlined text-sm">drag_indicator</span></div>
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-bold text-xl text-white">Recent Activity</h3>
+<div class="flex space-x-2">
+<button class="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all">Filter</button>
+<button class="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all">Export</button>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex items-center justify-between p-4 hover:bg-white/[0.03] rounded-2xl transition-all border-b border-white/5 last:border-0">
+<div class="flex items-center space-x-4">
+<div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl">shopping_cart</span>
+</div>
+<div>
+<p class="font-bold text-sm text-white">Apple Store NYC</p>
+<p class="text-[11px] text-slate-500 font-medium">Technology • 14:20</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-white">-$1,299.00</p>
+<p class="text-[10px] text-slate-500">Oct 31, 2025</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-white/[0.03] rounded-2xl transition-all border-b border-white/5 last:border-0">
+<div class="flex items-center space-x-4">
+<div class="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-xl">restaurant</span>
+</div>
+<div>
+<p class="font-bold text-sm text-white">The Grill House</p>
+<p class="text-[11px] text-slate-500 font-medium">Dining • 20:15</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-white">-$142.50</p>
+<p class="text-[10px] text-slate-500">Oct 30, 2025</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 text-[10px] font-bold uppercase tracking-widest text-slate-400 transition-all">
+                    View Complete Ledger
+                </button>
+<div class="module-resize-handle"></div>
+</div>
+</div>
+</main>
+</div>
+<button class="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all z-[100]">
+<span class="material-symbols-outlined text-2xl">bolt</span>
+</button>
 
-🎭 MOBILE-SPECIFIC ANIMATIONS
-Pull-to-Refresh
-typescriptconst usePullToRefresh = (onRefresh) => {
-  const [isPulling, setIsPulling] = useState(false)
-  const [pullDistance, setPullDistance] = useState(0)
-  
-  const handleTouchStart = (e) => {
-    if (window.scrollY === 0) {
-      setIsPulling(true)
-    }
-  }
-  
-  const handleTouchMove = (e) => {
-    if (isPulling) {
-      const touch = e.touches[0]
-      const distance = Math.min(touch.clientY - startY, 100)
-      setPullDistance(distance)
-    }
-  }
-  
-  const handleTouchEnd = () => {
-    if (pullDistance > 60) {
-      onRefresh()
-    }
-    setIsPulling(false)
-    setPullDistance(0)
-  }
-  
-  return { isPulling, pullDistance, handleTouchStart, handleTouchMove, handleTouchEnd }
-}
-Swipe Gestures
-typescriptconst useSwipeGesture = (onSwipeLeft, onSwipeRight) => {
-  const [touchStart, setTouchStart] = useState(null)
-  
-  const handleTouchStart = (e) => {
-    setTouchStart(e.touches[0].clientX)
-  }
-  
-  const handleTouchEnd = (e) => {
-    if (!touchStart) return
-    
-    const touchEnd = e.changedTouches[0].clientX
-    const diff = touchStart - touchEnd
-    
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        onSwipeLeft?.()
-      } else {
-        onSwipeRight?.()
-      }
-    }
-    
-    setTouchStart(null)
-  }
-  
-  return { handleTouchStart, handleTouchEnd }
-}
-Haptic Feedback
-typescriptconst useHaptic = () => {
-  const triggerHaptic = (type = 'light') => {
-    if ('vibrate' in navigator) {
-      const patterns = {
-        light: [10],
-        medium: [20],
-        heavy: [30],
-        success: [10, 50, 10],
-        error: [20, 100, 20]
-      }
-      navigator.vibrate(patterns[type] || patterns.light)
-    }
-  }
-  
-  return { triggerHaptic }
-}
-
-🎨 MOBILE COLOR PALETTE
-css:root {
-  /* Dark Theme (Primary) */
-  --dark-bg: #0A0E27;
-  --dark-surface: #12162D;
-  --dark-elevated: #1A1F3A;
-  
-  /* Accent Colors */
-  --blue-500: #0066FF;
-  --purple-500: #8B5CF6;
-  --cyan-500: #06B6D4;
-  --green-500: #10B981;
-  --orange-500: #F59E0B;
-  --red-500: #EF4444;
-  --pink-500: #EC4899;
-  
-  /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-blur: 32px;
-  
-  /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
-  --shadow-glow: 0 0 20px rgba(0, 102, 255, 0.3);
-}
-
-📐 MOBILE RESPONSIVE GUIDELINES
-Typography Scale
-css/* Mobile typography */
-h1 { font-size: 32px; line-height: 1.2; } /* Hero headings */
-h2 { font-size: 24px; line-height: 1.3; } /* Section headings */
-h3 { font-size: 18px; line-height: 1.4; } /* Card titles */
-h4 { font-size: 16px; line-height: 1.5; } /* Subsections */
-body { font-size: 14px; line-height: 1.6; } /* Body text */
-small { font-size: 12px; line-height: 1.5; } /* Captions */
-Spacing System
-css/* Mobile spacing (16px base) */
---space-1: 4px;
---space-2: 8px;
---space-3: 12px;
---space-4: 16px;
---space-5: 20px;
---space-6: 24px;
---space-8: 32px;
---space-12: 48px;
-
-🚀 MOBILE PERFORMANCE OPTIMIZATIONS
-
-Lazy Loading: Load widgets on scroll
-Image Optimization: Use WebP format, lazy load images
-Virtualization: For long lists (transactions, etc.)
-Code Splitting: Route-based code splitting
-Service Worker: Offline support, cache API responses
-Debouncing: For search and input fields
-Memoization: React.memo for expensive components
-
-
-✨ MOBILE-SPECIFIC FEATURES
-1. Biometric Authentication
-typescriptconst useBiometric = () => {
-  const authenticate = async () => {
-    if ('credentials' in navigator) {
-      // Use WebAuthn for biometric
-      return await navigator.credentials.get({
-        publicKey: { /* config */ }
-      })
-    }
-  }
-  
-  return { authenticate }
-}
-2. Camera Integration
-typescriptconst useCamera = () => {
-  const captureReceipt = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ 
-      video: { facingMode: 'environment' } 
-    })
-    // Handle camera stream
-  }
-  
-  return { captureReceipt }
-}
-3. Share API
-typescriptconst useShare = () => {
-  const shareData = async (data) => {
-    if (navigator.share) {
-      await navigator.share({
-        title: data.title,
-        text: data.text,
-        url: data.url
-      })
-    }
-  }
-  
-  return { shareData }
-}
-
-🎯 IMPLEMENTATION CHECKLIST
-
- Bottom navigation with 5 primary sections
- Swipeable financial overview cards
- Horizontal scrolling quick actions
- Vertically stacked widget cards
- Pull-to-refresh functionality
- Swipe gestures for navigation
- Haptic feedback on interactions
- Touch-optimized button sizes (48px minimum)
- Safe area insets for notched devices
- Dark theme with neon accents
- Glassmorphism effects
- 3D card transforms on touch
- Smooth page transitions
- Loading states and skeletons
- Error states with retry options
- Offline mode support
- Biometric authentication
- Camera integration for receipts
- Share functionality
- Accessibility (screen readers, contrast)
+</body></html>

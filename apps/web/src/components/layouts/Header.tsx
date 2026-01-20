@@ -10,13 +10,13 @@ import { useAuth } from '@financeflow/shared';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 
 export function Header() {
-    const { setSidebarOpen, setSearchModalOpen, setNotificationPanelOpen } = useLayoutStore();
+    const { setSidebarOpen, setSearchModalOpen, setNotificationPanelOpen, sidebarCollapsed } = useLayoutStore();
     const { theme, toggleTheme } = useTheme();
 
     const { user } = useAuth();
 
     return (
-        <header className="h-16 fixed top-0 right-0 left-0 lg:left-72 bg-white/80 dark:bg-dark-surface/80 backdrop-blur-2xl border-b border-gray-100 dark:border-white/10 z-30 transition-all duration-300 px-4 flex items-center justify-between">
+        <header className={`h-16 fixed top-0 right-0 left-0 ${sidebarCollapsed ? 'lg:left-20' : 'lg:left-72'} bg-white/80 dark:bg-dark-surface/80 backdrop-blur-2xl border-b border-gray-100 dark:border-white/10 z-30 transition-all duration-300 px-4 flex items-center justify-between`}>
             {/* Left: Mobile Menu & Breadcrumb Placeholder */}
             <div className="flex items-center">
                 <button

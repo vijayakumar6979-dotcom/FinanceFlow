@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Modal, ModalBody, ModalFooter } from '@/components/ui/Modal';
-import { CategorySelect } from './CategorySelect';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+import { createTransactionService, createAccountService, CreateTransactionDTO, TransactionCategory, Account } from '@financeflow/shared';
+import { supabase } from '@/services/supabase';
 import {
     ArrowRightLeft,
     TrendingUp,
@@ -12,10 +10,24 @@ import {
     Split,
     Sparkles,
     FileText,
-    Wallet
+    Wallet,
+    X,
+    ChevronDown,
+    Check,
+    Search,
+    ShoppingBag,
+    Utensils,
+    Car,
+    Home,
+    Zap,
+    Coffee,
+    Gamepad,
+    Plane,
+    Briefcase,
+    GraduationCap,
+    HeartPulse,
+    MoreHorizontal
 } from 'lucide-react';
-import { createTransactionService, createAccountService, CreateTransactionDTO, TransactionCategory, Account } from '@financeflow/shared';
-import { supabase } from '@/services/supabase';
 
 const transactionService = createTransactionService(supabase);
 const accountService = createAccountService(supabase);
@@ -24,6 +36,23 @@ interface AddTransactionModalProps {
     onClose: () => void;
     onSave?: () => void;
 }
+
+// Icon Mapping Helper
+const getCategoryIcon = (name: string) => {
+    const n = name.toLowerCase();
+    if (n.includes('food') || n.includes('dining')) return <Utensils size={16} />;
+    if (n.includes('shop')) return <ShoppingBag size={16} />;
+    if (n.includes('transport') || n.includes('car') || n.includes('taxi')) return <Car size={16} />;
+    if (n.includes('house') || n.includes('rent') || n.includes('utilities')) return <Home size={16} />;
+    if (n.includes('bill') || n.includes('utilities')) return <Zap size={16} />;
+    if (n.includes('coffee')) return <Coffee size={16} />;
+    if (n.includes('entertainment') || n.includes('game')) return <Gamepad size={16} />;
+    if (n.includes('travel')) return <Plane size={16} />;
+    if (n.includes('work') || n.includes('salary')) return <Briefcase size={16} />;
+    if (n.includes('education')) return <GraduationCap size={16} />;
+    if (n.includes('health') || n.includes('medical')) return <HeartPulse size={16} />;
+    return <MoreHorizontal size={16} />;
+};
 
 export function AddTransactionModal({ onClose, onSave }: AddTransactionModalProps) {
     const [type, setType] = useState<'income' | 'expense' | 'transfer'>('expense');
@@ -35,15 +64,20 @@ export function AddTransactionModal({ onClose, onSave }: AddTransactionModalProp
 
     const [categories, setCategories] = useState<TransactionCategory[]>([]);
     const [accounts, setAccounts] = useState<Account[]>([]);
-    const [isLoadingCategories, setIsLoadingCategories] = useState(false); // Kept for future use
     const [isSaving, setIsSaving] = useState(false);
+
+    // Custom Select State
+    const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+    const [categorySearch, setCategorySearch] = useState('');
+    const [isAccountOpen, setIsAccountOpen] = useState(false);
+
+    const controls = useDragControls();
 
     useEffect(() => {
         loadData();
     }, []);
 
     const loadData = async () => {
-        setIsLoadingCategories(true);
         try {
             const [cats, accs] = await Promise.all([
                 transactionService.getCategories(),
@@ -51,29 +85,14 @@ export function AddTransactionModal({ onClose, onSave }: AddTransactionModalProp
             ]);
             setCategories(cats);
             setAccounts(accs);
-
-            // Default to first account if available
-            if (accs.length > 0) {
-                setAccountId(accs[0].id);
-            } else {
-                // If no accounts, maybe create a default one or just warn?
-                // For now, let's keep it empty and require user to add one via other flow, 
-                // BUT we should probably handle the "no account" case more gracefully.
-                // Assuming user has accounts or we'll prompt.
-            }
+            if (accs.length > 0) setAccountId(accs[0].id);
         } catch (error) {
             console.error('Failed to load data', error);
-        } finally {
-            setIsLoadingCategories(false);
         }
     };
 
     const handleSave = async () => {
-        if (!accountId) {
-            alert("Please create an account first!"); // Simple validation
-            return;
-        }
-
+        if (!accountId) { alert("Please select an account"); return; }
         setIsSaving(true);
         try {
             const payload: CreateTransactionDTO = {
@@ -83,132 +102,272 @@ export function AddTransactionModal({ onClose, onSave }: AddTransactionModalProp
                 category_id: categoryId,
                 account_id: accountId,
                 date: new Date().toISOString(),
-                is_recurring: isRecurring,
                 is_split: false
             };
-
             await transactionService.create(payload);
             onSave?.();
             onClose();
         } catch (error) {
-            console.error('Failed to save transaction', error);
+            console.error('Failed to save', error);
+            alert('Failed to save transaction');
         } finally {
             setIsSaving(false);
         }
     };
 
-    const filteredCategories = categories.filter(c => c.type === type);
+    // Filter categories based on selection type and search
+    const activeCategories = categories.filter(c =>
+        c.type === type &&
+        c.name.toLowerCase().includes(categorySearch.toLowerCase())
+    );
+    const selectedCategory = categories.find(c => c.id === categoryId);
+    const selectedAccount = accounts.find(a => a.id === accountId);
 
     return (
-        <Modal isOpen={true} onClose={onClose} title="Add Transaction" size="lg">
-            <ModalBody className="space-y-6">
-                {/* Type Selector */}
-                <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-xl">
-                    {(['income', 'expense', 'transfer'] as const).map((t) => (
-                        <motion.button
-                            key={t}
-                            whileHover={{ scale: 1.02, y: -1 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => setType(t)}
-                            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg font-medium transition-all ${type === t
-                                ? t === 'income' ? 'bg-green-100 text-green-700 shadow-sm' :
-                                    t === 'expense' ? 'bg-red-100 text-red-700 shadow-sm' :
-                                        'bg-blue-100 text-blue-700 shadow-sm'
-                                : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'
-                                }`}
-                        >
-                            {t === 'income' && <TrendingUp size={18} />}
-                            {t === 'expense' && <TrendingDown size={18} />}
-                            {t === 'transfer' && <ArrowRightLeft size={18} />}
-                            <span className="capitalize">{t}</span>
-                        </motion.button>
-                    ))}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={onClose}
+                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+
+            {/* Modal Content - Draggable & Wider */}
+            <motion.div
+                drag
+                dragListener={false}
+                dragControls={controls}
+                dragMomentum={false}
+                dragElastic={0.05}
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative w-full max-w-2xl overflow-visible rounded-3xl bg-[#050511]/95 backdrop-blur-2xl border border-white/10 shadow-[0_0_60px_-15px_rgba(59,130,246,0.6)]"
+            >
+                {/* Drag Handle & Header */}
+                <div
+                    onPointerDown={(e) => controls.start(e)}
+                    className="flex items-center justify-between p-6 pb-2 cursor-grab active:cursor-grabbing"
+                >
+                    <h2 className="text-xl font-bold text-white tracking-tight pointer-events-none">Add Transaction</h2>
+                    <button
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onClick={onClose}
+                        className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/60 hover:text-white"
+                    >
+                        <X size={20} />
+                    </button>
                 </div>
 
-                {/* Amount */}
-                <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium text-lg">RM</span>
-                    <input
-                        type="number"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        placeholder="0.00"
-                        className="w-full pl-12 pr-4 py-8 text-4xl font-bold bg-transparent border-b-2 border-gray-200 dark:border-white/10 focus:border-blue-500 outline-none text-center text-gray-900 dark:text-white placeholder-gray-300 dark:placeholder-gray-700"
-                        autoFocus
-                    />
-                </div>
-
-                {/* Main Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input
-                        label="Description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        icon={<FileText size={18} />}
-                    />
-
-                    <div className="relative mb-4">
-                        <label className="text-xs text-gray-500 dark:text-gray-400 absolute top-1 left-3 z-10">Category</label>
-                        <CategorySelect
-                            categories={filteredCategories}
-                            value={categoryId}
-                            onChange={(id) => setCategoryId(id)}
-                            className="mt-1"
-                        />
+                <div className="p-6 space-y-8">
+                    {/* Type Selector */}
+                    <div className="bg-black/40 p-1 rounded-xl flex border border-white/5">
+                        {(['income', 'expense', 'transfer'] as const).map((t) => (
+                            <button
+                                key={t}
+                                onClick={() => setType(t)}
+                                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-all relative overflow-hidden ${type === t ? 'text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                            >
+                                {type === t && (
+                                    <motion.div
+                                        layoutId="activeTab"
+                                        className={`absolute inset-0 ${t === 'income' ? 'bg-emerald-500' : t === 'expense' ? 'bg-rose-500' : 'bg-blue-500'}`}
+                                    />
+                                )}
+                                <span className="relative z-10 flex items-center gap-2">
+                                    {t === 'income' ? <TrendingUp size={14} /> : t === 'expense' ? <TrendingDown size={14} /> : <ArrowRightLeft size={14} />}
+                                    {t}
+                                </span>
+                            </button>
+                        ))}
                     </div>
 
-                    {/* Account Selector */}
-                    <div className="relative mb-4">
-                        <label className="text-xs text-gray-500 dark:text-gray-400 absolute top-1 left-3 z-10">Account</label>
-                        <select
-                            value={accountId}
-                            onChange={(e) => setAccountId(e.target.value)}
-                            className="w-full h-12 pt-4 px-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-dark-surface appearance-none outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
-                        >
-                            <option value="" disabled>Select Account</option>
-                            {accounts.map(acc => (
-                                <option key={acc.id} value={acc.id} className="bg-white dark:bg-dark-surface">{acc.name} ({acc.currency})</option>
-                            ))}
-                        </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                            <Wallet size={18} className="text-gray-400" />
+                    {/* Amount Input */}
+                    <div className="text-center relative group">
+                        <style>
+                            {`
+                                input[type=number]::-webkit-inner-spin-button, 
+                                input[type=number]::-webkit-outer-spin-button { 
+                                    -webkit-appearance: none; 
+                                    margin: 0; 
+                                }
+                                input[type=number] {
+                                    -moz-appearance: textfield;
+                                }
+                            `}
+                        </style>
+                        <label className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 block">Amount</label>
+                        <div className="relative inline-block w-full">
+                            <span className="absolute left-1/2 -translate-x-[120px] top-1/2 -translate-y-1/2 text-2xl font-bold text-slate-500">RM</span>
+                            <input
+                                type="number"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                placeholder="0.00"
+                                className="w-full bg-transparent text-center text-5xl font-black text-white outline-none placeholder-slate-700 caret-primary"
+                                autoFocus
+                            />
+                        </div>
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50 group-focus-within:opacity-100 transition-opacity" />
+                    </div>
+
+                    {/* Form Fields */}
+                    <div className="space-y-4">
+                        {/* Description */}
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-3 focus-within:ring-2 ring-primary/50 transition-all">
+                            <FileText className="text-slate-400" size={18} />
+                            <input
+                                type="text"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="What is this for?"
+                                className="bg-transparent w-full outline-none text-white placeholder-slate-500 text-sm font-medium"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            {/* Searchable Category Select */}
+                            <div className="relative">
+                                <button
+                                    onClick={() => { setIsCategoryOpen(!isCategoryOpen); setIsAccountOpen(false); if (!isCategoryOpen) setCategorySearch(''); }}
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between hover:bg-white/10 transition-colors text-left group"
+                                >
+                                    <div className="flex items-center gap-3 overflow-hidden">
+                                        <div className={`p-1.5 rounded-lg ${selectedCategory ? 'bg-primary/20 text-primary' : 'bg-slate-800 text-slate-500'}`}>
+                                            {selectedCategory ? getCategoryIcon(selectedCategory.name) : <ShoppingBag size={14} />}
+                                        </div>
+                                        <div className="block overflow-hidden">
+                                            <label className="text-[10px] font-bold uppercase text-slate-500 block group-hover:text-primary transition-colors">Category</label>
+                                            <span className="text-sm font-medium text-white truncate block">
+                                                {selectedCategory?.name || 'Select Category'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <ChevronDown size={16} className={`text-slate-400 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} />
+                                </button>
+                                <AnimatePresence>
+                                    {isCategoryOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            className="absolute top-full left-0 right-0 mt-2 bg-[#0F0F23] border border-white/10 rounded-xl shadow-2xl z-30 max-h-[300px] overflow-hidden flex flex-col"
+                                        >
+                                            {/* Search Input */}
+                                            <div className="p-3 border-b border-white/5 bg-white/5 flex items-center gap-2">
+                                                <Search size={14} className="text-slate-500" />
+                                                <input
+                                                    type="text"
+                                                    value={categorySearch}
+                                                    onChange={(e) => setCategorySearch(e.target.value)}
+                                                    placeholder="Search categories..."
+                                                    className="bg-transparent border-none outline-none text-xs text-white placeholder-slate-500 w-full"
+                                                    autoFocus
+                                                />
+                                            </div>
+
+                                            <div className="overflow-y-auto flex-1 no-scrollbar p-1">
+                                                <style>{`.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+                                                {activeCategories.length > 0 ? activeCategories.map(cat => (
+                                                    <div
+                                                        key={cat.id}
+                                                        onClick={() => { setCategoryId(cat.id); setIsCategoryOpen(false); }}
+                                                        className="p-2 hover:bg-white/10 cursor-pointer flex items-center gap-3 transition-colors rounded-lg mb-1"
+                                                    >
+                                                        <div className="p-1.5 rounded-md bg-white/5 text-slate-300">
+                                                            {getCategoryIcon(cat.name)}
+                                                        </div>
+                                                        <span className="text-sm text-slate-200">{cat.name}</span>
+                                                        {categoryId === cat.id && <Check size={14} className="ml-auto text-primary" />}
+                                                    </div>
+                                                )) : (
+                                                    <div className="p-4 text-center text-xs text-slate-500">No matching categories</div>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            {/* Account Select */}
+                            <div className="relative">
+                                <button
+                                    onClick={() => { setIsAccountOpen(!isAccountOpen); setIsCategoryOpen(false); }}
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between hover:bg-white/10 transition-colors text-left group"
+                                >
+                                    <div className="flex items-center gap-3 overflow-hidden">
+                                        <div className={`p-1.5 rounded-lg ${selectedAccount ? 'bg-blue-500/20 text-blue-500' : 'bg-slate-800 text-slate-500'}`}>
+                                            <Wallet size={14} />
+                                        </div>
+                                        <div className="block overflow-hidden">
+                                            <label className="text-[10px] font-bold uppercase text-slate-500 block group-hover:text-blue-500 transition-colors">Account</label>
+                                            <span className="text-sm font-medium text-white truncate block">
+                                                {selectedAccount?.name || 'Select Account'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <ChevronDown size={16} className={`text-slate-400 transition-transform ${isAccountOpen ? 'rotate-180' : ''}`} />
+                                </button>
+                                <AnimatePresence>
+                                    {isAccountOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            className="absolute top-full left-0 right-0 mt-2 bg-[#0F0F23] border border-white/10 rounded-xl shadow-2xl z-30 max-h-[300px] overflow-y-auto no-scrollbar"
+                                        >
+                                            <style>{`.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+                                            {accounts.map(acc => (
+                                                <div
+                                                    key={acc.id}
+                                                    onClick={() => { setAccountId(acc.id); setIsAccountOpen(false); }}
+                                                    className="p-3 hover:bg-white/10 cursor-pointer flex items-center gap-2 transition-colors border-b border-white/5 last:border-0"
+                                                >
+                                                    <span className="text-sm text-slate-200">{acc.name}</span>
+                                                    <span className="text-xs text-slate-500 ml-auto">{acc.currency}</span>
+                                                    {accountId === acc.id && <Check size={14} className="text-primary" />}
+                                                </div>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+
+                        {/* Toggles */}
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setIsRecurring(!isRecurring)}
+                                className={`flex-1 py-3 rounded-xl border flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider transition-all ${isRecurring ? 'bg-primary/20 border-primary text-primary' : 'bg-white/5 border-transparent text-slate-500 hover:bg-white/10'}`}
+                            >
+                                <Repeat size={14} /> Recurring
+                            </button>
+                            <button className="flex-1 py-3 rounded-xl border border-transparent bg-white/5 text-slate-500 hover:bg-white/10 hover:text-slate-300 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider transition-all">
+                                <Split size={14} /> Split
+                            </button>
+                            <button className="flex-1 py-3 rounded-xl border border-transparent bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider transition-all">
+                                <Sparkles size={14} /> AI Fill
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Advanced Options Toggles */}
-                <div className="flex gap-4 pt-2">
-                    <motion.button
-                        whileHover={{ scale: 1.02, y: -1 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setIsRecurring(!isRecurring)}
-                        className={`px-4 py-2 rounded-lg border flex items-center gap-2 transition-colors ${isRecurring ? 'bg-blue-50 border-blue-200 text-blue-600' : 'border-gray-200 dark:border-white/10 text-gray-500'}`}
+                {/* Footer */}
+                <div className="p-6 pt-0 flex gap-4">
+                    <button onClick={onClose} className="flex-1 py-4 rounded-xl font-bold text-slate-400 hover:bg-white/5 transition-colors">
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleSave}
+                        disabled={!amount || !categoryId || isSaving}
+                        className="flex-[2] py-4 rounded-xl bg-gradient-to-r from-primary to-blue-600 text-white font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <Repeat size={16} /> Recurring
-                    </motion.button>
-                    <motion.button
-                        whileHover={{ scale: 1.02, y: -1 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-gray-500 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-white/5"
-                    >
-                        <Split size={16} /> Split
-                    </motion.button>
-                    <motion.button
-                        whileHover={{ scale: 1.02, y: -1 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-gray-500 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-white/5"
-                    >
-                        <Sparkles size={16} /> AI Auto-fill
-                    </motion.button>
+                        {isSaving ? 'Processing...' : 'Save Transaction'}
+                    </button>
                 </div>
-
-            </ModalBody>
-            <ModalFooter>
-                <Button variant="ghost" onClick={onClose}>Cancel</Button>
-                <Button onClick={handleSave} loading={isSaving} disabled={!amount || !description || !categoryId || !accountId}>
-                    Save Transaction
-                </Button>
-            </ModalFooter>
-        </Modal>
+            </motion.div>
+        </div>
     );
 }

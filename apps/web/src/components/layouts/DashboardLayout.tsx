@@ -1,7 +1,6 @@
 import React from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
-import { MobileBottomNav } from '@/components/dashboard/MobileBottomNav';
 import { useLayoutStore } from '@/store/layoutStore';
 import clsx from 'clsx';
 
@@ -27,8 +26,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     {children}
                 </div>
             </main>
-
-            <MobileBottomNav />
 
             {/* Placeholders for Modals/Panels */}
             {/* <SearchModal /> */}
