@@ -41,6 +41,13 @@ export interface Loan {
     loan_purpose?: string;
     collateral_value?: number;
     late_payment_fee?: number;
+
+    // Insurance
+    insurance_provider?: string;
+    insurance_policy_no?: string;
+    insurance_amount?: number;
+    insurance_expiry_date?: string;
+
     prepayment_penalty_type?: 'percentage' | 'fixed' | 'none';
     prepayment_penalty_value?: number;
 

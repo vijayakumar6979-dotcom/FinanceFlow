@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Brain, TrendingUp, AlertTriangle, Lightbulb, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface AIInsightsProps {
     bill: any;
@@ -117,134 +118,128 @@ export function AIInsights({ bill, payments }: AIInsightsProps) {
 
     if (isLoading) {
         return (
-            <Card className="p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
-                <div className="flex items-center justify-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-                    <span className="ml-3 text-slate-500">Loading AI insights...</span>
+            <div className="relative p-8 rounded-3xl bg-[#121629]/50 border border-white/5 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-purple-500/5" />
+                <div className="relative flex flex-col items-center justify-center text-center">
+                    <div className="relative">
+                        <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
+                        <Loader2 className="w-10 h-10 animate-spin text-primary relative z-10" />
+                    </div>
+                    <p className="mt-4 text-sm font-medium text-slate-400">Analyzing patterns with AI...</p>
                 </div>
-            </Card>
+            </div>
         );
     }
 
     return (
-        <Card className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-500/10 dark:to-purple-500/10 border-blue-200 dark:border-blue-500/20">
-            <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-blue-500 rounded-lg">
-                    <Brain className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">AI Insights</h3>
-                    <p className="text-sm text-slate-500">Powered by machine learning</p>
-                </div>
-            </div>
+        <div className="relative p-1 rounded-3xl bg-gradient-to-br from-primary/20 via-purple-500/20 to-blue-500/20">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-purple-500/10 to-blue-500/10 blur-xl opacity-50" />
 
-            <div className="space-y-4">
-                {/* Prediction */}
-                {prediction && (
-                    <div className="p-4 bg-white dark:bg-white/5 rounded-lg border border-blue-200 dark:border-blue-500/20">
-                        <div className="flex items-start gap-3">
-                            <TrendingUp className="w-5 h-5 text-blue-500 mt-0.5" />
-                            <div className="flex-1">
-                                <h4 className="font-semibold text-slate-900 dark:text-white mb-1">
-                                    Next Month Prediction
-                                </h4>
-                                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                                    {bill.currency} {prediction.predicted_amount.toFixed(2)}
-                                </p>
-                                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                                    <span>Confidence: {(prediction.confidence * 100).toFixed(0)}%</span>
-                                    <span>•</span>
-                                    <span className="capitalize">{prediction.trend} trend</span>
+            <Card className="relative p-6 bg-[#0A0E27]/90 backdrop-blur-xl border border-white/10 rounded-[22px] overflow-hidden">
+                {/* Header with Brain Icon */}
+                <div className="flex items-center gap-4 mb-6">
+                    <div className="relative">
+                        <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full animate-pulse" />
+                        <div className="relative p-3 bg-gradient-to-br from-[#1A1F3A] to-[#0F1225] border border-white/10 rounded-2xl shadow-xl">
+                            <Brain className="w-6 h-6 text-primary" />
+                        </div>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+                            AI Intelligence
+                        </h3>
+                        <p className="text-xs font-medium text-primary/60 uppercase tracking-widest">
+                            Real-time Bill Analysis
+                        </p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* Prediction Card */}
+                    {prediction && (
+                        <div className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group">
+                            <div className="flex items-start justify-between mb-2">
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Forecast</span>
+                                <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
+                                    <TrendingUp size={14} />
                                 </div>
-                                {prediction.factors && prediction.factors.length > 0 && (
-                                    <div className="mt-2 text-xs text-slate-500 space-y-1">
-                                        {prediction.factors.map((factor, idx) => (
-                                            <div key={idx}>• {factor}</div>
-                                        ))}
-                                    </div>
-                                )}
+                            </div>
+                            <div className="mb-2">
+                                <span className="text-2xl font-black text-white">
+                                    <span className="text-sm text-slate-500 mr-1">{bill.currency}</span>
+                                    {prediction.predicted_amount.toFixed(2)}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs">
+                                <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                    {Math.round(prediction.confidence * 100)}% Confidence
+                                </span>
+                                <span className="text-slate-500 capitalize">{prediction.trend} trend</span>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {/* Spending Trend */}
-                {trend && (
-                    <div className="p-4 bg-white dark:bg-white/5 rounded-lg border border-purple-200 dark:border-purple-500/20">
-                        <div className="flex items-start gap-3">
-                            <TrendingUp className={`w-5 h-5 mt-0.5 ${trend.direction === 'increasing' ? 'text-red-500' : 'text-green-500'}`} />
-                            <div className="flex-1">
-                                <h4 className="font-semibold text-slate-900 dark:text-white mb-1">
-                                    Spending Trend
-                                </h4>
-                                <p className="text-slate-700 dark:text-slate-300">
-                                    <span className={`font-bold ${trend.direction === 'increasing' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                                        {trend.percentage}% {trend.direction}
-                                    </span>
-                                    {' '}over last 3 months
-                                </p>
-                                {trend.isSignificant && (
-                                    <p className="text-xs text-slate-500 mt-1">
-                                        ⚠️ Significant change detected - review usage patterns
-                                    </p>
-                                )}
+                    {/* Anomaly Card */}
+                    {recentAnomaly && (
+                        <div className={cn(
+                            "p-4 rounded-2xl border transition-colors group relative overflow-hidden",
+                            recentAnomaly.severity === 'high'
+                                ? "bg-rose-500/5 border-rose-500/20"
+                                : "bg-amber-500/5 border-amber-500/20"
+                        )}>
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+                            <div className="flex items-start justify-between mb-2">
+                                <span className={cn(
+                                    "text-xs font-bold uppercase tracking-wider",
+                                    recentAnomaly.severity === 'high' ? "text-rose-400" : "text-amber-400"
+                                )}>Anomaly</span>
+                                <div className={cn(
+                                    "p-1.5 rounded-lg",
+                                    recentAnomaly.severity === 'high' ? "bg-rose-500/10 text-rose-400" : "bg-amber-500/10 text-amber-400"
+                                )}>
+                                    <AlertTriangle size={14} />
+                                </div>
+                            </div>
+                            <p className="text-sm font-medium text-slate-200 mb-2 leading-snug">
+                                {recentAnomaly.message}
+                            </p>
+                            <p className="text-xs text-slate-400 flex items-start gap-1.5">
+                                <Lightbulb size={12} className="mt-0.5 shrink-0 text-yellow-400" />
+                                {recentAnomaly.recommendation}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* General Recommendations / Dynamic Insight */}
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                        <div className="flex items-start justify-between mb-2">
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Insight</span>
+                            <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+                                <Lightbulb size={14} />
                             </div>
                         </div>
-                    </div>
-                )}
-
-                {/* Recent Anomaly */}
-                {recentAnomaly && (
-                    <div className={`p-4 rounded-lg border ${recentAnomaly.severity === 'high'
-                        ? 'bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/30'
-                        : 'bg-yellow-50 dark:bg-yellow-500/10 border-yellow-300 dark:border-yellow-500/30'
-                        }`}>
-                        <div className="flex items-start gap-3">
-                            <AlertTriangle className={`w-5 h-5 mt-0.5 ${recentAnomaly.severity === 'high' ? 'text-red-500' : 'text-yellow-500'
-                                }`} />
-                            <div className="flex-1">
-                                <h4 className="font-semibold text-slate-900 dark:text-white mb-1">
-                                    Anomaly Detected
-                                </h4>
-                                <p className="text-sm text-slate-700 dark:text-slate-300 mb-2">
-                                    {recentAnomaly.message}
-                                </p>
-                                <p className="text-xs text-slate-600 dark:text-slate-400">
-                                    💡 {recentAnomaly.recommendation}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* AI Recommendations */}
-                <div className="p-4 bg-white dark:bg-white/5 rounded-lg border border-green-200 dark:border-green-500/20">
-                    <div className="flex items-start gap-3">
-                        <Lightbulb className="w-5 h-5 text-green-500 mt-0.5" />
-                        <div className="flex-1">
-                            <h4 className="font-semibold text-slate-900 dark:text-white mb-2">
-                                Recommendations
-                            </h4>
-                            <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-1">
-                                {bill.is_variable && payments.length > 3 && (
-                                    <li>• Set up payment alerts to avoid surprises</li>
-                                )}
-                                {trend && trend.direction === 'increasing' && trend.isSignificant && (
-                                    <li>• Review usage to identify cost-saving opportunities</li>
-                                )}
-                                {bill.auto_pay_enabled ? (
-                                    <li>• Auto-pay is enabled - payments are automated ✓</li>
-                                ) : (
-                                    <li>• Enable auto-pay to never miss a payment</li>
-                                )}
-                                {payments.length < 3 && (
-                                    <li>• Build payment history for better predictions</li>
-                                )}
-                            </ul>
-                        </div>
+                        <ul className="space-y-2">
+                            {bill.is_variable ? (
+                                <li className="text-xs text-slate-300 flex items-start gap-2">
+                                    <span className="w-1 h-1 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                                    Variable bill detected. Auto-adjust budget?
+                                </li>
+                            ) : (
+                                <li className="text-xs text-slate-300 flex items-start gap-2">
+                                    <span className="w-1 h-1 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                                    Fixed Amount. Good for recurring payment.
+                                </li>
+                            )}
+                            {trend && (
+                                <li className="text-xs text-slate-300 flex items-start gap-2">
+                                    <span className="w-1 h-1 rounded-full bg-blue-500 mt-1.5 shrink-0" />
+                                    Spending is {trend.direction} by {trend.percentage}%
+                                </li>
+                            )}
+                        </ul>
                     </div>
                 </div>
-            </div>
-        </Card>
+            </Card>
+        </div>
     );
 }

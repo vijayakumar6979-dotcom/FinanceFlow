@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/services/supabase'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
@@ -24,6 +24,20 @@ export function useRealtimeSubscription({
     const [status, setStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting')
     const [channel, setChannel] = useState<RealtimeChannel | null>(null)
 
+    // Store callbacks in refs to avoid re-subscribing on every render
+    const onInsertRef = useRef(onInsert)
+    const onUpdateRef = useRef(onUpdate)
+    const onDeleteRef = useRef(onDelete)
+    const onChangeRef = useRef(onChange)
+
+    // Update refs when callbacks change
+    useEffect(() => {
+        onInsertRef.current = onInsert
+        onUpdateRef.current = onUpdate
+        onDeleteRef.current = onDelete
+        onChangeRef.current = onChange
+    }, [onInsert, onUpdate, onDelete, onChange])
+
     useEffect(() => {
         const channelName = `realtime:${table}${filter ? `:${filter}` : ''}`
 
@@ -38,14 +52,14 @@ export function useRealtimeSubscription({
                     filter
                 },
                 (payload: any) => {
-                    onChange?.(payload)
+                    onChangeRef.current?.(payload)
 
                     if (payload.eventType === 'INSERT') {
-                        onInsert?.(payload)
+                        onInsertRef.current?.(payload)
                     } else if (payload.eventType === 'UPDATE') {
-                        onUpdate?.(payload)
+                        onUpdateRef.current?.(payload)
                     } else if (payload.eventType === 'DELETE') {
-                        onDelete?.(payload)
+                        onDeleteRef.current?.(payload)
                     }
                 }
             )
@@ -64,7 +78,7 @@ export function useRealtimeSubscription({
         return () => {
             realtimeChannel.unsubscribe()
         }
-    }, [table, event, filter, onInsert, onUpdate, onDelete, onChange])
+    }, [table, event, filter]) // Removed callbacks from dependencies
 
     return { status, channel }
 }

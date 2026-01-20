@@ -10,6 +10,9 @@ export default {
     presets: [sharedConfig],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ['"IBM Plex Sans"', 'sans-serif'],
+            },
             colors: {
                 purple: {
                     DEFAULT: '#7C3AED',

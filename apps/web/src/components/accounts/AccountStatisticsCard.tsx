@@ -38,21 +38,21 @@ export function AccountStatisticsCard({ accountId, currency = 'MYR' }: AccountSt
 
     if (isLoading) {
         return (
-            <Card className="p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none min-h-[200px] flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-            </Card>
+            <div className="min-h-[200px] flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
         );
     }
 
     if (error || !stats) {
         return (
-            <Card className="p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none">
-                <div className="flex flex-col items-center justify-center text-center py-6 space-y-3">
-                    <AlertCircle className="w-10 h-10 text-slate-300 dark:text-gray-600" />
-                    <p className="text-slate-500 dark:text-gray-400 text-sm">Could not load usage statistics</p>
-                    <Button variant="ghost" size="sm" onClick={fetchStats} className="text-blue-500">Retry</Button>
+            <div className="flex flex-col items-center justify-center text-center py-10 space-y-4">
+                <div className="p-3 rounded-full bg-slate-800/50">
+                    <AlertCircle className="w-6 h-6 text-slate-400" />
                 </div>
-            </Card>
+                <p className="text-slate-400 text-sm">Unavailable</p>
+                <Button variant="ghost" size="sm" onClick={fetchStats} className="text-primary hover:text-primary/80">Retry</Button>
+            </div>
         );
     }
 
@@ -60,94 +60,92 @@ export function AccountStatisticsCard({ accountId, currency = 'MYR' }: AccountSt
 
     if (!hasData) {
         return (
-            <Card className="p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Account Statistics</h3>
-                <div className="flex flex-col items-center justify-center text-center py-6 space-y-3">
-                    <LayoutGrid className="w-10 h-10 text-slate-300 dark:text-gray-600" />
-                    <p className="text-slate-500 dark:text-gray-400 text-sm">No transactions found for this account yet.</p>
+            <div className="flex flex-col items-center justify-center text-center py-12 space-y-4">
+                <div className="p-4 rounded-full bg-white/5">
+                    <LayoutGrid className="w-8 h-8 text-slate-500" />
                 </div>
-            </Card>
+                <div>
+                    <p className="text-white font-medium">No Data Available</p>
+                    <p className="text-slate-500 text-xs mt-1">Start using this account to see statistics</p>
+                </div>
+            </div>
         );
     }
 
     return (
-        <Card className="p-6 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none space-y-6">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Usage Statistics</h3>
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white">Usage Statistics</h3>
+            </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-4">
                 {/* Total Spend */}
-                <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 space-y-2">
-                    <div className="flex items-center gap-2 mb-1">
-                        <div className="p-1.5 bg-red-100 dark:bg-red-800/30 rounded-lg">
-                            <TrendingUp className="w-4 h-4 text-red-600 dark:text-red-400" />
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-rose-500/10 to-rose-600/5 border border-rose-500/10 hover:border-rose-500/20 transition-colors group">
+                    <div className="flex items-start justify-between mb-4">
+                        <div className="p-2.5 rounded-xl bg-rose-500/20 text-rose-400 group-hover:scale-110 transition-transform">
+                            <TrendingUp className="w-5 h-5" />
                         </div>
-                        <span className="text-xs font-medium text-slate-500 dark:text-gray-400">Total Spend</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400/60">Total Spend</span>
                     </div>
                     <div>
-                        <p className="text-xl font-bold text-slate-900 dark:text-white">{formatCurrency(stats.total_spend, currency)}</p>
-                        <p className="text-xs text-slate-500 dark:text-gray-500">{stats.total_transactions} transactions</p>
+                        <p className="text-2xl font-black text-white tracking-tight break-all">
+                            <span className="text-sm text-slate-400 font-medium mr-1">{currency}</span>
+                            {formatCurrency(stats.total_spend, currency).replace(/[^0-9.,]/g, '')}
+                        </p>
+                        <p className="text-xs font-medium text-rose-400/80 mt-1">{stats.total_transactions} transactions</p>
                     </div>
                 </div>
 
                 {/* Average Transaction */}
-                <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/20 space-y-2">
-                    <div className="flex items-center gap-2 mb-1">
-                        <div className="p-1.5 bg-blue-100 dark:bg-blue-800/30 rounded-lg">
-                            <CreditCard className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/10 hover:border-blue-500/20 transition-colors group">
+                    <div className="flex items-start justify-between mb-4">
+                        <div className="p-2.5 rounded-xl bg-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
+                            <CreditCard className="w-5 h-5" />
                         </div>
-                        <span className="text-xs font-medium text-slate-500 dark:text-gray-400">Average Txn</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400/60">Average Txn</span>
                     </div>
                     <div>
-                        <p className="text-xl font-bold text-slate-900 dark:text-white">{formatCurrency(stats.average_transaction_amount, currency)}</p>
-                        <p className="text-xs text-slate-500 dark:text-gray-500">per transaction</p>
+                        <p className="text-2xl font-black text-white tracking-tight break-all">
+                            <span className="text-sm text-slate-400 font-medium mr-1">{currency}</span>
+                            {formatCurrency(stats.average_transaction_amount, currency).replace(/[^0-9.,]/g, '')}
+                        </p>
+                        <p className="text-xs font-medium text-blue-400/80 mt-1">per transaction</p>
                     </div>
                 </div>
             </div>
 
-            <div className="space-y-4">
-                {/* Most Frequent Category */}
-                {stats.most_frequent_category && (
-                    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-full text-purple-600 dark:text-purple-400">
-                                <LayoutGrid className="w-4 h-4" />
+            {stats.largest_transaction && (
+                <div className="relative p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="relative flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                            <div className="p-3 rounded-full bg-amber-500/10 text-amber-500 shrink-0">
+                                <ShoppingBag className="w-5 h-5" />
                             </div>
-                            <div>
-                                <p className="text-sm font-medium text-slate-900 dark:text-white">Top Category</p>
-                                <p className="text-xs text-slate-500 dark:text-gray-400">{stats.most_frequent_category.name}</p>
-                            </div>
-                        </div>
-                        <div className="text-right">
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
-                                {stats.most_frequent_category.count} txns
-                            </span>
-                        </div>
-                    </div>
-                )}
-
-                {/* Largest Transaction */}
-                {stats.largest_transaction && (
-                    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-amber-100 dark:bg-amber-900/20 rounded-full text-amber-600 dark:text-amber-400">
-                                <ShoppingBag className="w-4 h-4" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-slate-900 dark:text-white">Largest Spend</p>
-                                <p className="text-xs text-slate-500 dark:text-gray-400 truncate max-w-[120px]">{stats.largest_transaction.description}</p>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-bold text-white">Largest Spend</p>
+                                <p className="text-xs text-slate-400 truncate">{stats.largest_transaction.description}</p>
                             </div>
                         </div>
-                        <div className="text-right">
-                            <p className="text-sm font-bold text-slate-900 dark:text-white">{formatCurrency(stats.largest_transaction.amount, currency)}</p>
-                            <p className="text-xs text-slate-500 dark:text-gray-500">{new Date(stats.largest_transaction.date).toLocaleDateString()}</p>
+                        <div className="text-right shrink-0">
+                            <p className="text-sm font-black text-white">
+                                {formatCurrency(stats.largest_transaction.amount, currency)}
+                            </p>
+                            <p className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">
+                                {new Date(stats.largest_transaction.date).toLocaleDateString()}
+                            </p>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
 
-            <Button variant="outline" className="w-full text-xs h-8 border-dashed border-gray-300 dark:border-white/20 text-slate-500 dark:text-gray-400" onClick={() => navigate('/transactions')}>
+            <Button
+                variant="ghost"
+                className="w-full py-6 text-xs font-bold uppercase tracking-widest text-slate-500 border border-dashed border-white/10 hover:border-primary/50 hover:bg-primary/5 hover:text-primary transition-all rounded-xl"
+                onClick={() => navigate('/transactions')}
+            >
                 View Transaction History
             </Button>
-        </Card>
+        </div>
     );
 }

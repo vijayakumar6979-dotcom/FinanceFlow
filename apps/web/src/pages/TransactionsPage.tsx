@@ -8,6 +8,7 @@ import {
     TrendingDown,
     ArrowUpRight,
     ArrowDownLeft,
+    ArrowUpDown,
     Sparkles,
     Zap,
     BrainCircuit,
