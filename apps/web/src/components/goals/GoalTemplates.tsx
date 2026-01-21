@@ -189,7 +189,7 @@ export function GoalTemplates({ onSelectTemplate }: GoalTemplatesProps) {
             </div>
 
             {/* Templates Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {GOAL_TEMPLATES.map((template, index) => {
                     const Icon = template.icon;
                     return (
@@ -201,50 +201,72 @@ export function GoalTemplates({ onSelectTemplate }: GoalTemplatesProps) {
                         >
                             <Card
                                 className={cn(
-                                    "p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-2",
+                                    "relative h-full overflow-hidden p-6 cursor-pointer transition-all duration-300 group hover:-translate-y-2",
+                                    "bg-white/5 backdrop-blur-xl border border-white/10",
                                     selectedTemplate?.id === template.id
-                                        ? "border-primary-500 shadow-lg shadow-primary-500/20"
-                                        : "border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                                        ? "ring-2 ring-primary-500 shadow-[0_0_30px_rgba(59,130,246,0.3)]"
+                                        : "hover:border-white/20 hover:shadow-2xl hover:shadow-black/5"
                                 )}
                                 onClick={() => handleTemplateClick(template)}
                             >
+                                {/* Background Gradient Hover */}
+                                <div className={cn(
+                                    "absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 bg-gradient-to-br",
+                                    template.color
+                                )} />
+
                                 {/* Icon & Emoji */}
-                                <div className="flex items-center gap-3 mb-4">
+                                <div className="relative flex items-center justify-between mb-6">
                                     <div className={cn(
-                                        "p-3 rounded-xl bg-gradient-to-br",
+                                        "p-3.5 rounded-2xl bg-gradient-to-br shadow-lg group-hover:scale-110 transition-transform duration-300",
                                         template.color
                                     )}>
                                         <Icon size={24} className="text-white" />
                                     </div>
-                                    <span className="text-3xl">{template.emoji}</span>
+                                    <span className="text-4xl transform group-hover:rotate-12 transition-transform duration-300 drop-shadow-lg">
+                                        {template.emoji}
+                                    </span>
                                 </div>
 
                                 {/* Name & Type */}
-                                <h4 className="font-bold text-slate-900 dark:text-white mb-1">{template.name}</h4>
-                                <span className={cn(
-                                    "inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider mb-3",
-                                    template.type === 'savings' ? "bg-emerald-500/10 text-emerald-500" :
-                                        template.type === 'debt_payoff' ? "bg-red-500/10 text-red-500" :
-                                            "bg-blue-500/10 text-blue-500"
-                                )}>
-                                    {template.type.replace('_', ' ')}
-                                </span>
+                                <div className="relative">
+                                    <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-2 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors">
+                                        {template.name}
+                                    </h4>
 
-                                {/* Description */}
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 line-clamp-2">
-                                    {template.description}
-                                </p>
+                                    <span className={cn(
+                                        "inline-block px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest mb-4 border",
+                                        template.type === 'savings'
+                                            ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                                            : template.type === 'debt_payoff'
+                                                ? "bg-red-500/10 text-red-500 border-red-500/20"
+                                                : "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                                    )}>
+                                        {template.type.replace('_', ' ')}
+                                    </span>
 
-                                {/* Suggested Amount */}
-                                <div className="space-y-1">
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-lg font-black text-slate-900 dark:text-white">
-                                            RM {template.suggestedAmount.toLocaleString()}
-                                        </span>
-                                    </div>
-                                    <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">
-                                        {template.suggestedMonths} months • RM {(template.suggestedAmount / template.suggestedMonths).toFixed(0)}/mo
+                                    {/* Description */}
+                                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-6 line-clamp-2 leading-relaxed">
+                                        {template.description}
                                     </p>
+
+                                    {/* Suggested Amount */}
+                                    <div className="pt-4 border-t border-slate-200 dark:border-white/5">
+                                        <div className="flex items-end justify-between">
+                                            <div>
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Target</p>
+                                                <span className="text-lg font-black text-slate-900 dark:text-white font-mono">
+                                                    RM {template.suggestedAmount.toLocaleString()}
+                                                </span>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Duration</p>
+                                                <p className="text-sm font-bold text-slate-600 dark:text-slate-300">
+                                                    {template.suggestedMonths} mo
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </Card>
                         </motion.div>

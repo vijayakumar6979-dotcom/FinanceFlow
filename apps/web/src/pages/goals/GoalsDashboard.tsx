@@ -8,6 +8,8 @@ import { GoalCard } from '@/components/goals/GoalCard';
 import { ContributeModal } from '@/components/goals/ContributeModal';
 import { useGoals, useGoalMilestones } from '@/hooks/useGoals';
 import { Goal } from '@financeflow/shared';
+import { cn } from '@/lib/utils';
+import { AIGoalMentor } from '@/components/goals/AIGoalMentor';
 
 type GoalFilter = 'all' | 'savings' | 'debt_payoff' | 'investment' | 'completed';
 
@@ -44,130 +46,137 @@ export default function GoalsDashboard() {
         setShowContributeModal(true);
     };
 
+    // ... existing code
+
     return (
-        <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in duration-500">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-8 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in duration-700">
+            {/* Header Section */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-2 border-b border-slate-200 dark:border-white/5">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Financial Goals</h1>
-                    <p className="text-slate-500 dark:text-slate-400">Track and achieve your dreams</p>
+                    <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-2">
+                        Financial <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-purple-600">Goals</span>
+                    </h1>
+                    <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">
+                        Turn your dreams into reality with AI-powered tracking.
+                    </p>
                 </div>
                 <Button
                     onClick={() => navigate('/goals/new')}
-                    className="bg-primary-600 hover:bg-primary-700 text-white shadow-lg shadow-primary-500/30 font-semibold px-6"
-                    icon={<Plus size={20} />}
+                    className="h-12 bg-primary-600 hover:bg-primary-700 text-white shadow-lg shadow-primary-500/30 font-bold px-8 rounded-xl transition-all hover:scale-105 active:scale-95"
+                    icon={<Plus size={22} strokeWidth={2.5} />}
                 >
-                    New Goal
+                    Create New Goal
                 </Button>
             </div>
 
-            {/* Category Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2">
-                {[
-                    { value: 'all', label: 'All Goals', icon: '🎯' },
-                    { value: 'savings', label: 'Savings', icon: '💰' },
-                    { value: 'debt_payoff', label: 'Debt Payoff', icon: '💳' },
-                    { value: 'investment', label: 'Investment', icon: '📈' },
-                    { value: 'completed', label: 'Completed', icon: '✅' },
-                ].map((filter) => (
-                    <button
-                        key={filter.value}
-                        onClick={() => setSelectedFilter(filter.value as GoalFilter)}
-                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2 ${selectedFilter === filter.value
-                                ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
-                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                            }`}
-                    >
-                        <span>{filter.icon}</span>
-                        {filter.label}
-                    </button>
-                ))}
+            {/* AI Goal Mentor Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                    <AIGoalMentor />
+                </div>
+                <div className="lg:col-span-1">
+                    <Card className="h-full bg-gradient-to-br from-indigo-600 to-purple-700 text-white border-none shadow-2xl shadow-indigo-500/20 p-6 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 transition-transform duration-700 group-hover:scale-150" />
+
+                        <div className="relative z-10 flex flex-col h-full justify-between">
+                            <div>
+                                <div className="p-3 bg-white/10 w-fit rounded-xl backdrop-blur-md mb-4 border border-white/10">
+                                    <Target size={24} className="text-white" />
+                                </div>
+                                <h3 className="text-xl font-bold mb-1">Total Progress</h3>
+                                <div className="text-5xl font-black tracking-tight mb-2">
+                                    {overallProgress}%
+                                </div>
+                                <p className="text-indigo-100 font-medium opacity-90">
+                                    RM {totalSaved.toLocaleString()} saved of RM {totalTarget.toLocaleString()}
+                                </p>
+                            </div>
+
+                            <div className="w-full bg-black/20 rounded-full h-3 mt-6 backdrop-blur-sm overflow-hidden">
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${overallProgress}%` }}
+                                    transition={{ duration: 1.5, ease: "circOut" }}
+                                    className="bg-white h-full rounded-full shadow-[0_0_20px_rgba(255,255,255,0.5)]"
+                                />
+                            </div>
+                        </div>
+                    </Card>
+                </div>
             </div>
 
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <SummaryCard
-                    title="Total Progress"
-                    value={`${overallProgress}%`}
-                    icon={<Trophy className="text-amber-500" />}
-                    subtitle={`RM ${totalSaved.toLocaleString()} of RM ${totalTarget.toLocaleString()}`}
-                />
+            {/* Bento Grid Summary Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                 <SummaryCard
                     title="Active Goals"
                     value={activeGoals.length}
                     icon={<Target className="text-primary-500" />}
                     subtitle={`${highPriorityCount} high priority`}
+                    trend="+2 this month"
                 />
                 <SummaryCard
                     title="Monthly Target"
                     value={`RM ${Math.round(totalMonthlyContribution).toLocaleString()}`}
                     icon={<TrendingUp className="text-emerald-500" />}
-                    subtitle="Estimated contribution"
+                    subtitle="Estimated needed"
+                    trend="On track"
+                    trendColor="text-emerald-500"
                 />
                 <SummaryCard
                     title="Goals Achieved"
                     value={completedGoalsCount}
+                    icon={<Trophy className="text-amber-500" />}
+                    subtitle="Lifetime total"
+                    trend="Top 5%"
+                    trendColor="text-amber-500"
+                />
+                <SummaryCard
+                    title="Next Milestone"
+                    value="15 Days"
                     icon={<Sparkles className="text-purple-500" />}
-                    subtitle={`${totalGoals} total goals`}
+                    subtitle="Emergency Fund"
+                    trend="Keep going!"
+                    trendColor="text-purple-500"
                 />
             </div>
 
-            {/* Milestones Preview Section */}
-            {activeGoals.length > 0 && (
-                <Card className="p-6 bg-gradient-to-br from-purple-600 to-indigo-700 text-white border-none shadow-xl shadow-purple-500/20">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="p-3 bg-white/10 rounded-xl backdrop-blur-md">
-                            <Trophy size={24} className="text-purple-200" />
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-bold">Upcoming Milestones</h3>
-                            <p className="text-sm text-purple-100 opacity-90">You're making great progress!</p>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {activeGoals.slice(0, 3).map((goal) => {
-                            const progress = (goal.current_amount / goal.target_amount) * 100;
-                            const nextMilestone = progress < 25 ? 25 : progress < 50 ? 50 : progress < 75 ? 75 : 100;
-                            const remaining = (goal.target_amount * (nextMilestone / 100)) - goal.current_amount;
-
-                            return (
-                                <div key={goal.id} className="p-4 bg-white/10 rounded-xl backdrop-blur-md">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className="text-2xl">{goal.emoji || '🎯'}</span>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="text-sm font-bold truncate">{goal.name}</div>
-                                            <div className="text-xs text-purple-200">Next: {nextMilestone}%</div>
-                                        </div>
-                                    </div>
-                                    <div className="text-lg font-bold">
-                                        RM {remaining.toLocaleString()} to go
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </Card>
-            )}
-
-            {/* Goals Section */}
-            <div>
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                        {selectedFilter === 'all' ? 'All Goals' :
-                            selectedFilter === 'completed' ? 'Completed Goals' :
-                                `${selectedFilter.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} Goals`}
-                    </h2>
-                    <div className="text-sm text-slate-500">
-                        {goals.length} {goals.length === 1 ? 'goal' : 'goals'}
+            {/* Goals Filtering & Grid */}
+            <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sticky top-4 z-30 py-2 backdrop-blur-xl bg-slate-50/80 dark:bg-slate-900/80 -mx-4 px-4 rounded-2xl border border-white/5">
+                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full sm:w-auto p-1">
+                        {[
+                            { value: 'all', label: 'All Goals', icon: '🎯' },
+                            { value: 'savings', label: 'Savings', icon: '💰' },
+                            { value: 'debt_payoff', label: 'Debt Payoff', icon: '💳' },
+                            { value: 'investment', label: 'Investment', icon: '📈' },
+                            { value: 'completed', label: 'Completed', icon: '✅' },
+                        ].map((filter) => (
+                            <button
+                                key={filter.value}
+                                onClick={() => setSelectedFilter(filter.value as GoalFilter)}
+                                className={cn(
+                                    "px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center gap-2 border",
+                                    selectedFilter === filter.value
+                                        ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-lg transform scale-105"
+                                        : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                )}
+                            >
+                                <span>{filter.icon}</span>
+                                {filter.label}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
                 {isLoading ? (
-                    <div className="flex items-center justify-center py-20">
-                        <Loader2 className="w-10 h-10 animate-spin text-primary-500" />
+                    <div className="flex items-center justify-center py-40">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-primary-500 blur-xl opacity-20 animate-pulse" />
+                            <Loader2 className="w-12 h-12 animate-spin text-primary-500 relative z-10" />
+                        </div>
                     </div>
                 ) : goals.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                         {goals.map((goal, index) => (
                             <motion.div
                                 key={goal.id}
@@ -184,23 +193,24 @@ export default function GoalsDashboard() {
                         ))}
                     </div>
                 ) : (
-                    <Card className="flex flex-col items-center justify-center py-20 text-center border-dashed border-2 border-slate-200 dark:border-white/10 bg-transparent">
-                        <div className="w-20 h-20 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center mb-6">
-                            <Target className="text-slate-400" size={40} />
+                    <Card className="flex flex-col items-center justify-center py-32 text-center border-dashed border-2 border-slate-200 dark:border-white/10 bg-white/5 backdrop-blur-sm rounded-[32px]">
+                        <div className="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-white/5 dark:to-white/10 rounded-full flex items-center justify-center mb-6 shadow-inner ring-4 ring-white/5">
+                            <Target className="text-slate-400" size={48} />
                         </div>
-                        <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-                            {selectedFilter === 'all' ? 'No goals set yet' : `No ${selectedFilter.replace('_', ' ')} goals`}
+                        <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-3">
+                            {selectedFilter === 'all' ? 'Start Your Journey' : `No ${selectedFilter.replace('_', ' ')} Goals`}
                         </h3>
-                        <p className="text-slate-500 max-w-sm mx-auto mb-8">
+                        <p className="text-slate-500 max-w-md mx-auto mb-10 text-lg leading-relaxed">
                             {selectedFilter === 'all'
-                                ? 'Dreaming of a new car, a home, or a vacation? Start tracking your savings today!'
-                                : `Create a ${selectedFilter.replace('_', ' ')} goal to get started.`}
+                                ? 'Your financial dreams are waiting. Create your first goal to start tracking your progress today.'
+                                : `You haven't set any ${selectedFilter.replace('_', ' ')} goals yet.`}
                         </p>
                         <Button
-                            className="bg-primary-600 hover:bg-primary-700 text-white px-8 h-12 rounded-xl text-lg font-bold"
+                            className="bg-primary-600 hover:bg-primary-700 text-white px-10 h-14 rounded-2xl text-lg font-bold shadow-xl shadow-primary-500/20 hover:shadow-primary-500/40 hover:-translate-y-1 transition-all"
                             onClick={() => navigate('/goals/new')}
+                            icon={<Plus size={24} />}
                         >
-                            Create Your First Goal
+                            Create Goal
                         </Button>
                     </Card>
                 )}
@@ -224,18 +234,23 @@ export default function GoalsDashboard() {
     );
 }
 
-function SummaryCard({ title, value, icon, subtitle }: any) {
+function SummaryCard({ title, value, icon, subtitle, trend, trendColor = "text-slate-500" }: any) {
     return (
-        <Card className="flex flex-col p-6 hover:shadow-xl transition-all duration-300 border border-slate-200/50 dark:border-white/5 hover:-translate-y-1">
-            <div className="flex justify-between items-start mb-2">
-                <span className="text-slate-500 dark:text-slate-400 text-sm font-medium">{title}</span>
-                <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <Card className="flex flex-col p-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 backdrop-blur-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-[24px]">
+            <div className="flex justify-between items-start mb-4">
+                <div className="p-3 bg-slate-100 dark:bg-white/5 rounded-2xl">
                     {icon}
                 </div>
+                {trend && (
+                    <span className={cn("text-xs font-bold px-2 py-1 rounded-lg bg-slate-100 dark:bg-white/5", trendColor)}>
+                        {trend}
+                    </span>
+                )}
             </div>
             <div className="mt-auto">
-                <h4 className="text-2xl font-bold text-slate-900 dark:text-white">{value}</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{subtitle}</p>
+                <span className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider block mb-1">{title}</span>
+                <h4 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-1">{value}</h4>
+                <p className="text-xs font-medium text-slate-400">{subtitle}</p>
             </div>
         </Card>
     );

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Responsive, WidthProvider } from 'react-grid-layout';
+import RGL, { Responsive } from 'react-grid-layout';
+const WidthProvider = (RGL as any).WidthProvider;
 import { Settings, Plus, LayoutGrid, Pin, PinOff } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -264,7 +265,7 @@ export function WidgetGrid({ availableWidgets, onLayoutChange }: WidgetGridProps
                     draggableHandle=".react-grid-item"
                     isDraggable={isEditMode}
                     isResizable={isEditMode}
-                    onLayoutChange={(newLayout, allLayouts) => handleLayoutChange(allLayouts.lg || newLayout)}
+                    onLayoutChange={(newLayout: any, allLayouts: any) => handleLayoutChange(allLayouts.lg || newLayout)}
                     margin={[16, 16]}
                 >
                     {activeWidgets.map(widgetId => renderWidget(widgetId))}

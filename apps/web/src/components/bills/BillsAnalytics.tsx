@@ -307,7 +307,7 @@ function Metric3D({ label, value, icon: Icon, color, trend, trendUp, progress, i
                 colorStyles[color as keyof typeof colorStyles]
             )}
         >
-            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay" />
+
             <div className="relative z-10">
                 <div className="flex justify-between items-start mb-4">
                     <div className="p-2.5 bg-white/20 rounded-xl backdrop-blur-md">

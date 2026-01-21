@@ -64,161 +64,137 @@ export function GoalCard({ goal, milestones = [], onClick, onContribute }: GoalC
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
             onClick={onClick}
-            className="cursor-pointer h-full"
+            className="cursor-pointer h-full group"
         >
-            <Card className={cn(
-                "relative overflow-hidden group transition-all duration-500 h-full",
-                "bg-white/5 backdrop-blur-xl border border-white/10",
-                goal.priority === 'high' ? "ring-1 ring-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.1)]" : "",
-                isCompleted && "ring-2 ring-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.2)]"
+            <div className={cn(
+                "relative h-full overflow-hidden rounded-[24px] border transition-all duration-500",
+                "bg-white/5 backdrop-blur-2xl",
+                "border-white/10 group-hover:border-white/20",
+                goal.priority === 'high' ? "hover:shadow-[0_0_40px_rgba(239,68,68,0.2)]" : "hover:shadow-[0_0_40px_rgba(0,102,255,0.2)]",
+                isCompleted && "shadow-[0_0_40px_rgba(16,185,129,0.2)] border-emerald-500/30"
             )}>
-                {/* Confetti Effect on Completion */}
-                {isCompleted && showConfetti && (
-                    <div className="absolute inset-0 pointer-events-none z-20">
-                        {[...Array(20)].map((_, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ y: 0, x: Math.random() * 100 - 50, opacity: 1 }}
-                                animate={{
-                                    y: -200,
-                                    x: Math.random() * 200 - 100,
-                                    opacity: 0,
-                                    rotate: Math.random() * 360,
-                                }}
-                                transition={{ duration: 2, delay: i * 0.05 }}
-                                className="absolute top-1/2 left-1/2 w-2 h-2 rounded-full"
-                                style={{
-                                    backgroundColor: ['#0066FF', '#8B5CF6', '#EC4899', '#10B981', '#F59E0B'][i % 5],
-                                }}
-                            />
-                        ))}
-                    </div>
-                )}
+                {/* Dynamic Background Glow */}
+                <div className={cn(
+                    "absolute -inset-[100%] rounded-full opacity-0 group-hover:opacity-20 blur-3xl transition-opacity duration-700 pointer-events-none",
+                    goal.priority === 'high' ? "bg-red-500" : isCompleted ? "bg-emerald-500" : "bg-primary-500"
+                )} />
 
                 {/* Priority Badge */}
                 <div className={cn(
-                    "absolute top-3 right-3 px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg border z-10",
+                    "absolute top-4 left-1/2 -translate-x-1/2 px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border z-10 backdrop-blur-md shadow-lg",
                     getPriorityColor()
                 )}>
                     {goal.priority}
                 </div>
 
-                <div className="flex justify-between items-start mb-6 relative">
-                    {/* Emoji */}
-                    <div className="p-4 rounded-2xl bg-white/5 text-4xl shadow-inner group-hover:scale-110 transition-transform duration-300">
-                        {goal.emoji || '🎯'}
-                    </div>
-
-                    {/* Progress Ring */}
-                    <div className="mr-2">
-                        <ProgressRing
-                            progress={percentage}
-                            size={96}
-                            strokeWidth={8}
-                            color={isCompleted ? '#10B981' : goal.color || '#0066FF'}
-                            showPercentage={true}
-                        />
-                    </div>
-                </div>
-
-                <div className="relative">
-                    <h3 className="font-bold text-xl text-slate-900 dark:text-white truncate mb-1 pr-6 group-hover:text-primary-400 transition-colors">
-                        {goal.name}
-                    </h3>
-
-                    {/* Goal Type Badge */}
-                    <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-2 py-1 bg-slate-100 dark:bg-white/5 rounded">
-                            {goal.goal_type.replace('_', ' ')}
-                        </span>
-                        <span className="text-xs font-semibold text-slate-500">
-                            Target: RM {goal.target_amount.toLocaleString()}
-                        </span>
-                    </div>
-
-                    {/* Milestone Badges */}
-                    {standardMilestones.length > 0 && (
-                        <div className="flex items-center gap-2 mb-4">
-                            {standardMilestones.map((milestone) => (
-                                <motion.div
-                                    key={milestone.percentage}
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: milestone.completed ? 1 : 0.8 }}
-                                    className={cn(
-                                        "flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold transition-all",
-                                        milestone.completed
-                                            ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30"
-                                            : "bg-slate-100 dark:bg-white/5 text-slate-400"
-                                    )}
-                                >
-                                    {milestone.completed && <Award size={10} />}
-                                    {milestone.percentage}%
-                                </motion.div>
-                            ))}
+                <div className="p-6 relative z-10 flex flex-col h-full">
+                    <div className="flex justify-between items-start mb-6">
+                        {/* Floating 3D Emoji */}
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-white/20 blur-xl rounded-full scale-0 group-hover:scale-150 transition-transform duration-500" />
+                            <div className="relative text-5xl transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 drop-shadow-2xl">
+                                {goal.emoji || '🎯'}
+                            </div>
                         </div>
-                    )}
 
-                    {/* Current Amount */}
-                    <div className="flex flex-col gap-1 mb-6">
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-3xl font-black text-slate-900 dark:text-white font-mono leading-none">
-                                RM {goal.current_amount.toLocaleString()}
+                        {/* Progress Ring */}
+                        <div className="relative group-hover:scale-105 transition-transform duration-300">
+                            <ProgressRing
+                                progress={percentage}
+                                size={80}
+                                strokeWidth={6}
+                                color={isCompleted ? '#10B981' : goal.color || '#0066FF'}
+                                showPercentage={true}
+                                className="drop-shadow-lg"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex-1">
+                        <h3 className="font-bold text-xl text-slate-900 dark:text-white truncate mb-1 pr-6 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors">
+                            {goal.name}
+                        </h3>
+
+                        <div className="flex items-center gap-2 mb-6">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500/80 px-2 py-1 bg-slate-100/50 dark:bg-white/5 rounded-md backdrop-blur-sm">
+                                {goal.goal_type.replace('_', ' ')}
                             </span>
-                            {goal.current_amount > 0 && (
-                                <div className="flex items-center gap-1 text-emerald-500 text-sm font-semibold">
-                                    <TrendingUp size={14} />
-                                    <span>{percentage.toFixed(0)}%</span>
+                        </div>
+
+                        {/* Milestone Dots */}
+                        <div className="flex gap-1 mb-6">
+                            {[25, 50, 75, 100].map((step) => {
+                                const isReached = percentage >= step;
+                                return (
+                                    <div
+                                        key={step}
+                                        className={cn(
+                                            "h-1.5 flex-1 rounded-full transition-all duration-500",
+                                            isReached
+                                                ? (isCompleted ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "bg-primary-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]")
+                                                : "bg-slate-200 dark:bg-white/10"
+                                        )}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="mt-auto">
+                        <div className="flex items-end justify-between mb-4">
+                            <div>
+                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
+                                    Saved
                                 </div>
+                                <div className="text-2xl font-black text-slate-900 dark:text-white font-mono leading-none tracking-tight">
+                                    RM {goal.current_amount.toLocaleString()}
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
+                                    Target
+                                </div>
+                                <div className="text-sm font-bold text-slate-500 dark:text-slate-400 font-mono">
+                                    {goal.target_amount.toLocaleString()}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer Actions */}
+                        <div className="grid grid-cols-[1fr,auto] gap-3">
+                            <div className={cn(
+                                "flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-2.5 rounded-xl transition-colors backdrop-blur-md border",
+                                isCompleted
+                                    ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                                    : daysLeft > 0
+                                        ? "bg-slate-100/50 dark:bg-white/5 text-slate-500 dark:text-slate-400 border-white/5"
+                                        : "bg-red-500/10 text-red-500 border-red-500/20"
+                            )}>
+                                <Calendar size={14} className={cn("opacity-70", daysLeft < 0 && "animate-pulse")} />
+                                {isCompleted
+                                    ? 'Completed!'
+                                    : daysLeft > 0
+                                        ? `${daysLeft} days left`
+                                        : `${Math.abs(daysLeft)} days overdue`}
+                            </div>
+
+                            {!isCompleted && onContribute && (
+                                <motion.button
+                                    onClick={handleContribute}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="h-[38px] w-[38px] flex items-center justify-center rounded-xl bg-gradient-to-tr from-primary-600 to-indigo-600 text-white shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 border border-white/20"
+                                >
+                                    <Plus size={18} strokeWidth={3} />
+                                </motion.button>
                             )}
                         </div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">
-                            {isCompleted ? 'Goal Achieved!' : 'Saved so far'}
-                        </span>
-                    </div>
-
-                    {/* Footer: Countdown & Contribute Button */}
-                    <div className="flex items-center justify-between gap-3">
-                        {/* Countdown Timer */}
-                        <div className={cn(
-                            "flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-sm transition-colors flex-1",
-                            isCompleted
-                                ? "bg-emerald-500/10 text-emerald-500"
-                                : daysLeft > 0
-                                    ? "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400"
-                                    : "bg-red-500/10 text-red-500"
-                        )}>
-                            <Calendar size={14} className="opacity-70" />
-                            {isCompleted
-                                ? 'Completed!'
-                                : daysLeft > 0
-                                    ? `${daysLeft} days left`
-                                    : `${Math.abs(daysLeft)} days overdue`}
-                        </div>
-
-                        {/* Quick Contribute Button */}
-                        {!isCompleted && onContribute && (
-                            <motion.button
-                                onClick={handleContribute}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="h-10 w-10 flex items-center justify-center rounded-xl bg-primary-500 text-white shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all"
-                            >
-                                <Plus size={20} />
-                            </motion.button>
-                        )}
                     </div>
                 </div>
-
-                {/* Hover Glow */}
-                <div className={cn(
-                    "absolute inset-x-0 bottom-0 h-1 scale-x-0 group-hover:scale-x-100 transition-transform duration-500",
-                    isCompleted
-                        ? "bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600"
-                        : "bg-gradient-to-r from-primary-600 via-primary-400 to-primary-600"
-                )} />
-            </Card>
+            </div>
         </motion.div>
     );
 }

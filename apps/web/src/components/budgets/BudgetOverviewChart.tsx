@@ -1,5 +1,5 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { Card } from '@/components/ui/Card';
+
 import { Budget, BudgetPeriod } from '@financeflow/shared';
 
 interface BudgetOverviewChartProps {
@@ -23,7 +23,7 @@ export function BudgetOverviewChart({ budgets, periods }: BudgetOverviewChartPro
     const totalSpent = data.reduce((acc, curr) => acc + curr.spent, 0);
 
     return (
-        <Card className="h-[400px] flex flex-col">
+        <div className="h-[350px] flex flex-col">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Budget Overview</h3>
 
             <div className="flex-1 min-h-0 flex items-center justify-center relative">
@@ -56,14 +56,14 @@ export function BudgetOverviewChart({ budgets, periods }: BudgetOverviewChartPro
                     </PieChart>
                 </ResponsiveContainer>
 
-                {/* Center Text */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                {/* Center Text - Moved lower */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pt-4">
                     <span className="text-3xl font-bold text-slate-900 dark:text-white">
                         {Math.round((totalSpent / totalBudget) * 100) || 0}%
                     </span>
-                    <span className="text-sm text-slate-500 dark:text-slate-400">Total Used</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400 mt-1">Total Used</span>
                 </div>
             </div>
-        </Card>
+        </div>
     );
 }
